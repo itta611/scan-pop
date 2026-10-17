@@ -12,7 +12,8 @@
     "preview": "vite preview",
     "format": "biome format",
     "lint": "biome lint",
-    "check": "biome check"
+    "check": "biome check",
+    "test": "node --env-file-if-exists=.env.local --import tsx --test tests/*.test.ts"
   },
   "dependencies": {
     "@orpc/client": "^1.13.6",

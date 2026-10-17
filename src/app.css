@@ -70,7 +70,7 @@
 .stage-bottomline { bottom: 4.3%; padding-top: 1.8cqh; border-top: 1px solid var(--stage-line); font-size: 1.05cqw; color: var(--stage-muted); letter-spacing: .05em; }
 .stage-bottomline > span:last-child { font-size: 2.3cqw; line-height: 1; }
 .confetti-canvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 3; }
-.scan-thanks { position: absolute; z-index: 4; bottom: -3cqh; left: 50%; display: block; width: max-content; padding: .7em 1.2em; font-size: 2cqw; font-weight: 650; color: #315340; background: #fff; border-radius: 100px; box-shadow: 0 4px 16px #00000012; animation: thanks 2400ms both; }
+.scan-thanks { position: absolute; z-index: 4; top: 4.7cqh; left: 50%; display: block; width: max-content; padding: .7em 1.2em; font-size: 2cqw; font-weight: 650; color: #315340; background: #fff; border-radius: 100px; box-shadow: 0 4px 16px #00000012; animation: thanks 2400ms both; }
 @keyframes thanks { 0% { opacity: 0; transform: translate(-50%, 8px) scale(.95); } 12%, 75% { opacity: 1; transform: translate(-50%, 0) scale(1); } 100% { opacity: 0; transform: translate(-50%, -8px); } }
 .preview-toolbar { display: flex; align-items: center; justify-content: space-between; margin-top: 17px; gap: 10px; }
 .preview-toolbar > span { display: flex; align-items: center; gap: 7px; font-size: 10px; color: #859180; }

@@ -1,212 +1,63 @@
-Welcome to your new TanStack Start app!
+# QR Pop
 
-# Getting Started
+TanStack Startで作る、スキャンに反応するQR表示アプリです。
 
-To run this application:
+## 画面
 
-```bash
+- `/`: URL、見出し、メッセージ、背景、紙吹雪を編集します。下書きと編集用トークンはブラウザに保存します。
+- `/screen/:screenId`: QRを表示します。スマホでリンクを開くと、表示画面の左右下から紙吹雪が出ます。
+
+「変更を保存」で、開いている表示ページにも設定を配信します。表示ページのURLには編集権限を含めません。
+
+## 開発
+
+Node.js 22.12以上、pnpm 12.3.4、Redisが必要です。
+
+```sh
 pnpm install
-pnpm dev
+cp .env.example .env.local
+mkdir -p work/redis
+redis-server --bind 127.0.0.1 --port 6387 --appendonly yes --dir work/redis
 ```
 
-# Building For Production
+別のターミナルで起動します。
 
-To build this application for production:
+```sh
+pnpm dev --host 0.0.0.0
+```
 
-```bash
+今回の開発環境にはRedisをインストール済みです。127.0.0.1:6387で起動しており、永続化ファイルは `work/redis/` に保存します。
+
+スマホで試す場合は、PCとスマホを同じネットワークにつなぎ、Viteが出力する **Network URL** をPC側で開いてからQRを表示してください。localhostで表示したQRはスマホからアクセスできません。
+
+## 通知の仕様
+
+1. QRには `/go/:screenId` を埋め込みます。
+2. スマホのGETアクセスでRedis Streamsへイベントを追加し、指定URLへ302で転送します。
+3. 表示画面は `/api/events/:screenId` をSSEで購読します。
+4. サーバーが `XREAD BLOCK` でイベントの追加を待ち、そのままSSEへ流します。
+5. 接続は30秒で終了します。`retry: 0` によりEventSourceが再接続します。
+6. 再接続時はLast-Event-IDより新しく、復帰時点から2秒以内のイベントだけを再送します。初回接続は接続時点以降のイベントを受信します。
+7. 紙吹雪の動きを減らすOS設定を尊重します。
+
+Redisのサーバー時刻を基準に再送範囲を計算します。表示画面ごとに独立したStreamを使い、専用のRedis接続で待ち受けます。購読にConsumer Groupは使わないため、同じQRを複数画面で表示しても各画面へ通知されます。
+
+検知対象はカメラの認識ではなく、転送用URLへのアクセスです。再読み込みや一部のプレビューによるアクセスでも演出が発生します。
+
+## 検証
+
+Redisを起動した状態で実行します。テストは作成した専用データだけを削除し、DB全体の初期化は行いません。
+
+```sh
+pnpm test
+pnpm exec tsc --noEmit
 pnpm build
 ```
 
-## Styling
+テストには、即時配信、2秒以内の未受信分の再送、古い通知と受信済み通知の除外、設定配信、30秒後の接続終了を含みます。最後のテストのため約30秒かかります。
 
-This project uses [Tailwind CSS](https://tailwindcss.com/) for styling.
+## デプロイナウへの公開
 
-### Removing Tailwind CSS
+ローカルのRedisは公開先から接続できません。公開時は、TLS接続と `XREAD BLOCK` に対応する外部Redisを用意し、デプロイナウの環境変数 `REDIS_URL` に接続URLを設定します。接続情報はクライアントへ配信しません。
 
-If you prefer not to use Tailwind CSS:
-
-1. Remove the demo pages in `src/routes/demo/`
-2. Replace the Tailwind import in `src/styles.css` with your own styles
-3. Remove `tailwindcss()` from the plugins array in `vite.config.ts`
-4. Remove `@tailwindcss/vite` and `tailwindcss` from `package.json`
-
-## Linting & Formatting
-
-This project uses [Biome](https://biomejs.dev/) for linting and formatting. The following scripts are available:
-
-
-```bash
-pnpm lint
-pnpm format
-pnpm check
-```
-
-
-# Paraglide i18n
-
-This add-on wires up ParaglideJS for localized routing and message formatting.
-
-- Messages live in `project.inlang/messages`.
-- URLs are localized through the Paraglide Vite plugin and router `rewrite` hooks.
-- Run the dev server or build to regenerate the `src/paraglide` outputs.
-
-
-## Shadcn
-
-Add components using the latest version of [Shadcn](https://ui.shadcn.com/).
-
-```bash
-pnpm dlx shadcn@latest add button
-```
-
-
-
-## Routing
-
-This project uses [TanStack Router](https://tanstack.com/router) with file-based routing. Routes are managed as files in `src/routes`.
-
-### Adding A Route
-
-To add a new route to your application just add a new file in the `./src/routes` directory.
-
-TanStack will automatically generate the content of the route file for you.
-
-Now that you have two routes you can use a `Link` component to navigate between them.
-
-### Adding Links
-
-To use SPA (Single Page Application) navigation you will need to import the `Link` component from `@tanstack/react-router`.
-
-```tsx
-import { Link } from "@tanstack/react-router";
-```
-
-Then anywhere in your JSX you can use it like so:
-
-```tsx
-<Link to="/about">About</Link>
-```
-
-This will create a link that will navigate to the `/about` route.
-
-More information on the `Link` component can be found in the [Link documentation](https://tanstack.com/router/v1/docs/framework/react/api/router/linkComponent).
-
-### Using A Layout
-
-In the File Based Routing setup the layout is located in `src/routes/__root.tsx`. Anything you add to the root route will appear in all the routes. The route content will appear in the JSX where you render `{children}` in the `shellComponent`.
-
-Here is an example layout that includes a header:
-
-```tsx
-import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
-
-export const Route = createRootRoute({
-  head: () => ({
-    meta: [
-      { charSet: 'utf-8' },
-      { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { title: 'My App' },
-    ],
-  }),
-  shellComponent: ({ children }) => (
-    <html lang="en">
-      <head>
-        <HeadContent />
-      </head>
-      <body>
-        <header>
-          <nav>
-            <Link to="/">Home</Link>
-            <Link to="/about">About</Link>
-          </nav>
-        </header>
-        {children}
-        <Scripts />
-      </body>
-    </html>
-  ),
-})
-```
-
-More information on layouts can be found in the [Layouts documentation](https://tanstack.com/router/latest/docs/framework/react/guide/routing-concepts#layouts).
-
-## Server Functions
-
-TanStack Start provides server functions that allow you to write server-side code that seamlessly integrates with your client components.
-
-```tsx
-import { createServerFn } from '@tanstack/react-start'
-
-const getServerTime = createServerFn({
-  method: 'GET',
-}).handler(async () => {
-  return new Date().toISOString()
-})
-
-// Use in a component
-function MyComponent() {
-  const [time, setTime] = useState('')
-  
-  useEffect(() => {
-    getServerTime().then(setTime)
-  }, [])
-  
-  return <div>Server time: {time}</div>
-}
-```
-
-## API Routes
-
-You can create API routes by using the `server` property in your route definitions:
-
-```tsx
-import { createFileRoute } from '@tanstack/react-router'
-import { json } from '@tanstack/react-start'
-
-export const Route = createFileRoute('/api/hello')({
-  server: {
-    handlers: {
-      GET: () => json({ message: 'Hello, World!' }),
-    },
-  },
-})
-```
-
-## Data Fetching
-
-There are multiple ways to fetch data in your application. You can use TanStack Query to fetch data from a server. But you can also use the `loader` functionality built into TanStack Router to load the data for a route before it's rendered.
-
-For example:
-
-```tsx
-import { createFileRoute } from '@tanstack/react-router'
-
-export const Route = createFileRoute('/people')({
-  loader: async () => {
-    const response = await fetch('https://swapi.dev/api/people')
-    return response.json()
-  },
-  component: PeopleComponent,
-})
-
-function PeopleComponent() {
-  const data = Route.useLoaderData()
-  return (
-    <ul>
-      {data.results.map((person) => (
-        <li key={person.name}>{person.name}</li>
-      ))}
-    </ul>
-  )
-}
-```
-
-Loaders simplify your data fetching logic dramatically. Check out more information in the [Loader documentation](https://tanstack.com/router/latest/docs/framework/react/guide/data-loading#loader-parameters).
-
-
-
-# Learn More
-
-You can learn more about all of the offerings from TanStack in the [TanStack documentation](https://tanstack.com).
-
-For TanStack Start specific documentation, visit [TanStack Start](https://tanstack.com/start).
+TanStack Startは現時点のデプロイナウの公式対応一覧に記載されていません。公開先でのビルド・起動方式とSSEの即時配信は、実際のデプロイで検証が必要です。このリポジトリでは、公開済みとは扱っていません。
