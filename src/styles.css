@@ -1,11 +1,5 @@
 @import "tailwindcss";
 
-@theme static {
-  --color-blue-50: oklch(97% 0.014 254.604);
-  --color-blue-100: oklch(93.2% 0.032 255.585);
-  --color-blue-200: oklch(88.2% 0.059 254.128);
-}
-
 @theme {
   --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
@@ -120,6 +114,9 @@
   --color-sky-800: oklch(44.3% 0.11 240.79);
   --color-sky-900: oklch(39.1% 0.09 240.876);
   --color-sky-950: oklch(29.3% 0.066 243.157);
+  --color-blue-50: oklch(97% 0.014 254.604);
+  --color-blue-100: oklch(93.2% 0.032 255.585);
+  --color-blue-200: oklch(88.2% 0.059 254.128);
   --color-blue-300: oklch(80.9% 0.105 251.813);
   --color-blue-400: oklch(70.7% 0.165 254.624);
   --color-blue-500: oklch(62.3% 0.214 259.815);
@@ -436,16 +433,5 @@
       transform: none;
       animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
     }
-  }
-}
-
-@theme {
-  --font-app: -apple-system, BlinkMacSystemFont, "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif;
-  --animate-thanks: thanks 2400ms both;
-
-  @keyframes thanks {
-    0% { opacity: 0; transform: translate(-50%, 8px) scale(.95); }
-    12%, 75% { opacity: 1; transform: translate(-50%, 0) scale(1); }
-    100% { opacity: 0; transform: translate(-50%, -8px); }
   }
 }
