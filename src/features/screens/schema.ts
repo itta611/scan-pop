@@ -28,9 +28,9 @@ export const defaultScreen: ScreenConfig = {
 };
 
 export const themes = [
-	{ value: "paper", label: "ペーパー", color: "#f4f0e8" },
-	{ value: "mint", label: "ミント", color: "#dce9df" },
-	{ value: "night", label: "ナイト", color: "#242b29" },
+	{ value: "paper", label: "ペーパー", className: "bg-[#f4f0e8]" },
+	{ value: "mint", label: "ミント", className: "bg-[#dce9df]" },
+	{ value: "night", label: "ナイト", className: "bg-[#242b29]" },
 ] as const;
 
 export const palettes = {

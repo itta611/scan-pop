@@ -1,3 +1,4 @@
+import { buttonClassName } from "../components/Button";
 import {
 	HeadContent,
 	Scripts,
@@ -5,7 +6,6 @@ import {
 } from "@tanstack/react-router";
 
 import appCss from "../styles.css?url";
-import interfaceCss from "../app.css?url";
 
 import type { QueryClient } from "@tanstack/react-query";
 
@@ -32,15 +32,14 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 				rel: "stylesheet",
 				href: appCss,
 			},
-			{ rel: "stylesheet", href: interfaceCss },
 			{ rel: "icon", type: "image/svg+xml", href: "/favicon.svg" },
 		],
 	}),
 	shellComponent: RootDocument,
 	notFoundComponent: () => (
-		<div className="empty-screen">
+		<div className="flex min-h-svh flex-col items-center justify-center gap-5 p-[25px] text-center [&>h1]:text-[23px] [&>p]:text-[13px] [&>p]:text-[#7a8778]">
 			<h1>このページは見つかりませんでした。</h1>
-			<a href="/" className="button button-primary">
+			<a href="/" className={buttonClassName("primary")}>
 				編集ページに戻る
 			</a>
 		</div>
@@ -49,7 +48,10 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 
 function RootDocument({ children }: { children: React.ReactNode }) {
 	return (
-		<html lang="ja">
+		<html
+			lang="ja"
+			className="bg-[#fafbf8] font-app text-[#293d35] antialiased tabular-nums [font-synthesis:none] [-webkit-tap-highlight-color:transparent] selection:bg-[#d5e8d8] selection:text-[#254331] [&_h1]:text-balance [&_h2]:text-balance [&_p]:text-pretty [&_button]:cursor-pointer [&_button:disabled]:cursor-not-allowed [&_button]:touch-manipulation [&_a]:touch-manipulation [&_:focus-visible]:outline-3 [&_:focus-visible]:outline-solid [&_:focus-visible]:outline-[#9bc6ae] [&_:focus-visible]:outline-offset-4 motion-reduce:[&_*]:transition-none!"
+		>
 			<head>
 				<HeadContent />
 			</head>

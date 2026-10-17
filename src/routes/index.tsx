@@ -7,7 +7,7 @@ function Home() {
 	return (
 		<ClientOnly
 			fallback={
-				<div className="loading-screen">
+				<div className="flex min-h-svh items-center justify-center gap-5 p-[25px] text-center text-[36px] font-bold [&>span]:text-[#cc805c]">
 					QR Pop<span>✳</span>
 				</div>
 			}
