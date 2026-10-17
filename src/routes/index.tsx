@@ -7,24 +7,27 @@ import {
 	ArrowUpRight,
 	Check,
 	Copy,
-	Link2,
 	LoaderCircle,
 	Monitor,
 	PartyPopper,
-	RotateCcw,
 	Sparkles,
 } from "lucide-react";
 import { type FormEvent, useRef, useState } from "react";
 import { Button } from "../components/Button";
-import { cn } from "../lib/utils";
 import { QrStage, type StageHandle } from "../features/screens/QrStage";
+import {
+	ConfettiSetting,
+	LinkSetting,
+	TextSetting,
+	ThemeSetting,
+} from "../features/screens/ScreenSettings";
 import {
 	defaultScreen,
 	type SavedScreen,
 	type ScreenConfig,
 	screenSchema,
-	themes,
 } from "../features/screens/schema";
+import { cn } from "../lib/utils";
 
 export const Route = createFileRoute("/")({ component: HomeRoute });
 
@@ -44,19 +47,6 @@ function HomeRoute() {
 
 type Draft = { config: ScreenConfig; saved?: SavedScreen };
 const STORAGE_KEY = "qrpop.editor";
-const inputClassName =
-	"w-full rounded-md border border-[#dfe5db] bg-[#fdfefc] px-[11px] py-2.5 text-[11px] leading-[1.6] text-[#364b3c] transition-[border-color,box-shadow] duration-160 placeholder:text-[#aab4a5] focus:border-[#8ba88c] focus:shadow-[0_0_0_3px_#cbdcc938] focus:outline-none max-[760px]:text-[16px]";
-const labelClassName =
-	"mt-[13px] mb-2 flex clear-both items-center gap-1.5 text-[10px] text-[#657466] max-[760px]:text-[12px]";
-const legendClassName =
-	"float-left mb-[15px] flex w-full items-center gap-[7px] text-[11px] font-semibold max-[760px]:text-[12px] [&_svg]:size-[13px] [&_svg]:text-[#7f917e]";
-const headerButtonClassName =
-	"max-[760px]:gap-1.5 max-[760px]:p-2.5 max-[760px]:text-[10px] max-[760px]:[&>svg:last-child:not(:first-child)]:hidden";
-const paletteSwatches = {
-	colorful: ["bg-[#ff795d]", "bg-[#f4c95d]", "bg-[#6d9d87]", "bg-[#8d9acc]"],
-	pastel: ["bg-[#f3b9c8]", "bg-[#b7c8ed]", "bg-[#a8d5bf]", "bg-[#f4d9a6]"],
-	gold: ["bg-[#b58a38]", "bg-[#d5b46b]", "bg-[#f1db9d]", "bg-[#e8c373]"],
-};
 
 function Home() {
 	const navigate = useNavigate();
@@ -144,7 +134,7 @@ function Home() {
 	}
 
 	return (
-		<div className="mx-auto max-w-[1600px]">
+		<div className="mx-auto min-h-svh max-w-[1600px] bg-white">
 			<header className="flex h-17 items-center gap-8 border px-3 rounded-xl w-[1060px] mx-auto">
 				<span
 					className="grid size-9 place-items-center rounded-[10px] bg-[#e5ecdf] max-[760px]:size-6 [&_svg]:size-5.5"
@@ -156,7 +146,7 @@ function Home() {
 				<div className="ml-auto flex items-center gap-3 max-[760px]:gap-1">
 					<Button
 						variant="ghost"
-						className={headerButtonClassName}
+						className="max-[760px]:gap-1.5 max-[760px]:p-2.5 max-[760px]:text-[10px] max-[760px]:[&>svg:last-child:not(:first-child)]:hidden"
 						aria-label={
 							copied ? "表示リンクをコピーしました" : "表示リンクをコピー"
 						}
@@ -169,7 +159,7 @@ function Home() {
 					</Button>
 					<Button
 						variant="primary"
-						className={headerButtonClassName}
+						className="max-[760px]:gap-1.5 max-[760px]:p-2.5 max-[760px]:text-[10px] max-[760px]:[&>svg:last-child:not(:first-child)]:hidden"
 						type="submit"
 						form="screen-editor"
 						disabled={saving || !config.url.trim()}
@@ -215,146 +205,15 @@ function Home() {
 								{saved ? (isDirty ? "未保存の変更" : "保存済み") : ""}
 							</span>
 						</div>
-						<fieldset className="mb-[21px] min-w-0 border-0 border-b border-[#eff1eb] p-0 pb-[22px]">
-							<legend className={legendClassName}>
-								<Link2 />
-								リンク先
-							</legend>
-							<label className={labelClassName} htmlFor="destination">
-								開くURL
-							</label>
-							<input
-								className={inputClassName}
-								id="destination"
-								type="url"
-								value={config.url}
-								placeholder="https://example.com"
-								onChange={(e) => change({ url: e.target.value })}
-								autoComplete="url"
-								maxLength={2048}
-								aria-describedby="url-hint"
-							/>
-						</fieldset>
-						<fieldset className="mb-[21px] min-w-0 border-0 border-b border-[#eff1eb] p-0 pb-[22px]">
-							<legend className={legendClassName}>画面のテキスト</legend>
-							<label className={labelClassName} htmlFor="screen-title">
-								見出し
-								<span className="ml-auto text-[9px] text-[#a0aa9d]">
-									{config.title.length}/60
-								</span>
-							</label>
-							<input
-								className={inputClassName}
-								id="screen-title"
-								value={config.title}
-								onChange={(e) => change({ title: e.target.value })}
-								maxLength={60}
-							/>
-							<label className={labelClassName} htmlFor="screen-message">
-								ひとことメッセージ
-							</label>
-							<textarea
-								className={cn(
-									inputClassName,
-									"min-h-16 max-h-[170px] resize-y",
-								)}
-								id="screen-message"
-								value={config.message}
-								onChange={(e) => change({ message: e.target.value })}
-								maxLength={120}
-								rows={2}
-							/>
-						</fieldset>
-						<fieldset className="mb-[21px] min-w-0 border-0 border-b border-[#eff1eb] p-0 pb-[22px]">
-							<legend className={legendClassName}>背景テーマ</legend>
-							<div className="grid clear-both grid-cols-3 gap-2.5">
-								{themes.map((theme) => (
-									<button
-										type="button"
-										key={theme.value}
-										aria-pressed={config.theme === theme.value}
-										className="group border-0 bg-transparent p-0 text-[9px] text-[#8a9684] aria-pressed:text-[#385c42] max-[760px]:text-[10px]"
-										onClick={() => change({ theme: theme.value })}
-									>
-										<span
-											className={cn(
-												"relative mb-2 flex h-[54px] items-center justify-center rounded-md shadow-[0_0_0_1px_#00000006] transition-shadow duration-160 group-hover:shadow-[0_0_0_2px_#c1cebb] group-aria-pressed:shadow-[0_0_0_2px_#577d5b] max-[760px]:h-[70px]",
-												theme.className,
-											)}
-										>
-											<span
-												className={cn(
-													"-rotate-6 rounded-[1px] bg-white px-0.5 py-px text-[24px] leading-none text-[#647160]",
-													theme.value === "night" && "text-[#404640]",
-												)}
-											>
-												▦
-											</span>
-											{config.theme === theme.value && (
-												<span className="absolute right-[3px] bottom-[3px] rounded-full bg-[#577d5b] p-0.5 text-white [&_svg]:block [&_svg]:size-[9px]">
-													<Check />
-												</span>
-											)}
-										</span>
-										<span>{theme.label}</span>
-									</button>
-								))}
-							</div>
-						</fieldset>
-						<fieldset className="mb-0 min-w-0 p-0 pb-4 max-[760px]:pb-[22px]">
-							<legend className={legendClassName}>
-								<PartyPopper />
-								クラッカー
-							</legend>
-							<label className={labelClassName} htmlFor="confetti-palette">
-								紙吹雪のカラー
-							</label>
-							<div id="confetti-palette" className="flex gap-2.5">
-								{(["colorful", "pastel", "gold"] as const).map((palette) => (
-									<button
-										key={palette}
-										type="button"
-										aria-pressed={config.confetti === palette}
-										aria-label={
-											{
-												colorful: "カラフル",
-												pastel: "パステル",
-												gold: "ゴールド",
-											}[palette]
-										}
-										className="flex min-h-10 flex-1 items-center justify-center gap-[3px] rounded-md border border-[#e7ece2] bg-[#fafbf8] px-[7px] py-[11px] transition-[border-color,background-color] duration-160 hover:border-[#a7b8a0] aria-pressed:border-[#759574] aria-pressed:bg-[#f2f6ee]"
-										onClick={() => change({ confetti: palette })}
-									>
-										{paletteSwatches[palette].map((colorClassName) => (
-											<span
-												key={colorClassName}
-												className={cn("size-2.5 rounded-full", colorClassName)}
-											/>
-										))}
-									</button>
-								))}
-							</div>
-							<label className={labelClassName} htmlFor="confetti-amount">
-								紙吹雪の量
-								<span className="ml-auto text-[9px] text-[#a0aa9d]">
-									{config.amount < 90
-										? "ひかえめ"
-										: config.amount > 150
-											? "たっぷり"
-											: "ほどよく"}
-								</span>
-							</label>
-							<input
-								className="m-0 block h-6 w-full cursor-pointer accent-[#577d5b]"
-								id="confetti-amount"
-								type="range"
-								min={40}
-								max={200}
-								step={10}
-								value={config.amount}
-								onChange={(e) => change({ amount: Number(e.target.value) })}
-							/>
-						</fieldset>
+						<LinkSetting config={config} onChange={change} />
+						<TextSetting config={config} onChange={change} />
+						<ThemeSetting config={config} onChange={change} />
+						<ConfettiSetting config={config} onChange={change} />
+						{error && (
+							<p role="alert" className="mt-4 text-[12px] text-red-700">
+								{error}
+							</p>
+						)}
 					</form>
 				</div>
 			</main>

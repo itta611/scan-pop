@@ -1,13 +1,11 @@
-import { buttonClassName } from "../components/Button";
+import type { QueryClient } from "@tanstack/react-query";
 import {
+	createRootRouteWithContext,
 	HeadContent,
 	Scripts,
-	createRootRouteWithContext,
 } from "@tanstack/react-router";
-
+import { buttonClassName } from "../components/Button";
 import appCss from "../styles.css?url";
-
-import type { QueryClient } from "@tanstack/react-query";
 
 interface MyRouterContext {
 	queryClient: QueryClient;
@@ -50,7 +48,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 	return (
 		<html
 			lang="ja"
-			className="bg-[#fafbf8] font-app text-[#293d35] antialiased tabular-nums [font-synthesis:none] [-webkit-tap-highlight-color:transparent] selection:bg-[#d5e8d8] selection:text-[#254331] [&_h1]:text-balance [&_h2]:text-balance [&_p]:text-pretty [&_button]:cursor-pointer [&_button:disabled]:cursor-not-allowed [&_button]:touch-manipulation [&_a]:touch-manipulation [&_:focus-visible]:outline-3 [&_:focus-visible]:outline-solid [&_:focus-visible]:outline-[#9bc6ae] [&_:focus-visible]:outline-offset-4 motion-reduce:[&_*]:transition-none!"
+			className="bg-white font-app text-[#293d35] antialiased tabular-nums [font-synthesis:none] [-webkit-tap-highlight-color:transparent] selection:bg-[#d5e8d8] selection:text-[#254331] [&_h1]:text-balance [&_h2]:text-balance [&_p]:text-pretty [&_button]:cursor-pointer [&_button:disabled]:cursor-not-allowed [&_button]:touch-manipulation [&_a]:touch-manipulation [&_:focus-visible]:outline-3 [&_:focus-visible]:outline-solid [&_:focus-visible]:outline-[#9bc6ae] [&_:focus-visible]:outline-offset-4 motion-reduce:[&_*]:transition-none!"
 		>
 			<head>
 				<HeadContent />
