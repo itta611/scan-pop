@@ -1,14 +1,8 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { ClientOnly, createFileRoute } from '@tanstack/react-router'
+import { Editor } from '../features/screens/Editor'
 
 export const Route = createFileRoute('/')({ component: Home })
 
 function Home() {
-  return (
-    <div className="p-8">
-      <h1 className="text-4xl font-bold">Welcome to TanStack Start</h1>
-      <p className="mt-4 text-lg">
-        Edit <code>src/routes/index.tsx</code> to get started.
-      </p>
-    </div>
-  )
+  return <ClientOnly fallback={<div className="loading-screen">QR Pop<span>✳</span></div>}><Editor /></ClientOnly>
 }

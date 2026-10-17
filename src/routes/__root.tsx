@@ -3,14 +3,11 @@ import {
   Scripts,
   createRootRouteWithContext,
 } from '@tanstack/react-router'
-import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
-import { TanStackDevtools } from '@tanstack/react-devtools'
 
-import TanStackQueryDevtools from '../integrations/tanstack-query/devtools'
 
-import { getLocale } from '#/paraglide/runtime'
 
 import appCss from '../styles.css?url'
+import interfaceCss from '../app.css?url'
 
 import type { QueryClient } from '@tanstack/react-query'
 
@@ -19,13 +16,6 @@ interface MyRouterContext {
 }
 
 export const Route = createRootRouteWithContext<MyRouterContext>()({
-  beforeLoad: async () => {
-    // Other redirect strategies are possible; see
-    // https://github.com/TanStack/router/tree/main/examples/react/i18n-paraglide#offline-redirect
-    if (typeof document !== 'undefined') {
-      document.documentElement.setAttribute('lang', getLocale())
-    }
-  },
 
   head: () => ({
     meta: [
@@ -37,7 +27,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
         content: 'width=device-width, initial-scale=1',
       },
       {
-        title: 'TanStack Start Starter',
+        title: 'QR Pop — スキャンに、小さなお祝いを。',
       },
     ],
     links: [
@@ -45,31 +35,21 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
         rel: 'stylesheet',
         href: appCss,
       },
+      { rel: 'stylesheet', href: interfaceCss },
     ],
   }),
   shellComponent: RootDocument,
+  notFoundComponent: () => <div className="empty-screen"><h1>このページは見つかりませんでした。</h1><a href="/" className="button button-primary">編集ページに戻る</a></div>,
 })
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
-    <html lang={getLocale()}>
+    <html lang="ja">
       <head>
         <HeadContent />
       </head>
       <body>
         {children}
-        <TanStackDevtools
-          config={{
-            position: 'bottom-right',
-          }}
-          plugins={[
-            {
-              name: 'Tanstack Router',
-              render: <TanStackRouterDevtoolsPanel />,
-            },
-            TanStackQueryDevtools,
-          ]}
-        />
         <Scripts />
       </body>
     </html>

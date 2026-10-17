@@ -11,7 +11,12 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiSplatRouteImport } from './routes/api.$'
+import { Route as ApiScreensRouteImport } from './routes/api.screens'
+import { Route as GoScreenIdRouteImport } from './routes/go.$screenId'
+import { Route as ScreenScreenIdRouteImport } from './routes/screen.$screenId'
+import { Route as ApiEventsScreenIdRouteImport } from './routes/api.events.$screenId'
 import { Route as ApiRpcSplatRouteImport } from './routes/api.rpc.$'
+import { Route as ApiScreensScreenIdRouteImport } from './routes/api.screens.$screenId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -23,39 +28,108 @@ const ApiSplatRoute = ApiSplatRouteImport.update({
   path: '/api/$',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiScreensRoute = ApiScreensRouteImport.update({
+  id: '/api/screens',
+  path: '/api/screens',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GoScreenIdRoute = GoScreenIdRouteImport.update({
+  id: '/go/$screenId',
+  path: '/go/$screenId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ScreenScreenIdRoute = ScreenScreenIdRouteImport.update({
+  id: '/screen/$screenId',
+  path: '/screen/$screenId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiEventsScreenIdRoute = ApiEventsScreenIdRouteImport.update({
+  id: '/api/events/$screenId',
+  path: '/api/events/$screenId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiRpcSplatRoute = ApiRpcSplatRouteImport.update({
   id: '/api/rpc/$',
   path: '/api/rpc/$',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiScreensScreenIdRoute = ApiScreensScreenIdRouteImport.update({
+  id: '/$screenId',
+  path: '/$screenId',
+  getParentRoute: () => ApiScreensRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/api/$': typeof ApiSplatRoute
+  '/api/screens': typeof ApiScreensRouteWithChildren
+  '/go/$screenId': typeof GoScreenIdRoute
+  '/screen/$screenId': typeof ScreenScreenIdRoute
+  '/api/events/$screenId': typeof ApiEventsScreenIdRoute
   '/api/rpc/$': typeof ApiRpcSplatRoute
+  '/api/screens/$screenId': typeof ApiScreensScreenIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/api/$': typeof ApiSplatRoute
+  '/api/screens': typeof ApiScreensRouteWithChildren
+  '/go/$screenId': typeof GoScreenIdRoute
+  '/screen/$screenId': typeof ScreenScreenIdRoute
+  '/api/events/$screenId': typeof ApiEventsScreenIdRoute
   '/api/rpc/$': typeof ApiRpcSplatRoute
+  '/api/screens/$screenId': typeof ApiScreensScreenIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/api/$': typeof ApiSplatRoute
+  '/api/screens': typeof ApiScreensRouteWithChildren
+  '/go/$screenId': typeof GoScreenIdRoute
+  '/screen/$screenId': typeof ScreenScreenIdRoute
+  '/api/events/$screenId': typeof ApiEventsScreenIdRoute
   '/api/rpc/$': typeof ApiRpcSplatRoute
+  '/api/screens/$screenId': typeof ApiScreensScreenIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/api/$' | '/api/rpc/$'
+  fullPaths:
+    | '/'
+    | '/api/$'
+    | '/api/screens'
+    | '/go/$screenId'
+    | '/screen/$screenId'
+    | '/api/events/$screenId'
+    | '/api/rpc/$'
+    | '/api/screens/$screenId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/api/$' | '/api/rpc/$'
-  id: '__root__' | '/' | '/api/$' | '/api/rpc/$'
+  to:
+    | '/'
+    | '/api/$'
+    | '/api/screens'
+    | '/go/$screenId'
+    | '/screen/$screenId'
+    | '/api/events/$screenId'
+    | '/api/rpc/$'
+    | '/api/screens/$screenId'
+  id:
+    | '__root__'
+    | '/'
+    | '/api/$'
+    | '/api/screens'
+    | '/go/$screenId'
+    | '/screen/$screenId'
+    | '/api/events/$screenId'
+    | '/api/rpc/$'
+    | '/api/screens/$screenId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ApiSplatRoute: typeof ApiSplatRoute
+  ApiScreensRoute: typeof ApiScreensRouteWithChildren
+  GoScreenIdRoute: typeof GoScreenIdRoute
+  ScreenScreenIdRoute: typeof ScreenScreenIdRoute
+  ApiEventsScreenIdRoute: typeof ApiEventsScreenIdRoute
   ApiRpcSplatRoute: typeof ApiRpcSplatRoute
 }
 
@@ -75,6 +149,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/screens': {
+      id: '/api/screens'
+      path: '/api/screens'
+      fullPath: '/api/screens'
+      preLoaderRoute: typeof ApiScreensRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/go/$screenId': {
+      id: '/go/$screenId'
+      path: '/go/$screenId'
+      fullPath: '/go/$screenId'
+      preLoaderRoute: typeof GoScreenIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/screen/$screenId': {
+      id: '/screen/$screenId'
+      path: '/screen/$screenId'
+      fullPath: '/screen/$screenId'
+      preLoaderRoute: typeof ScreenScreenIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/events/$screenId': {
+      id: '/api/events/$screenId'
+      path: '/api/events/$screenId'
+      fullPath: '/api/events/$screenId'
+      preLoaderRoute: typeof ApiEventsScreenIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/rpc/$': {
       id: '/api/rpc/$'
       path: '/api/rpc/$'
@@ -82,12 +184,35 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiRpcSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/screens/$screenId': {
+      id: '/api/screens/$screenId'
+      path: '/$screenId'
+      fullPath: '/api/screens/$screenId'
+      preLoaderRoute: typeof ApiScreensScreenIdRouteImport
+      parentRoute: typeof ApiScreensRoute
+    }
   }
 }
+
+interface ApiScreensRouteChildren {
+  ApiScreensScreenIdRoute: typeof ApiScreensScreenIdRoute
+}
+
+const ApiScreensRouteChildren: ApiScreensRouteChildren = {
+  ApiScreensScreenIdRoute: ApiScreensScreenIdRoute,
+}
+
+const ApiScreensRouteWithChildren = ApiScreensRoute._addFileChildren(
+  ApiScreensRouteChildren,
+)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ApiSplatRoute: ApiSplatRoute,
+  ApiScreensRoute: ApiScreensRouteWithChildren,
+  GoScreenIdRoute: GoScreenIdRoute,
+  ScreenScreenIdRoute: ScreenScreenIdRoute,
+  ApiEventsScreenIdRoute: ApiEventsScreenIdRoute,
   ApiRpcSplatRoute: ApiRpcSplatRoute,
 }
 export const routeTree = rootRouteImport
