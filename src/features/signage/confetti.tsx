@@ -15,11 +15,9 @@ export type ConfettiHandle = {
 
 export function Confetti({
   colors,
-  preview = false,
   ref,
 }: {
   colors: ScreenConfig["confetti"];
-  preview?: boolean;
   ref?: Ref<ConfettiHandle>;
 }) {
   const canvas = useRef<HTMLCanvasElement>(null);
@@ -39,10 +37,10 @@ export function Confetti({
       const options = {
         particleCount: 100,
         spread: 65,
-        startVelocity: preview ? 32 : 55,
+        startVelocity: 55,
         gravity: 0.95,
         ticks: 240,
-        scalar: preview ? 0.75 : 1.1,
+        scalar: 1.1,
         colors: palette,
         disableForReducedMotion: true,
       };

@@ -101,8 +101,8 @@ function EditorPreview({
 }) {
   const config = useAtomValue(screenConfigAtom);
   return (
-    <div className="grow min-w-0">
-      <div className="rounded-2xl bg-white p-2 shadow-[0_0_0_1px_#293d3514,0_10px_28px_-16px_#293d3528] max-[760px]:rounded-[13px] max-[760px]:p-1.5">
+    <div className="grow min-w-0 aspect-[16/10]">
+      <div className="h-full rounded-2xl bg-white p-2 shadow-[0_0_0_1px_#293d3514,0_10px_28px_-16px_#293d3528] max-[760px]:rounded-[13px] max-[760px]:p-1.5">
         <Signage
           ref={ref}
           config={{ ...config, confetti: confettiPalettes[config.confetti] }}
@@ -111,7 +111,6 @@ function EditorPreview({
               ? `${location.origin}/go/${screenId}`
               : config.url || "https://example.com"
           }
-          preview
         />
       </div>
     </div>

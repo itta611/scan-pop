@@ -15,12 +15,10 @@ export type SignageHandle = ConfettiHandle;
 export function Signage({
   config,
   value,
-  preview = false,
   ref,
 }: {
   config: ScreenConfig;
   value: string;
-  preview?: boolean;
   ref?: Ref<SignageHandle>;
 }) {
   return (
@@ -28,30 +26,14 @@ export function Signage({
       className={cn(
         "relative flex h-full min-h-0 w-full flex-col overflow-hidden bg-[color:var(--stage-bg)] text-[color:var(--stage-text)] [container-type:size]",
         themeClasses[config.theme],
-        preview &&
-          "aspect-[16/10] h-auto rounded-[9px] max-[760px]:rounded-[7px]",
       )}
       aria-label="QRコード表示"
     >
       <div className="flex flex-1 flex-col items-center justify-center px-[6cqw] py-[8cqh] text-center">
-        <h2
-          className={cn(
-            "max-w-[90%] font-semibold tracking-[-.06em] wrap-anywhere",
-            preview
-              ? "text-[clamp(16px,3.6cqw,60px)]/[1.5]"
-              : "text-[clamp(24px,3.5cqw,60px)]/[1.5]",
-          )}
-        >
+        <h2 className="max-w-[90%] font-semibold tracking-[-.06em] wrap-anywhere text-[clamp(24px,3.5cqw,60px)]/[1.5]">
           {config.title || "つながる、その瞬間を。"}
         </h2>
-        <div
-          className={cn(
-            "mt-[3.5cqh] mb-[3cqh]",
-            preview
-              ? "w-[30cqw] max-w-[37cqh]"
-              : "w-[min(29cqw,42cqh)] max-w-[420px] max-[760px]:my-[5cqh] max-[760px]:w-[57cqw] max-[760px]:max-w-[40cqh]",
-          )}
-        >
+        <div className="mt-[3.5cqh] mb-[3cqh] w-[min(29cqw,42cqh)] max-w-[420px] max-[760px]:my-[5cqh] max-[760px]:w-[57cqw] max-[760px]:max-w-[40cqh]">
           <QRCodeSVG
             className="block h-auto w-full bg-white"
             value={value}
@@ -61,18 +43,11 @@ export function Signage({
             title="スマートフォンのカメラで読み取ってください"
           />
         </div>
-        <p
-          className={cn(
-            "max-w-[85%] whitespace-pre-line text-[color:var(--stage-muted)] wrap-anywhere",
-            preview
-              ? "text-[1.55cqw]/[1.9]"
-              : "text-[clamp(12px,1.4cqw,20px)]/[1.9] max-[760px]:text-[12px]/[1.9]",
-          )}
-        >
+        <p className="max-w-[85%] whitespace-pre-line text-[color:var(--stage-muted)] wrap-anywhere text-[clamp(12px,1.4cqw,20px)]/[1.9] max-[760px]:text-[12px]/[1.9]">
           {config.message}
         </p>
       </div>
-      <Confetti colors={config.confetti} preview={preview} ref={ref} />
+      <Confetti colors={config.confetti} ref={ref} />
     </section>
   );
 }
