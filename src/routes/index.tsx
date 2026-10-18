@@ -1,6 +1,6 @@
 import { ClientOnly, createFileRoute } from "@tanstack/react-router";
 import { useAtomValue } from "jotai";
-import { type FormEvent, type Ref, useRef } from "react";
+import { type FormEvent, type Ref, useEffect, useRef } from "react";
 import { EditorHeader } from "@/features/editor-header";
 import { ConfettiSetting } from "@/features/settings/confetti-setting";
 import { LinkSetting } from "@/features/settings/link-setting";
@@ -9,7 +9,11 @@ import { ThemeSetting } from "@/features/settings/theme-setting";
 import { Signage, type SignageHandle } from "@/features/signage";
 import { confettiPalettes } from "@/features/signage/confetti";
 import { useSaveScreen } from "@/hooks/use-save-screen";
-import { saveErrorAtom, screenConfigAtom } from "@/jotai/atoms";
+import {
+  savedScreenAtom,
+  saveErrorAtom,
+  screenConfigAtom,
+} from "@/jotai/atoms";
 import { cn } from "../lib/utils";
 
 export const Route = createFileRoute("/")({ component: HomeRoute });
@@ -32,6 +36,14 @@ function Home() {
   const stage = useRef<SignageHandle>(null);
   const saveScreen = useSaveScreen();
   const saveError = useAtomValue(saveErrorAtom);
+  const screenId = useAtomValue(savedScreenAtom)?.id;
+
+  useEffect(() => {
+    if (!screenId) return;
+    const source = new EventSource(`/api/events/${screenId}`);
+    source.addEventListener("scan", () => stage.current?.celebrate());
+    return () => source.close();
+  }, [screenId]);
 
   async function submit(event: FormEvent) {
     event.preventDefault();
@@ -60,7 +72,7 @@ function Home() {
       )}
       <main className="mx-auto max-w-300 mt-8">
         <div className="flex items-start gap-9">
-          <EditorPreview ref={stage} />
+          <EditorPreview ref={stage} screenId={screenId} />
           <form
             id="screen-editor"
             className="bg-background px-5 w-80"
@@ -80,7 +92,13 @@ function Home() {
   );
 }
 
-function EditorPreview({ ref }: { ref: Ref<SignageHandle> }) {
+function EditorPreview({
+  ref,
+  screenId,
+}: {
+  ref: Ref<SignageHandle>;
+  screenId?: string;
+}) {
   const config = useAtomValue(screenConfigAtom);
   return (
     <div className="grow min-w-0">
@@ -88,7 +106,11 @@ function EditorPreview({ ref }: { ref: Ref<SignageHandle> }) {
         <Signage
           ref={ref}
           config={{ ...config, confetti: confettiPalettes[config.confetti] }}
-          value={config.url || "https://example.com"}
+          value={
+            screenId
+              ? `${location.origin}/go/${screenId}`
+              : config.url || "https://example.com"
+          }
           preview
         />
       </div>
