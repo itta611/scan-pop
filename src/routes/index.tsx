@@ -1,8 +1,4 @@
-import {
-	ClientOnly,
-	createFileRoute,
-	useNavigate,
-} from "@tanstack/react-router";
+import { ClientOnly, createFileRoute } from "@tanstack/react-router";
 import { useAtomValue, useSetAtom } from "jotai";
 import { type FormEvent, type Ref, useRef } from "react";
 import {
@@ -41,16 +37,20 @@ function HomeRoute() {
 function Home() {
 	const stage = useRef<StageHandle>(null);
 	const theme = useAtomValue(themeAtom);
-	const navigate = useNavigate();
 	const saveScreen = useSetAtom(saveScreenAtom);
 
 	async function submit(event: FormEvent) {
 		event.preventDefault();
-		const saved = await saveScreen();
-		await navigate({
-			to: "/screen/$screenId",
-			params: { screenId: saved.id },
-		});
+		const displayWindow = window.open("about:blank", "_blank");
+		if (!displayWindow) return;
+		displayWindow.opener = null;
+		try {
+			const saved = await saveScreen();
+			displayWindow.location.replace(`/screen/${saved.id}`);
+		} catch (error) {
+			displayWindow.close();
+			throw error;
+		}
 	}
 
 	return (
