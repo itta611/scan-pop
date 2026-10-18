@@ -22,7 +22,7 @@ export const Route = createFileRoute("/screen/$id")({
   },
   component: DisplayPage,
   errorComponent: () => (
-    <div className="flex min-h-svh flex-col items-center justify-center gap-5 p-[25px] text-center [&>h1]:text-[23px] [&>p]:text-[13px] [&>p]:text-[#7a8778]">
+    <div className="flex min-h-svh flex-col items-center justify-center gap-5 p-[25px] text-center [&>h1]:text-[23px] [&>p]:text-[13px]">
       <h1>表示ページを読み込めませんでした。</h1>
       <p>接続を確認して、もう一度お試しください。</p>
       <Link to="/" className={buttonClassName("primary")}>
