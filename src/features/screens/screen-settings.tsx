@@ -1,5 +1,6 @@
 import { useAtom } from "jotai";
 import { CheckIcon } from "lucide-react";
+import { Fragment } from "react";
 import { Input } from "../../components/ui/input";
 import { Textarea } from "../../components/ui/textarea";
 import { cn } from "../../lib/utils";
@@ -14,9 +15,9 @@ import { type ScreenConfig, themes } from "./schema";
 import { SettingField, SettingLabel } from "./setting-field";
 
 const paletteSwatches = {
-	colorful: ["bg-[#ff795d]", "bg-[#f4c95d]", "bg-[#6d9d87]", "bg-[#8d9acc]"],
-	pastel: ["bg-[#f3b9c8]", "bg-[#b7c8ed]", "bg-[#a8d5bf]", "bg-[#f4d9a6]"],
-	gold: ["bg-[#b58a38]", "bg-[#d5b46b]", "bg-[#f1db9d]", "bg-[#e8c373]"],
+	colorful: ["#ff795d", "#f4c95d", "#8d9acc", "#6d9d87"],
+	pastel: ["#f3b9c8", "#b7c8ed", "#f4d9a6", "#a8d5bf"],
+	gold: ["#b58a38", "#d5b46b", "#e8c373", "#f1db9d"],
 };
 
 export function LinkSetting() {
@@ -73,7 +74,7 @@ export function ThemeSetting() {
 					>
 						<span
 							className={cn(
-								"relative mb-1.5 flex h-14 group-aria-pressed:border-2 border-primary",
+								"relative mb-1.5 flex h-14 group-aria-pressed:ring-2 border-primary",
 								option.className,
 							)}
 						>
@@ -99,31 +100,34 @@ export function ConfettiSetting({
 	const [confetti, setConfetti] = useAtom(confettiAtom);
 	return (
 		<SettingField title="クラッカー">
-			<SettingLabel htmlFor="confetti-palette">紙吹雪のカラー</SettingLabel>
-			<div id="confetti-palette" className="flex gap-2.5">
+			<div className="flex gap-3">
 				{(["colorful", "pastel", "gold"] as const).map((palette) => (
 					<button
 						key={palette}
 						type="button"
 						aria-pressed={confetti === palette}
-						aria-label={
-							{
-								colorful: "カラフル",
-								pastel: "パステル",
-								gold: "ゴールド",
-							}[palette]
-						}
-						className="flex min-h-10 flex-1 items-center justify-center gap-[3px] rounded-md border bg-[#fafbf8] px-[7px] py-[11px] transition-[border-color,background-color] duration-160 hover:border-[#a7b8a0] aria-pressed:border-[#759574] aria-pressed:bg-[#f2f6ee]"
+						className="flex flex-1 items-center justify-center gap-0 transition-[border-color,background-color] aria-pressed:border-primary border-2 border-transparent"
 						onClick={() => {
 							setConfetti(palette);
 							onPreview(palette);
 						}}
 					>
-						{paletteSwatches[palette].map((colorClassName) => (
-							<span
-								key={colorClassName}
-								className={cn("size-2.5 rounded-full", colorClassName)}
-							/>
+						{paletteSwatches[palette].map((color, index) => (
+							<Fragment key={color}>
+								{index > 0 && (
+									<div
+										className="size-0 border-r-10 border-t-40"
+										style={{
+											borderTopColor: paletteSwatches[palette][index - 1],
+											borderRightColor: color,
+										}}
+									/>
+								)}
+								<div
+									className="h-full grow first:pl-1 last:pr-1"
+									style={{ backgroundColor: color }}
+								/>
+							</Fragment>
 						))}
 					</button>
 				))}

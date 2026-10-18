@@ -2,7 +2,7 @@ import { useAtomValue } from "jotai";
 import { ArrowUpRight, Check, Copy, LoaderCircle, Monitor } from "lucide-react";
 import { useState } from "react";
 import Logo from "#/components/logo";
-import { Button } from "@/components/button";
+import { Button } from "@/components/ui/button";
 import { hasDestinationAtom, savedScreenAtom, savingScreenAtom } from "./atoms";
 
 export function EditorHeader() {
@@ -26,6 +26,7 @@ function OpenDisplayButton() {
 			type="submit"
 			form="screen-editor"
 			disabled={saving || !hasDestination}
+			aria-busy={saving}
 		>
 			{saving ? (
 				<LoaderCircle className="animate-spin motion-reduce:[animation-duration:2s]" />

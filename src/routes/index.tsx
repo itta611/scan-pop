@@ -3,6 +3,7 @@ import { useAtomValue, useSetAtom } from "jotai";
 import { type FormEvent, type Ref, useRef } from "react";
 import {
 	savedScreenAtom,
+	saveErrorAtom,
 	saveScreenAtom,
 	screenConfigAtom,
 } from "../features/screens/atoms";
@@ -35,6 +36,7 @@ function HomeRoute() {
 function Home() {
 	const stage = useRef<StageHandle>(null);
 	const saveScreen = useSetAtom(saveScreenAtom);
+	const saveError = useAtomValue(saveErrorAtom);
 
 	async function submit(event: FormEvent) {
 		event.preventDefault();
@@ -53,6 +55,14 @@ function Home() {
 	return (
 		<div className={cn("min-h-svh pt-6 px-5 bg-accent")}>
 			<EditorHeader />
+			{saveError && (
+				<p
+					role="alert"
+					className="mx-auto mt-4 max-w-300 px-5 text-sm text-destructive"
+				>
+					{saveError}
+				</p>
+			)}
 			<main className="mx-auto max-w-300 mt-8">
 				<div className="flex items-start gap-9">
 					<EditorPreview ref={stage} />

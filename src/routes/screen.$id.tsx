@@ -1,10 +1,10 @@
-import { buttonClassName } from "../components/button";
 import {
 	ClientOnly,
 	createFileRoute,
 	Link,
 	notFound,
 } from "@tanstack/react-router";
+import { buttonClassName } from "@/components/ui/button";
 import { Display } from "../features/screens/display";
 import { getScreen } from "../server/screens";
 

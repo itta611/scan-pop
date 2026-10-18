@@ -8,12 +8,12 @@ export function SettingField({
 	children: ReactNode;
 }) {
 	return (
-		<fieldset className="pt-4 min-w-0 border-b pb-5 last:border-b-0">
-			<legend className="float-left mb-3.5 flex w-full items-center gap-2 text-xs font-semibold max-[760px]:text-[12px] [&_svg]:size-4 [&_svg]:text-[#7f917e]">
+		<div className="pt-4 min-w-0 border-b pb-5 last:border-b-0">
+			<div className="mb-3.5 flex w-full items-center text-xs font-semibold max-[760px]:text-[12px]">
 				{title}
-			</legend>
+			</div>
 			{children}
-		</fieldset>
+		</div>
 	);
 }
 
@@ -25,7 +25,7 @@ export function SettingLabel({
 	return (
 		<label
 			htmlFor={htmlFor}
-			className="mt-[13px] mb-2 flex clear-both items-center gap-1.5 text-[10px] text-[#657466] max-[760px]:text-[12px]"
+			className="mt-3 mb-2 flex text-[11px] text-accent-foreground"
 			{...props}
 		>
 			{children}
