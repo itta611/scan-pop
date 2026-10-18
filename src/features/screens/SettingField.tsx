@@ -1,9 +1,4 @@
-import type {
-	InputHTMLAttributes,
-	LabelHTMLAttributes,
-	ReactNode,
-	TextareaHTMLAttributes,
-} from "react";
+import type { LabelHTMLAttributes, ReactNode } from "react";
 
 export function SettingField({
 	title,
@@ -38,25 +33,5 @@ export function SettingLabel({
 		>
 			{children}
 		</label>
-	);
-}
-
-export function SettingInput(props: InputHTMLAttributes<HTMLInputElement>) {
-	return (
-		<input
-			className="w-full rounded-md border border-[#dfe5db] bg-[#fdfefc] px-[11px] py-2.5 text-[11px] leading-[1.6] text-[#364b3c] transition-[border-color,box-shadow] duration-160 placeholder:text-[#aab4a5] focus:border-[#8ba88c] focus:shadow-[0_0_0_3px_#cbdcc938] focus:outline-none max-[760px]:text-[16px]"
-			{...props}
-		/>
-	);
-}
-
-export function SettingTextarea(
-	props: TextareaHTMLAttributes<HTMLTextAreaElement>,
-) {
-	return (
-		<textarea
-			className="w-full rounded-md border border-[#dfe5db] bg-[#fdfefc] px-[11px] py-2.5 text-[11px] leading-[1.6] text-[#364b3c] transition-[border-color,box-shadow] duration-160 placeholder:text-[#aab4a5] focus:border-[#8ba88c] focus:shadow-[0_0_0_3px_#cbdcc938] focus:outline-none max-[760px]:text-[16px] min-h-16 max-h-[170px] resize-y"
-			{...props}
-		/>
 	);
 }

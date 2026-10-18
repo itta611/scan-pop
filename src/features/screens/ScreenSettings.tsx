@@ -1,6 +1,8 @@
 import { useAtom } from "jotai";
 import { Check, Link2, PartyPopper } from "lucide-react";
 import { Button } from "../../components/Button";
+import { Input } from "../../components/ui/input";
+import { Textarea } from "../../components/ui/textarea";
 import { cn } from "../../lib/utils";
 import {
 	amountAtom,
@@ -10,12 +12,7 @@ import {
 	titleAtom,
 	urlAtom,
 } from "./atoms";
-import {
-	SettingField,
-	SettingInput,
-	SettingLabel,
-	SettingTextarea,
-} from "./SettingField";
+import { SettingField, SettingLabel } from "./SettingField";
 import { themes } from "./schema";
 
 const paletteSwatches = {
@@ -29,7 +26,7 @@ export function LinkSetting() {
 	return (
 		<SettingField title="リンク先" icon={<Link2 />}>
 			<SettingLabel htmlFor="destination">開くURL</SettingLabel>
-			<SettingInput
+			<Input
 				id="destination"
 				type="url"
 				value={url}
@@ -53,14 +50,14 @@ export function TextSetting() {
 					{title.length}/60
 				</span>
 			</SettingLabel>
-			<SettingInput
+			<Input
 				id="screen-title"
 				value={title}
 				onChange={(e) => setTitle(e.target.value)}
 				maxLength={60}
 			/>
 			<SettingLabel htmlFor="screen-message">ひとことメッセージ</SettingLabel>
-			<SettingTextarea
+			<Textarea
 				id="screen-message"
 				value={message}
 				onChange={(e) => setMessage(e.target.value)}
