@@ -9,6 +9,34 @@ TanStack Startで作る、スキャンに反応するQR表示アプリです。
 
 「変更を保存」で、開いている表示ページにも設定を配信します。表示ページのURLには編集権限を含めません。
 
+## 設定の状態管理
+
+編集するプロジェクト設定はJotai 3で管理します。atomはモジュールスコープで定義し、機能に関係するファイルの近くへまとめます。この配置はプロジェクトに合わせた選択で、Jotaiが固定のディレクトリ構成を指定しているわけではありません。
+
+```text
+src/features/screens/
+  atoms.ts            # 下書き、設定ごとのatom、派生値、保存アクション
+  schema.ts           # サーバーと共有する設定の型・検証
+  ScreenSettings.tsx  # 必要なatomを直接購読する設定項目
+  SettingField.tsx    # 状態を持たない共通フィールド
+  QrStage.tsx         # propsを受け取るQR表示・演出
+```
+
+- ルートの`Provider`でストアを分離します。サーバーでリクエスト間にストアを共有しません。
+- 非公開の`atomWithStorage`が、従来と同じ`qrpop.editor`キーと`{ config, saved }`形式で下書きを保存します。既存の下書きと編集用トークンを引き継ぎ、別タブの変更にも同期します。
+- 各設定項目は狭い読み書き可能な派生atomを使います。読み取り専用は`useAtomValue`、操作だけなら`useSetAtom`、両方必要なら`useAtom`を使います。
+- 保存済みかどうかは派生atomで計算し、保存は`saveScreenAtom`にまとめます。保存中に編集された下書きは、応答が返っても上書きしません。
+- ブラウザ保存値を使う編集画面は`ClientOnly`内で描画します。コピー完了など、その場だけのUI状態はコンポーネントの`useState`に置きます。
+- 公開設定の保存先はRedisです。表示ページはSSEで届く公開設定を使い、編集用ストアには依存しません。
+
+設計の参照元: [Composing atoms](https://jotai.org/docs/guides/composing-atoms)、[Performance](https://jotai.org/docs/guides/performance)、[Provider](https://jotai.org/docs/core/provider)、[Storage](https://jotai.org/docs/utilities/storage)。
+
+公式サイトが案内する[`jotaijs/jotai-skills`](https://github.com/jotaijs/jotai-skills)の`jotai`スキルをCodexへ導入済みです（参照リビジョン: `44ebadb8fc0d151c645f3a39fb1e6db173e65463`）。別環境では次の公式コマンドで導入できます。
+
+```sh
+npx skills add jotaijs/jotai-skills --skill jotai --agent codex
+```
+
 ## 開発
 
 Node.js 22.12以上、pnpm 12.3.4、Redisが必要です。
