@@ -24,11 +24,11 @@ export function Signage({
       )}
     >
       <SignageBackground theme={config.theme} />
-      <div className="relative z-1 flex flex-1 flex-col items-center justify-center px-[10cqw] py-[9cqh] text-center">
+      <div className="relative flex flex-1 flex-col items-center justify-center px-[10cqw] py-[9cqh] text-center">
         <h2 className="w-full max-w-[76cqw] whitespace-pre-line text-left font-semibold tracking-[-.055em] wrap-anywhere text-[clamp(28px,min(14cqw,9cqh),120px)]/[1.06]">
           {config.title || "つながる、その瞬間を。"}
         </h2>
-        <div className="mt-[4.5cqh] mb-[3.5cqh] w-[min(68cqw,40cqh)] max-w-[480px] shrink-0">
+        <div className="relative z-4 mt-[4.5cqh] mb-[3.5cqh] w-[min(68cqw,40cqh)] max-w-[480px] shrink-0">
           <QRCodeSVG
             className="block h-auto w-full"
             bgColor={config.theme === "night" ? "#f1f0e9" : "var(--stage-bg)"}
