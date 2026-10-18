@@ -9,11 +9,7 @@ import { ThemeSetting } from "@/features/settings/theme-setting";
 import { Signage, type SignageHandle } from "@/features/signage";
 import { confettiPalettes } from "@/features/signage/confetti";
 import { useSaveScreen } from "@/hooks/use-save-screen";
-import {
-  savedScreenAtom,
-  saveErrorAtom,
-  screenConfigAtom,
-} from "@/jotai/atoms";
+import { saveErrorAtom, screenConfigAtom } from "@/jotai/atoms";
 import { cn } from "../lib/utils";
 
 export const Route = createFileRoute("/")({ component: HomeRoute });
@@ -86,17 +82,13 @@ function Home() {
 
 function EditorPreview({ ref }: { ref: Ref<SignageHandle> }) {
   const config = useAtomValue(screenConfigAtom);
-  const saved = useAtomValue(savedScreenAtom);
-  const scanUrl = saved
-    ? `${location.origin}/go/${saved.id}`
-    : config.url || "https://example.com";
   return (
     <div className="grow min-w-0">
       <div className="rounded-2xl bg-white p-2 shadow-[0_0_0_1px_#293d3514,0_10px_28px_-16px_#293d3528] max-[760px]:rounded-[13px] max-[760px]:p-1.5">
         <Signage
           ref={ref}
           config={{ ...config, confetti: confettiPalettes[config.confetti] }}
-          value={scanUrl}
+          value={config.url || "https://example.com"}
           preview
         />
       </div>

@@ -1,8 +1,8 @@
 import { useStore } from "jotai";
 import { confettiPalettes } from "@/features/signage/confetti";
 import {
-  hasDestinationAtom,
   pendingSaveAtom,
+  requestedScreenConfigAtom,
   savedScreenAtom,
   saveErrorAtom,
   screenConfigAtom,
@@ -13,13 +13,14 @@ export function useSaveScreen() {
   const store = useStore();
 
   return async function saveScreen(): Promise<SavedScreen> {
+    store.set(requestedScreenConfigAtom, store.get(screenConfigAtom));
     const pending = store.get(pendingSaveAtom);
     if (pending) return pending;
 
     store.set(saveErrorAtom, null);
     const saving = (async () => {
       while (true) {
-        const config = store.get(screenConfigAtom);
+        const config = store.get(requestedScreenConfigAtom);
         const parsed = screenSchema.parse({
           ...config,
           confetti: confettiPalettes[config.confetti],
@@ -40,10 +41,7 @@ export function useSaveScreen() {
         if (!response.ok) throw new Error(data.error);
         const screen = data as SavedScreen;
         store.set(savedScreenAtom, screen);
-        if (
-          store.get(screenConfigAtom) === config ||
-          !store.get(hasDestinationAtom)
-        ) {
+        if (store.get(requestedScreenConfigAtom) === config) {
           return screen;
         }
       }

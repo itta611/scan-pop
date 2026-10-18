@@ -11,12 +11,15 @@ import {
 type EditorConfig = Omit<ScreenConfig, "confetti"> & { confetti: number };
 type Draft = { config: EditorConfig; saved?: SavedScreen };
 
+const defaultEditorConfig: EditorConfig = { ...defaultScreen, confetti: 0 };
+
 const draftAtom = atomWithStorage<Draft>(
   "qrpop.editor",
-  { config: { ...defaultScreen, confetti: 0 } },
+  { config: defaultEditorConfig },
   undefined,
   { getOnInit: true },
 );
+export const requestedScreenConfigAtom = atom(defaultEditorConfig);
 export const pendingSaveAtom = atom<Promise<SavedScreen> | null>(null);
 
 export const savingScreenAtom = atom((get) => get(pendingSaveAtom) !== null);

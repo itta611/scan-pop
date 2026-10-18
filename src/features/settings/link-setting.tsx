@@ -4,14 +4,15 @@ import { Input } from "../../components/ui/input";
 import { SettingField } from "./setting-field";
 
 export function LinkSetting() {
-  const [url, setUrl] = useScreenSetting(urlAtom);
+  const [url, saveUrl, setUrl] = useScreenSetting(urlAtom);
   return (
     <SettingField title="リンク先">
       <Input
         type="url"
-        defaultValue={url}
+        value={url}
         placeholder="https://example.com"
-        onBlur={(e) => setUrl(e.currentTarget.value)}
+        onChange={(e) => setUrl(e.currentTarget.value)}
+        onBlur={(e) => saveUrl(e.currentTarget.value)}
         autoComplete="url"
         maxLength={2048}
       />

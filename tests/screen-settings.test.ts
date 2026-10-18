@@ -5,6 +5,7 @@ import { createStore } from "jotai/vanilla";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { ConfettiSetting } from "../src/features/settings/confetti-setting.tsx";
+import { LinkSetting } from "../src/features/settings/link-setting.tsx";
 import { confettiPalettes } from "../src/features/signage/confetti.tsx";
 import { useSaveScreen } from "../src/hooks/use-save-screen.ts";
 import { useScreenSetting } from "../src/hooks/use-screen-setting.ts";
@@ -349,4 +350,60 @@ test("a restored palette ID stays selected after JSON serialization", (t) => {
     ),
   );
   assert.equal((markup.match(/aria-pressed="true"/g) ?? []).length, 1);
+});
+
+test("typing updates the preview immediately and only saves after blur", async (t) => {
+  const store = editor(t);
+  const fetchMock = t.mock.method(
+    globalThis,
+    "fetch",
+    async (_path: unknown, init?: RequestInit) =>
+      Response.json({ ...saved, ...JSON.parse(String(init?.body)) }),
+  );
+  const input = renderHook(store, LinkSetting).props.children;
+  await input.props.onBlur({ currentTarget: { value: "" } });
+  assert.equal(fetchMock.mock.callCount(), 0);
+  input.props.onChange({ currentTarget: { value: saved.url } });
+  assert.equal(store.get(screenConfigAtom).url, saved.url);
+  assert.equal(
+    renderHook(store, LinkSetting).props.children.props.value,
+    saved.url,
+  );
+  assert.equal(fetchMock.mock.callCount(), 0);
+  await input.props.onBlur({ currentTarget: { value: saved.url } });
+  assert.equal(fetchMock.mock.callCount(), 1);
+  assert.equal(store.get(savedScreenAtom)?.url, saved.url);
+  await input.props.onBlur({ currentTarget: { value: saved.url } });
+  assert.equal(fetchMock.mock.callCount(), 1);
+});
+
+test("typing during an ongoing save stays local until committed", async (t) => {
+  const store = editor(t);
+  let respond!: (response: Response) => void;
+  const fetchMock = t.mock.method(
+    globalThis,
+    "fetch",
+    () =>
+      new Promise<Response>((resolve) => {
+        respond = resolve;
+      }),
+  );
+  const saving = update(store, urlAtom, saved.url);
+  const [, commit, preview] = renderHook(store, () =>
+    useScreenSetting(titleAtom),
+  );
+  preview("入力中の見出し");
+  respond(Response.json(saved));
+  await saving;
+  assert.equal(fetchMock.mock.callCount(), 1);
+  assert.equal(store.get(titleAtom), "入力中の見出し");
+  assert.equal(store.get(savedScreenAtom)?.title, saved.title);
+  t.mock.method(
+    globalThis,
+    "fetch",
+    async (_path: unknown, init?: RequestInit) =>
+      Response.json({ ...saved, ...JSON.parse(String(init?.body)) }),
+  );
+  await commit("入力中の見出し");
+  assert.equal(store.get(savedScreenAtom)?.title, "入力中の見出し");
 });
