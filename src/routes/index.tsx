@@ -4,9 +4,7 @@ import {
 	useNavigate,
 } from "@tanstack/react-router";
 import { useAtomValue, useSetAtom } from "jotai";
-import { PartyPopper } from "lucide-react";
-import { type FormEvent, useRef } from "react";
-import { Button } from "../components/Button";
+import { type FormEvent, type Ref, useRef } from "react";
 import {
 	isScreenDirtyAtom,
 	savedScreenAtom,
@@ -42,6 +40,7 @@ function HomeRoute() {
 }
 
 function Home() {
+	const stage = useRef<StageHandle>(null);
 	const theme = useAtomValue(themeAtom);
 	const navigate = useNavigate();
 	const saveScreen = useSetAtom(saveScreenAtom);
@@ -65,7 +64,7 @@ function Home() {
 			<EditorHeader />
 			<main className="mx-auto max-w-[1200px] mt-8">
 				<div className="flex items-start gap-9">
-					<EditorPreview />
+					<EditorPreview ref={stage} />
 					<form
 						id="screen-editor"
 						className="rounded-[13px] bg-white p-[23px] shadow-[0_0_0_1px_#2e463414,0_5px_20px_-12px_#2e463414] max-[1050px]:p-5 max-[760px]:p-[23px]"
@@ -79,7 +78,7 @@ function Home() {
 						<LinkSetting />
 						<TextSetting />
 						<ThemeSetting />
-						<ConfettiSetting />
+						<ConfettiSetting onPreview={() => stage.current?.celebrate()} />
 					</form>
 				</div>
 			</main>
@@ -87,25 +86,17 @@ function Home() {
 	);
 }
 
-function EditorPreview() {
+function EditorPreview({ ref }: { ref: Ref<StageHandle> }) {
 	const config = useAtomValue(screenConfigAtom);
 	const saved = useAtomValue(savedScreenAtom);
-	const stage = useRef<StageHandle>(null);
 	const scanUrl = saved
 		? `${location.origin}/go/${saved.id}`
 		: config.url || "https://example.com";
 	return (
 		<div className="grow min-w-0">
 			<div className="rounded-2xl bg-white p-2 shadow-[0_0_0_1px_#293d3514,0_10px_28px_-16px_#293d3528] max-[760px]:rounded-[13px] max-[760px]:p-1.5">
-				<QrStage ref={stage} config={config} value={scanUrl} preview />
+				<QrStage ref={ref} config={config} value={scanUrl} preview />
 			</div>
-			<Button
-				className="min-h-[38px] px-[13px] py-2 text-[11px] leading-[1.4]"
-				onClick={() => stage.current?.celebrate()}
-			>
-				<PartyPopper />
-				演出を試す
-			</Button>
 		</div>
 	);
 }

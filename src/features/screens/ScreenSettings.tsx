@@ -1,5 +1,6 @@
 import { useAtom } from "jotai";
 import { Check, Link2, PartyPopper } from "lucide-react";
+import { Button } from "../../components/Button";
 import { cn } from "../../lib/utils";
 import {
 	amountAtom,
@@ -111,7 +112,7 @@ export function ThemeSetting() {
 	);
 }
 
-export function ConfettiSetting() {
+export function ConfettiSetting({ onPreview }: { onPreview: () => void }) {
 	const [confetti, setConfetti] = useAtom(confettiAtom);
 	const [amount, setAmount] = useAtom(amountAtom);
 	return (
@@ -158,6 +159,13 @@ export function ConfettiSetting() {
 				value={amount}
 				onChange={(e) => setAmount(Number(e.target.value))}
 			/>
+			<Button
+				className="mt-3 min-h-[38px] px-[13px] py-2 text-[11px] leading-[1.4]"
+				onClick={onPreview}
+			>
+				<PartyPopper />
+				演出を試す
+			</Button>
 		</SettingField>
 	);
 }
