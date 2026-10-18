@@ -24,12 +24,12 @@ export function EditorHeader() {
 function OpenDisplayButton() {
   const store = useStore();
   const [justSaved, setJustSaved] = useState(false);
-  const saving = useAtomValue(savingScreenAtom);
   const hasDestination = useAtomValue(hasDestinationAtom);
 
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout>;
-    const unsubscribe = store.sub(savedScreenAtom, () => {
+    const unsubscribe = store.sub(savingScreenAtom, () => {
+      if (!store.get(savingScreenAtom)) return;
       setJustSaved(true);
       clearTimeout(timer);
       timer = setTimeout(() => setJustSaved(false), 1000);
@@ -44,8 +44,7 @@ function OpenDisplayButton() {
       variant="primary"
       type="submit"
       form="screen-editor"
-      disabled={saving || !hasDestination}
-      aria-busy={saving}
+      disabled={!hasDestination}
     >
       {justSaved ? <Check /> : <Monitor />}
       <span>{justSaved ? "保存しました" : "表示ページを開く"}</span>
