@@ -7,8 +7,8 @@ import { hasDestinationAtom, savedScreenAtom, savingScreenAtom } from "./atoms";
 
 export function EditorHeader() {
 	return (
-		<header className="bg-background/90 backdrop-blur-2xl flex h-17 items-center gap-8 border px-5 w-300 mx-auto">
-			<Logo className="mt-0.5" />
+		<header className="bg-background/90 backdrop-blur-2xl flex h-17 items-center gap-8 px-5 w-300 mx-auto">
+			<Logo className="mt-1" />
 			<div className="ml-auto flex items-center gap-3 max-[760px]:gap-1">
 				<CopyDisplayLinkButton />
 				<OpenDisplayButton />
