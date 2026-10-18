@@ -35,7 +35,7 @@ export function Confetti({
   useImperativeHandle(ref, () => ({
     celebrate(palette = colors) {
       const options = {
-        particleCount: 100,
+        particleCount: 200,
         spread: 65,
         startVelocity: 55,
         gravity: 0.95,
