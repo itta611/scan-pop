@@ -28,6 +28,7 @@ src/
   features/signage/index.tsx           # 編集プレビュー・表示ページ共通のQR表示と演出
   features/editor/index.tsx            # 編集画面と読み取り通知のみのSSE購読
   features/display/index.tsx           # 表示画面と設定同期を含むSSE購読
+  features/signage/background.tsx      # 共通の曲線模様と5テーマの色
   app/                                # Next.jsのページとRoute Handler
 ```
 
@@ -99,3 +100,7 @@ create-next-appの空テンプレートを土台に既存画面と機能をコ�
 フレームワーク設定は `next`、インストールは `npm ci --ignore-scripts`、ビルドは `npm run build`、出力は `.next/standalone` を指定します。
 
 `lolipop deploy --project 01M577HPCGBGSH19NTKG6G9WC5` で公開し、完了後に保存、`/go/:screenId` のリダイレクト、SSEの即時配信を確認します。GitHubリポジトリは https://github.com/itta611/scan-pop です。CLIでの公開とGitHubの自動デプロイ連携は別です。
+
+## 表示デザイン
+
+背景はSVGの静かな曲線模様で、ペーパー・ミント・ミスト・ローズ・ナイトの5色から選びます。表示ページと設定サンプルは同じBackgroundコンポーネントを使います。見出し・QR・案内文のサイズは表示枠の幅と高さに合わせ、縦長・横長の両方に対応します。

@@ -1,8 +1,8 @@
 import { CheckIcon } from "lucide-react";
+import { SignageBackground } from "@/features/signage/background";
 import { useScreenSetting } from "@/hooks/use-screen-setting";
 import { themeAtom } from "@/jotai/atoms";
 import { themes } from "@/schemas/screen";
-import { cn } from "../../lib/utils";
 import { SettingField } from "./setting-field";
 
 export function ThemeSetting() {
@@ -18,12 +18,8 @@ export function ThemeSetting() {
             className="group text-xs text-accent-foreground"
             onClick={() => setTheme(option.value)}
           >
-            <span
-              className={cn(
-                "relative mb-1.5 flex h-14 group-aria-pressed:ring-2 border-primary",
-                option.className,
-              )}
-            >
+            <span className="relative mb-1.5 flex h-14 overflow-hidden group-aria-pressed:ring-2 border-primary">
+              <SignageBackground theme={option.value} />
               {theme === option.value && (
                 <span className="absolute right-1 bottom-1 bg-primary p-0.75 text-white">
                   <CheckIcon size={11} />

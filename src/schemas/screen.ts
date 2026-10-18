@@ -11,7 +11,7 @@ export const screenSchema = z.object({
     .max(2048),
   title: z.string().trim().min(1, "見出しを入力してください。"),
   message: z.string().trim().max(120),
-  theme: z.enum(["paper", "mint", "night"]),
+  theme: z.enum(["paper", "mint", "sky", "rose", "night"]),
   confetti: z.tuple([hexColor, hexColor, hexColor, hexColor]),
 });
 
@@ -28,7 +28,9 @@ export const defaultScreen: ScreenConfig = {
 };
 
 export const themes = [
-  { value: "paper", label: "ペーパー", className: "bg-[#f4f0e8]" },
-  { value: "mint", label: "ミント", className: "bg-[#dce9df]" },
-  { value: "night", label: "ナイト", className: "bg-[#242b29]" },
+  { value: "paper", label: "ペーパー" },
+  { value: "mint", label: "ミント" },
+  { value: "sky", label: "ミスト" },
+  { value: "rose", label: "ローズ" },
+  { value: "night", label: "ナイト" },
 ] as const;

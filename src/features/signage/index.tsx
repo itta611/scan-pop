@@ -2,13 +2,8 @@ import { QRCodeSVG } from "qrcode.react";
 import type { Ref } from "react";
 import type { ScreenConfig } from "@/schemas/screen";
 import { cn } from "../../lib/utils";
+import { SignageBackground, themeClasses } from "./background";
 import { Confetti, type ConfettiHandle } from "./confetti";
-
-const themeClasses = {
-  paper: "[--stage-bg:#f4f0e8] [--stage-text:#394c3f] [--stage-muted:#898c78]",
-  mint: "[--stage-bg:#dce9df] [--stage-text:#284e3d] [--stage-muted:#6b8674]",
-  night: "[--stage-bg:#242b29] [--stage-text:#f1f0df] [--stage-muted:#a3b3a6]",
-};
 
 export type SignageHandle = ConfettiHandle;
 
@@ -28,20 +23,23 @@ export function Signage({
         themeClasses[config.theme],
       )}
     >
-      <div className="flex flex-1 flex-col items-center justify-center px-[6cqw] py-[8cqh] text-center">
-        <h2 className="max-w-[90%] font-semibold tracking-[-.06em] wrap-anywhere text-[clamp(32px,10cqw,60px)]/[1.5]">
+      <SignageBackground theme={config.theme} />
+      <div className="relative z-1 flex flex-1 flex-col items-center justify-center px-[10cqw] py-[9cqh] text-center">
+        <h2 className="w-full max-w-[76cqw] whitespace-pre-line text-left font-semibold tracking-[-.055em] wrap-anywhere text-[clamp(28px,min(14cqw,9cqh),120px)]/[1.06]">
           {config.title || "つながる、その瞬間を。"}
         </h2>
-        <div className="mt-[3.5cqh] mb-[3cqh] w-[min(29cqw,42cqh)] max-w-[420px] max-[760px]:my-[5cqh] max-[760px]:w-[57cqw] max-[760px]:max-w-[40cqh]">
+        <div className="mt-[4.5cqh] mb-[3.5cqh] w-[min(68cqw,40cqh)] max-w-[480px] shrink-0">
           <QRCodeSVG
-            className="block h-auto w-full bg-white"
+            className="block h-auto w-full"
+            bgColor={config.theme === "night" ? "#f1f0e9" : "var(--stage-bg)"}
+            fgColor={config.theme === "night" ? "#242b29" : "var(--stage-text)"}
             value={value}
             size={400}
             level="M"
             marginSize={4}
           />
         </div>
-        <p className="max-w-[85%] whitespace-pre-line text-[color:var(--stage-muted)] wrap-anywhere text-[clamp(12px,5cqw,20px)]/[1.9] max-[760px]:text-[12px]/[1.9]">
+        <p className="max-w-[76cqw] whitespace-pre-line text-[color:var(--stage-muted)] wrap-anywhere text-[clamp(14px,min(5cqw,3cqh),34px)]/[1.45]">
           {config.message}
         </p>
       </div>
