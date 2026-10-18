@@ -14,13 +14,13 @@ export function ConfettiSetting({
   const [confetti, setConfetti] = useScreenSetting(confettiAtom);
   return (
     <SettingField title="クラッカー">
-      <div className="flex gap-3">
+      <div className="grid grid-cols-3 gap-3">
         {confettiPalettes.map((palette, paletteIndex) => (
           <button
             key={palette[0]}
             type="button"
             aria-pressed={confetti === paletteIndex}
-            className="relative flex flex-1 items-center justify-center gap-0 transition-[border-color,background-color] aria-pressed:border-primary border-2 border-transparent"
+            className="relative flex items-center justify-center gap-0 transition-[border-color,background-color] aria-pressed:border-primary border-2 border-transparent"
             onClick={() => {
               setConfetti(paletteIndex);
               onPreview(palette);
