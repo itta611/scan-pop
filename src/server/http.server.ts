@@ -25,7 +25,7 @@ export async function handleApi(handler: () => Promise<Response>) {
         { status: 400 },
       );
     }
-    console.error("QR Pop request failed", error);
+    console.error("Scan Pop request failed", error);
     return Response.json(
       {
         error: "接続できませんでした。少し待ってから、もう一度お試しください。",

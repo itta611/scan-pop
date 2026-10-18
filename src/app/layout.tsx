@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Providers } from "./providers";
 import "../styles.css";
 export const metadata: Metadata = {
-  title: "QR Pop — スキャンに、小さなお祝いを。",
+  title: "Scan Pop — スキャンに、小さなお祝いを。",
   icons: { icon: "/favicon.svg" },
 };
 export default function RootLayout({

@@ -5,7 +5,7 @@ const Editor = dynamic(() => import("@/features/editor"), {
   ssr: false,
   loading: () => (
     <div className="flex min-h-svh items-center justify-center gap-5 p-[25px] text-center text-[36px] font-bold">
-      QR Pop<span>✳</span>
+      Scan Pop<span>✳</span>
     </div>
   ),
 });

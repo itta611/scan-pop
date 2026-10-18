@@ -1,4 +1,4 @@
-# QR Pop — エージェント向け参照メモ
+# Scan Pop — エージェント向け参照メモ
 
 Next.js App Routerで作る、スキャンに反応するQR表示アプリです。
 
@@ -98,4 +98,4 @@ create-next-appの空テンプレートを土台に既存画面と機能をコ�
 
 フレームワーク設定は `next`、インストールは `npm ci --ignore-scripts`、ビルドは `npm run build`、出力は `.next/standalone` を指定します。
 
-`lolipop deploy --project 01M577HPCGBGSH19NTKG6G9WC5` で公開し、完了後に保存、`/go/:screenId` のリダイレクト、SSEの即時配信を確認します。GitHubリポジトリは https://github.com/itta611/qr-pop です。CLIでの公開とGitHubの自動デプロイ連携は別です。
+`lolipop deploy --project 01M577HPCGBGSH19NTKG6G9WC5` で公開し、完了後に保存、`/go/:screenId` のリダイレクト、SSEの即時配信を確認します。GitHubリポジトリは https://github.com/itta611/scan-pop です。CLIでの公開とGitHubの自動デプロイ連携は別です。

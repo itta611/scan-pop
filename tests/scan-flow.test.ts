@@ -21,7 +21,7 @@ const ids: string[] = [];
 async function fixture() {
   const screen = await createScreen({
     ...defaultScreen,
-    url: "https://example.com/?test=qr-pop",
+    url: "https://example.com/?test=scan-pop",
   });
   ids.push(screen.id);
   return screen;
