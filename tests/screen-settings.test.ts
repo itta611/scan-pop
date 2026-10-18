@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { afterEach, beforeEach, type TestContext, test } from "node:test";
+import { type TestContext, test } from "node:test";
 import { Provider, type WritableAtom } from "jotai";
 import { createStore } from "jotai/vanilla";
 import { createElement } from "react";
@@ -25,24 +25,6 @@ import {
   type ScreenConfig,
   screenSchema,
 } from "../src/schemas/screen.ts";
-
-let storage: Map<string, string>;
-beforeEach(() => {
-  storage = new Map();
-  Object.defineProperty(globalThis, "window", {
-    configurable: true,
-    value: {
-      localStorage: {
-        getItem: (key: string) => storage.get(key) ?? null,
-        setItem: (key: string, value: string) => storage.set(key, value),
-        removeItem: (key: string) => storage.delete(key),
-      },
-    },
-  });
-});
-afterEach(() => {
-  Reflect.deleteProperty(globalThis, "window");
-});
 
 function editor(t: TestContext) {
   const store = createStore();
@@ -84,30 +66,19 @@ const saved: SavedScreen = {
   editToken: "test-owner-token",
 };
 
-test("existing drafts retain settings and owner credentials in the same storage record", async (t) => {
-  storage.set(
-    "qrpop.editor",
-    JSON.stringify({ config: screenConfig(saved), saved }),
-  );
-  const store = editor(t);
-  assert.deepEqual(store.get(screenConfigAtom), screenConfig(saved));
-  assert.equal(store.get(savedScreenAtom)?.editToken, saved.editToken);
-  t.mock.method(
-    globalThis,
-    "fetch",
-    async (_path: unknown, init?: RequestInit) =>
-      Response.json({ ...saved, ...JSON.parse(String(init?.body)) }),
-  );
-  await update(store, titleAtom, "新しい見出し");
-  const persisted = JSON.parse(storage.get("qrpop.editor") ?? "{}");
-  assert.equal(persisted.config.title, "新しい見出し");
-  assert.equal(persisted.saved.editToken, saved.editToken);
+test("a fresh editor starts with default settings and no saved screen", async (t) => {
+  const first = editor(t);
+  t.mock.method(globalThis, "fetch", async () => Response.json(saved));
+  first.set(titleAtom, "リロード前の見出し");
+  await update(first, urlAtom, saved.url);
+  assert.equal(first.get(savedScreenAtom)?.id, saved.id);
+  const reloaded = editor(t);
+  assert.deepEqual(reloaded.get(screenConfigAtom), {
+    ...defaultScreen,
+    confetti: 0,
+  });
+  assert.equal(reloaded.get(savedScreenAtom), undefined);
 });
-
-function screenConfig(screen: SavedScreen) {
-  const { id: _id, editToken: _token, ...config } = screen;
-  return { ...config, confetti: 0 };
-}
 
 test("editing text does not notify a theme subscriber or change another store", (t) => {
   const first = editor(t);
@@ -221,10 +192,6 @@ test("edits made while creating save the latest draft next with the same screen 
   assert.equal(store.get(savedScreenAtom)?.title, "保存中の編集");
   assert.equal(store.get(savedScreenAtom)?.theme, "night");
   assert.equal(store.get(savingScreenAtom), false);
-  assert.equal(
-    JSON.parse(storage.get("qrpop.editor") ?? "{}").config.title,
-    "保存中の編集 ",
-  );
 });
 
 test("a rejected autosave keeps the draft, exposes the error, and can be retried", async (t) => {
@@ -331,17 +298,11 @@ test("a client palette ID is sent as four HEX colors", async (t) => {
   assert.equal(store.get(screenConfigAtom).confetti, 2);
   assert.deepEqual(requests[1].confetti, colors);
   assert.deepEqual(store.get(savedScreenAtom)?.confetti, colors);
-  const persisted = JSON.parse(storage.get("qrpop.editor") ?? "{}");
-  assert.equal(persisted.config.confetti, 2);
-  assert.deepEqual(persisted.saved.confetti, colors);
 });
 
-test("a restored palette ID stays selected after JSON serialization", (t) => {
-  storage.set(
-    "qrpop.editor",
-    JSON.stringify({ config: screenConfig(saved), saved }),
-  );
+test("the chosen palette is selected in the current editor", (t) => {
   const store = editor(t);
+  store.set(confettiAtom, 2);
   const markup = renderToStaticMarkup(
     createElement(
       Provider,
