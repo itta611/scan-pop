@@ -24,10 +24,8 @@ const paletteSwatches = {
 export function LinkSetting() {
 	const [url, setUrl] = useAtom(urlAtom);
 	return (
-		<SettingField title="リンク先" icon={<Link2 />}>
-			<SettingLabel htmlFor="destination">開くURL</SettingLabel>
+		<SettingField title="リンク先">
 			<Input
-				id="destination"
 				type="url"
 				value={url}
 				placeholder="https://example.com"

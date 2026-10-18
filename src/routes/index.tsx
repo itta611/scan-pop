@@ -9,13 +9,13 @@ import {
 } from "../features/screens/atoms";
 import { EditorHeader } from "../features/screens/editor-header";
 import { QrStage, type StageHandle } from "../features/screens/qr-stage";
+import { themes } from "../features/screens/schema";
 import {
 	ConfettiSetting,
 	LinkSetting,
 	TextSetting,
 	ThemeSetting,
 } from "../features/screens/screen-settings";
-import { themes } from "../features/screens/schema";
 import { cn } from "../lib/utils";
 
 export const Route = createFileRoute("/")({ component: HomeRoute });
@@ -36,7 +36,6 @@ function HomeRoute() {
 
 function Home() {
 	const stage = useRef<StageHandle>(null);
-	const theme = useAtomValue(themeAtom);
 	const saveScreen = useSetAtom(saveScreenAtom);
 
 	async function submit(event: FormEvent) {
@@ -54,19 +53,14 @@ function Home() {
 	}
 
 	return (
-		<div
-			className={cn(
-				"min-h-svh pt-6",
-				themes.find((option) => option.value === theme)?.className,
-			)}
-		>
+		<div className={cn("min-h-svh pt-6 px-5 bg-accent")}>
 			<EditorHeader />
 			<main className="mx-auto max-w-300 mt-8">
 				<div className="flex items-start gap-9">
 					<EditorPreview ref={stage} />
 					<form
 						id="screen-editor"
-						className="bg-background/90 backdrop-blur-2xl p-5"
+						className="bg-background p-5"
 						onSubmit={submit}
 						noValidate
 					>

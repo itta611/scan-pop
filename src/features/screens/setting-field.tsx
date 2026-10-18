@@ -10,8 +10,8 @@ export function SettingField({
 	children: ReactNode;
 }) {
 	return (
-		<fieldset className="mb-[21px] min-w-0 border-0 border-b border-[#eff1eb] p-0 pb-[22px] last-of-type:mb-0 last-of-type:border-b-0 last-of-type:pb-4 max-[760px]:last-of-type:pb-[22px]">
-			<legend className="float-left mb-[15px] flex w-full items-center gap-[7px] text-[11px] font-semibold max-[760px]:text-[12px] [&_svg]:size-[13px] [&_svg]:text-[#7f917e]">
+		<fieldset className="mb-4 min-w-0 border-0 border-b border-[#eff1eb] p-0 pb-5 last-of-type:mb-0 last-of-type:border-b-0 last-of-type:pb-4">
+			<legend className="float-left mb-3.5 flex w-full items-center gap-2 text-xs font-semibold max-[760px]:text-[12px] [&_svg]:size-4 [&_svg]:text-[#7f917e]">
 				{icon}
 				{title}
 			</legend>
