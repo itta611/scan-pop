@@ -7,7 +7,7 @@ export const screenSchema = z.object({
 			error: "http:// または https:// から始まるURLを入力してください。",
 		})
 		.max(2048),
-	title: z.string().trim().min(1, "見出しを入力してください。").max(60),
+	title: z.string().trim().min(1, "見出しを入力してください。"),
 	message: z.string().trim().max(120),
 	theme: z.enum(["paper", "mint", "night"]),
 	confetti: z.enum(["colorful", "pastel", "gold"]),

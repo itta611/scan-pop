@@ -42,17 +42,11 @@ export function TextSetting() {
 	const [message, setMessage] = useAtom(messageAtom);
 	return (
 		<SettingField title="画面のテキスト">
-			<SettingLabel htmlFor="screen-title">
-				見出し
-				<span className="ml-auto text-[9px] text-[#a0aa9d]">
-					{title.length}/60
-				</span>
-			</SettingLabel>
+			<SettingLabel htmlFor="screen-title">見出し</SettingLabel>
 			<Input
 				id="screen-title"
 				value={title}
 				onChange={(e) => setTitle(e.target.value)}
-				maxLength={60}
 			/>
 			<SettingLabel htmlFor="screen-message">ひとことメッセージ</SettingLabel>
 			<Textarea
