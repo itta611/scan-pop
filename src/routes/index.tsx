@@ -1,7 +1,6 @@
 import { ClientOnly, createFileRoute } from "@tanstack/react-router";
 import { useAtomValue } from "jotai";
 import { type FormEvent, type Ref, useRef } from "react";
-import { confettiPalettes } from "@/constants/confetti";
 import { EditorHeader } from "@/features/editor-header";
 import {
   ConfettiSetting,
@@ -10,6 +9,7 @@ import {
   ThemeSetting,
 } from "@/features/settings";
 import { Signage, type SignageHandle } from "@/features/signage";
+import { confettiPalettes } from "@/features/signage/confetti";
 import { useSaveScreen } from "@/hooks/use-save-screen";
 import {
   savedScreenAtom,

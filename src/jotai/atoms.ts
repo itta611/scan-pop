@@ -1,6 +1,6 @@
 import { atom } from "jotai/vanilla";
 import { atomWithStorage } from "jotai/vanilla/utils";
-import { confettiPalettes } from "@/constants/confetti";
+import { confettiPalettes } from "@/features/signage/confetti";
 import {
   defaultScreen,
   type SavedScreen,

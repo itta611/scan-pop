@@ -1,5 +1,5 @@
 import { useStore } from "jotai";
-import { confettiPalettes } from "@/constants/confetti";
+import { confettiPalettes } from "@/features/signage/confetti";
 import {
   hasDestinationAtom,
   pendingSaveAtom,

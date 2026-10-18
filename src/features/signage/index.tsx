@@ -1,8 +1,8 @@
-import confetti from "canvas-confetti";
 import { QRCodeSVG } from "qrcode.react";
-import { type Ref, useEffect, useImperativeHandle, useRef } from "react";
+import type { Ref } from "react";
 import type { ScreenConfig } from "@/schemas/screen";
 import { cn } from "../../lib/utils";
+import { Confetti, type ConfettiHandle } from "./confetti";
 
 const themeClasses = {
   paper: "[--stage-bg:#f4f0e8] [--stage-text:#394c3f] [--stage-muted:#898c78]",
@@ -10,9 +10,7 @@ const themeClasses = {
   night: "[--stage-bg:#242b29] [--stage-text:#f1f0df] [--stage-muted:#a3b3a6]",
 };
 
-export type SignageHandle = {
-  celebrate: (palette?: ScreenConfig["confetti"]) => void;
-};
+export type SignageHandle = ConfettiHandle;
 
 export function Signage({
   config,
@@ -25,35 +23,6 @@ export function Signage({
   preview?: boolean;
   ref?: Ref<SignageHandle>;
 }) {
-  const canvas = useRef<HTMLCanvasElement>(null);
-  const party = useRef<ReturnType<typeof confetti.create> | null>(null);
-
-  useEffect(() => {
-    const instance = confetti.create(canvas.current!, { resize: true });
-    party.current = instance;
-    return () => {
-      instance.reset();
-      party.current = null;
-    };
-  }, []);
-
-  useImperativeHandle(ref, () => ({
-    celebrate(palette = config.confetti) {
-      const options = {
-        particleCount: 100,
-        spread: 65,
-        startVelocity: preview ? 32 : 55,
-        gravity: 0.95,
-        ticks: 240,
-        scalar: preview ? 0.75 : 1.1,
-        colors: palette,
-        disableForReducedMotion: true,
-      };
-      party.current?.({ ...options, angle: 58, origin: { x: 0, y: 1 } });
-      party.current?.({ ...options, angle: 122, origin: { x: 1, y: 1 } });
-    },
-  }));
-
   return (
     <section
       className={cn(
@@ -103,11 +72,7 @@ export function Signage({
           {config.message}
         </p>
       </div>
-      <canvas
-        className="pointer-events-none absolute inset-0 z-3 size-full"
-        aria-hidden="true"
-        ref={canvas}
-      />
+      <Confetti colors={config.confetti} preview={preview} ref={ref} />
     </section>
   );
 }

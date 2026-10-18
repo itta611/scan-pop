@@ -31,7 +31,7 @@ src/
 - 各設定項目は狭い読み書き可能な派生atomを使います。読み取り専用は`useAtomValue`、操作だけなら`useSetAtom`、両方必要なら`useAtom`を使います。
 - 保存処理は`useSaveScreen`にまとめ、atomは状態だけを管理します。設定項目は`useScreenSetting`を通じて更新・保存します。テキストはonBlur、背景・紙吹雪はクリックで設定atomを更新して保存を開始し、保存中の編集は現在のリクエストが完了してから最新の内容を続けて保存します。入力途中の不正な設定は下書きに残し、有効になるまでAPIへ送りません。保存したテキストの前後の空白は除去しますが、入力中の下書きは書き換えません。
 - ブラウザ保存値を使う編集画面は`ClientOnly`内で描画します。コピー完了など、その場だけのUI状態はコンポーネントの`useState`に置きます。
-- クラッカーの配色はクライアントの設定では数値IDで管理し、src/constants/confetti.ts にIDと4色の対応を定義します。保存hookで4個のHEX値（#RRGGBB）の配列へ変換して送信します。API・Redis・SSEは配列を扱い、描画にもその配列を使います。
+- クラッカーの配色はクライアントの設定では数値IDで管理し、src/features/signage/confetti.tsx にIDと4色の対応を定義します。保存hookで4個のHEX値（#RRGGBB）の配列へ変換して送信します。API・Redis・SSEは配列を扱い、描画にもその配列を使います。
 - 公開設定の保存先はRedisです。表示ページはSSEで届く公開設定を使い、編集用ストアには依存しません。
 
 設計の参照元: [Composing atoms](https://jotai.org/docs/guides/composing-atoms)、[Performance](https://jotai.org/docs/guides/performance)、[Provider](https://jotai.org/docs/core/provider)、[Storage](https://jotai.org/docs/utilities/storage)。

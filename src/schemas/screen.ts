@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { confettiPalettes } from "@/constants/confetti";
+import { confettiPalettes } from "@/features/signage/confetti";
 
 const hexColor = z.string().regex(/^#[0-9a-f]{6}$/i);
 

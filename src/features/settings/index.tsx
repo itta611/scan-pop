@@ -1,6 +1,6 @@
 import { CheckIcon } from "lucide-react";
 import { Fragment } from "react";
-import { confettiPalettes } from "@/constants/confetti";
+import { confettiPalettes } from "@/features/signage/confetti";
 import { useScreenSetting } from "@/hooks/use-screen-setting";
 import {
   confettiAtom,
