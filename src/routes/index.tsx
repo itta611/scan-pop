@@ -12,6 +12,7 @@ import {
 	savedScreenAtom,
 	saveScreenAtom,
 	screenConfigAtom,
+	themeAtom,
 } from "../features/screens/atoms";
 import { EditorHeader } from "../features/screens/EditorHeader";
 import { QrStage, type StageHandle } from "../features/screens/QrStage";
@@ -21,6 +22,7 @@ import {
 	TextSetting,
 	ThemeSetting,
 } from "../features/screens/ScreenSettings";
+import { themes } from "../features/screens/schema";
 import { cn } from "../lib/utils";
 
 export const Route = createFileRoute("/")({ component: HomeRoute });
@@ -40,6 +42,7 @@ function HomeRoute() {
 }
 
 function Home() {
+	const theme = useAtomValue(themeAtom);
 	const navigate = useNavigate();
 	const saveScreen = useSetAtom(saveScreenAtom);
 
@@ -53,7 +56,12 @@ function Home() {
 	}
 
 	return (
-		<div className="mx-auto min-h-svh max-w-[1600px] bg-white pt-6">
+		<div
+			className={cn(
+				"min-h-svh pt-6",
+				themes.find((option) => option.value === theme)?.className,
+			)}
+		>
 			<EditorHeader />
 			<main className="mx-auto max-w-[1200px] mt-8">
 				<div className="flex items-start gap-9">

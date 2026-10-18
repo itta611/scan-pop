@@ -7,7 +7,7 @@ import { hasDestinationAtom, savedScreenAtom, savingScreenAtom } from "./atoms";
 
 export function EditorHeader() {
 	return (
-		<header className="flex h-17 items-center gap-8 border px-5 w-300 mx-auto">
+		<header className="bg-white flex h-17 items-center gap-8 border px-5 w-300 mx-auto">
 			<Logo className="mt-0.5" />
 			<div className="ml-auto flex items-center gap-3 max-[760px]:gap-1">
 				<CopyDisplayLinkButton />
