@@ -6,7 +6,6 @@ import {
 import { useAtomValue, useSetAtom } from "jotai";
 import { type FormEvent, type Ref, useRef } from "react";
 import {
-	isScreenDirtyAtom,
 	savedScreenAtom,
 	saveScreenAtom,
 	screenConfigAtom,
@@ -73,7 +72,6 @@ function Home() {
 					>
 						<div className="mb-[23px] flex items-center justify-between gap-[5px] [&>h2]:text-[13px] [&>h2]:font-[650]">
 							<h2>表示をカスタマイズ</h2>
-							<SaveStatus />
 						</div>
 						<LinkSetting />
 						<TextSetting />
@@ -98,17 +96,5 @@ function EditorPreview({ ref }: { ref: Ref<StageHandle> }) {
 				<QrStage ref={ref} config={config} value={scanUrl} preview />
 			</div>
 		</div>
-	);
-}
-
-function SaveStatus() {
-	const saved = useAtomValue(savedScreenAtom);
-	const isDirty = useAtomValue(isScreenDirtyAtom);
-	return (
-		<span
-			className={cn("text-[9px] text-[#7e917d]", isDirty && "text-[#a58b5c]")}
-		>
-			{saved ? (isDirty ? "未保存の変更" : "保存済み") : ""}
-		</span>
 	);
 }

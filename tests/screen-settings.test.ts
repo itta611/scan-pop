@@ -3,7 +3,6 @@ import { afterEach, beforeEach, test, type TestContext } from "node:test";
 import { createStore } from "jotai/vanilla";
 import {
 	amountAtom,
-	isScreenDirtyAtom,
 	savedScreenAtom,
 	saveScreenAtom,
 	savingScreenAtom,
@@ -56,14 +55,10 @@ test("existing drafts retain settings and owner credentials in the same storage 
 	const store = editor(t);
 	assert.deepEqual(store.get(screenConfigAtom), screenConfig(saved));
 	assert.equal(store.get(savedScreenAtom)?.editToken, saved.editToken);
-	assert.equal(store.get(isScreenDirtyAtom), false);
 	store.set(titleAtom, "新しい見出し");
-	assert.equal(store.get(isScreenDirtyAtom), true);
 	const persisted = JSON.parse(storage.get("qrpop.editor") ?? "{}");
 	assert.equal(persisted.config.title, "新しい見出し");
 	assert.equal(persisted.saved.editToken, saved.editToken);
-	store.set(titleAtom, saved.title);
-	assert.equal(store.get(isScreenDirtyAtom), false);
 });
 
 function screenConfig(screen: SavedScreen) {
@@ -118,7 +113,6 @@ test("saving creates a screen, normalizes text, and uses its owner token for upd
 	const created = await store.set(saveScreenAtom);
 	assert.equal(created?.id, saved.id);
 	assert.equal(store.get(titleAtom), "ようこそ");
-	assert.equal(store.get(isScreenDirtyAtom), false);
 	assert.equal(requests[0].path, "/api/screens");
 	assert.equal(requests[0].init?.method, "POST");
 	assert.equal(
@@ -134,7 +128,6 @@ test("saving creates a screen, normalizes text, and uses its owner token for upd
 		saved.editToken,
 	);
 	assert.equal(store.get(savedScreenAtom)?.amount, 180);
-	assert.equal(store.get(isScreenDirtyAtom), false);
 });
 
 test("edits made while saving remain as an unsaved draft when the request finishes", async (t) => {
@@ -152,7 +145,6 @@ test("edits made while saving remain as an unsaved draft when the request finish
 	await saving;
 	assert.equal(store.get(titleAtom), "保存中の編集");
 	assert.equal(store.get(savedScreenAtom)?.title, saved.title);
-	assert.equal(store.get(isScreenDirtyAtom), true);
 	assert.equal(store.get(savingScreenAtom), false);
 	assert.equal(
 		JSON.parse(storage.get("qrpop.editor") ?? "{}").config.title,

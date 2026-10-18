@@ -40,15 +40,6 @@ export const confettiAtom = settingAtom("confetti");
 export const amountAtom = settingAtom("amount");
 
 export const hasDestinationAtom = atom((get) => Boolean(get(urlAtom).trim()));
-export const isScreenDirtyAtom = atom((get) => {
-	const saved = get(savedScreenAtom);
-	return (
-		!saved ||
-		JSON.stringify(get(screenConfigAtom)) !==
-			JSON.stringify(screenSchema.parse(saved))
-	);
-});
-
 export const saveScreenAtom = atom(null, async (get, set) => {
 	const config = get(screenConfigAtom);
 	const parsed = screenSchema.parse(config);
