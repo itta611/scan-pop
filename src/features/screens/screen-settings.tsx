@@ -26,9 +26,9 @@ export function LinkSetting() {
 		<SettingField title="リンク先">
 			<Input
 				type="url"
-				value={url}
+				defaultValue={url}
 				placeholder="https://example.com"
-				onChange={(e) => setUrl(e.target.value)}
+				onBlur={(e) => setUrl(e.currentTarget.value)}
 				autoComplete="url"
 				maxLength={2048}
 			/>
@@ -44,14 +44,14 @@ export function TextSetting() {
 			<SettingLabel htmlFor="screen-title">見出し</SettingLabel>
 			<Input
 				id="screen-title"
-				value={title}
-				onChange={(e) => setTitle(e.target.value)}
+				defaultValue={title}
+				onBlur={(e) => setTitle(e.currentTarget.value)}
 			/>
 			<SettingLabel htmlFor="screen-message">ひとことメッセージ</SettingLabel>
 			<Textarea
 				id="screen-message"
-				value={message}
-				onChange={(e) => setMessage(e.target.value)}
+				defaultValue={message}
+				onBlur={(e) => setMessage(e.currentTarget.value)}
 				maxLength={120}
 				rows={2}
 			/>
