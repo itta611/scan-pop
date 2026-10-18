@@ -28,7 +28,7 @@ function HomeRoute() {
 	return (
 		<ClientOnly
 			fallback={
-				<div className="flex min-h-svh items-center justify-center gap-5 p-[25px] text-center text-[36px] font-bold [&>span]:text-[#cc805c]">
+				<div className="flex min-h-svh items-center justify-center gap-5 p-[25px] text-center text-[36px] font-bold">
 					QR Pop<span>✳</span>
 				</div>
 			}
@@ -61,18 +61,15 @@ function Home() {
 			)}
 		>
 			<EditorHeader />
-			<main className="mx-auto max-w-[1200px] mt-8">
+			<main className="mx-auto max-w-300 mt-8">
 				<div className="flex items-start gap-9">
 					<EditorPreview ref={stage} />
 					<form
 						id="screen-editor"
-						className="rounded-[13px] bg-white p-[23px] shadow-[0_0_0_1px_#2e463414,0_5px_20px_-12px_#2e463414] max-[1050px]:p-5 max-[760px]:p-[23px]"
+						className="bg-background/90 backdrop-blur-2xl p-5"
 						onSubmit={submit}
 						noValidate
 					>
-						<div className="mb-[23px] flex items-center justify-between gap-[5px] [&>h2]:text-[13px] [&>h2]:font-[650]">
-							<h2>表示をカスタマイズ</h2>
-						</div>
 						<LinkSetting />
 						<TextSetting />
 						<ThemeSetting />

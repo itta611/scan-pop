@@ -7,7 +7,7 @@ import { hasDestinationAtom, savedScreenAtom, savingScreenAtom } from "./atoms";
 
 export function EditorHeader() {
 	return (
-		<header className="bg-white flex h-17 items-center gap-8 border px-5 w-300 mx-auto">
+		<header className="bg-background/90 backdrop-blur-2xl flex h-17 items-center gap-8 border px-5 w-300 mx-auto">
 			<Logo className="mt-0.5" />
 			<div className="ml-auto flex items-center gap-3 max-[760px]:gap-1">
 				<CopyDisplayLinkButton />
@@ -51,14 +51,13 @@ function CopyDisplayLinkButton() {
 	return (
 		<Button
 			variant="ghost"
-			className="max-[760px]:gap-1.5 max-[760px]:p-2.5 max-[760px]:text-[10px] max-[760px]:[&>svg:last-child:not(:first-child)]:hidden"
-			aria-label={copied ? "表示リンクをコピーしました" : "表示リンクをコピー"}
+			aria-label={copied ? "表示URLをコピーしました" : "表示URLをコピー"}
 			disabled={!saved}
 			onClick={saved ? () => copyDisplayLink(saved.id) : undefined}
 		>
 			{copied ? <Check /> : <Copy />}
 			<span className="max-[760px]:hidden">
-				{copied ? "コピーしました" : "表示リンク"}
+				{copied ? "コピーしました" : "表示URLをコピー"}
 			</span>
 		</Button>
 	);
