@@ -1,14 +1,12 @@
 import "#/polyfill";
 
-import { OpenAPIHandler } from "@orpc/openapi/fetch";
-import { ZodToJsonSchemaConverter } from "@orpc/zod/zod4";
 import { SmartCoercionPlugin } from "@orpc/json-schema";
-import { createFileRoute } from "@tanstack/react-router";
-import { onError } from "@orpc/server";
+import { OpenAPIHandler } from "@orpc/openapi/fetch";
 import { OpenAPIReferencePlugin } from "@orpc/openapi/plugins";
-
-import { TodoSchema } from "#/orpc/schema";
+import { onError } from "@orpc/server";
+import { ZodToJsonSchemaConverter } from "@orpc/zod/zod4";
 import router from "#/orpc/router";
+import { TodoSchema } from "#/orpc/schema";
 
 const handler = new OpenAPIHandler(router, {
   interceptors: [
@@ -54,7 +52,7 @@ const handler = new OpenAPIHandler(router, {
   ],
 });
 
-async function handle({ request }: { request: Request }) {
+async function handle(request: Request) {
   const { response } = await handler.handle(request, {
     prefix: "/api",
     context: {},
@@ -63,15 +61,11 @@ async function handle({ request }: { request: Request }) {
   return response ?? new Response("Not Found", { status: 404 });
 }
 
-export const Route = createFileRoute("/api/$")({
-  server: {
-    handlers: {
-      HEAD: handle,
-      GET: handle,
-      POST: handle,
-      PUT: handle,
-      PATCH: handle,
-      DELETE: handle,
-    },
-  },
-});
+export {
+  handle as GET,
+  handle as POST,
+  handle as PUT,
+  handle as PATCH,
+  handle as DELETE,
+  handle as HEAD,
+};

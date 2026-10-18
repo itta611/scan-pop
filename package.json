@@ -1,73 +1,55 @@
 {
   "name": "qr-pop",
+  "version": "0.1.0",
   "private": true,
-  "type": "module",
-  "imports": {
-    "#/*": "./src/*"
-  },
   "scripts": {
-    "dev": "vite dev --port 3000",
-    "generate-routes": "tsr generate",
-    "build": "vite build",
-    "preview": "vite preview",
-    "format": "biome format",
-    "lint": "biome lint",
-    "check": "biome check",
-    "test": "node --env-file-if-exists=.env.local --import tsx --test tests/*.test.ts"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "biome check",
+    "format": "biome format --write",
+    "predev": "paraglide-js compile --project ./project.inlang --outdir ./src/paraglide",
+    "prebuild": "paraglide-js compile --project ./project.inlang --outdir ./src/paraglide",
+    "test": "node --env-file-if-exists=.env.local --import tsx --test tests/*.test.ts",
+    "check": "biome check"
   },
   "dependencies": {
+    "next": "16.4.2",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
     "@orpc/client": "^1.13.6",
     "@orpc/json-schema": "^1.13.6",
     "@orpc/openapi": "^1.13.6",
     "@orpc/server": "^1.13.6",
-    "@orpc/tanstack-query": "^1.13.6",
     "@orpc/zod": "^1.13.6",
-    "@tailwindcss/vite": "^4.1.18",
-    "@tanstack/react-devtools": "0.10.13",
-    "@tanstack/react-query": "5.104.3",
-    "@tanstack/react-query-devtools": "5.104.3",
-    "@tanstack/react-router": "1.170.45",
-    "@tanstack/react-router-devtools": "1.167.2",
-    "@tanstack/react-router-ssr-query": "1.167.3",
-    "@tanstack/react-start": "1.169.3",
     "canvas-confetti": "^1.9.4",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "jotai": "^3.0.1",
     "lucide-react": "^0.577.0",
     "qrcode.react": "^4.2.0",
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0",
     "redis": "^6.3.0",
     "tailwind-merge": "^3.0.2",
-    "tailwindcss": "^4.1.18",
     "tw-animate-css": "^1.3.6",
     "zod": "^4.3.6"
   },
   "devDependencies": {
+    "@tailwindcss/turbopack": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "tailwindcss": "^4",
+    "typescript": "^5",
     "@biomejs/biome": "2.4.5",
     "@inlang/paraglide-js": "^2.13.1",
-    "@tailwindcss/typography": "^0.5.16",
-    "@tanstack/devtools-vite": "0.8.5",
-    "@tanstack/router-cli": "^1.132.0",
     "@types/canvas-confetti": "^1.9.0",
-    "@types/node": "^22.10.2",
-    "@types/react": "^19.2.0",
-    "@types/react-dom": "^19.2.0",
-    "@vitejs/plugin-react": "^6.0.1",
-    "nitro": "3.0.260903-beta",
-    "tsx": "^4.23.15",
-    "typescript": "^6.0.2",
-    "vite": "^8.0.0"
+    "tsx": "^4.23.15"
   },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "esbuild",
-      "lightningcss"
-    ]
+  "type": "module",
+  "imports": {
+    "#/*": "./src/*"
   },
   "engines": {
     "node": ">=22.12.0"
-  },
-  "packageManager": "pnpm@12.3.4"
+  }
 }

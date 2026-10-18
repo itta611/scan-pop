@@ -13,3 +13,8 @@ __unconfig*
 todos.json
 
 work/
+
+.next/
+out/
+next-env.d.ts
+*.tsbuildinfo

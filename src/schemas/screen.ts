@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { confettiPalettes } from "@/features/signage/confetti";
 
 const hexColor = z.string().regex(/^#[0-9a-f]{6}$/i);
 
@@ -25,7 +24,7 @@ export const defaultScreen: ScreenConfig = {
   title: "つながる、その瞬間を。",
   message: "カメラをかざして、アクセスしてください",
   theme: "paper",
-  confetti: confettiPalettes[0],
+  confetti: ["#ffffff", "#ffffff", "#ffffff", "#ffffff"],
 };
 
 export const themes = [

@@ -1,4 +1,4 @@
-import { ClientOnly, createFileRoute } from "@tanstack/react-router";
+"use client";
 import { useAtomValue } from "jotai";
 import { type FormEvent, type Ref, useEffect, useRef } from "react";
 import { EditorHeader } from "@/features/editor-header";
@@ -14,25 +14,9 @@ import {
   saveErrorAtom,
   screenConfigAtom,
 } from "@/jotai/atoms";
-import { cn } from "../lib/utils";
+import { cn } from "@/lib/utils";
 
-export const Route = createFileRoute("/")({ component: HomeRoute });
-
-function HomeRoute() {
-  return (
-    <ClientOnly
-      fallback={
-        <div className="flex min-h-svh items-center justify-center gap-5 p-[25px] text-center text-[36px] font-bold">
-          QR Pop<span>✳</span>
-        </div>
-      }
-    >
-      <Home />
-    </ClientOnly>
-  );
-}
-
-function Home() {
+export default function Editor() {
   const stage = useRef<SignageHandle>(null);
   const saveScreen = useSaveScreen();
   const saveError = useAtomValue(saveErrorAtom);

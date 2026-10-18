@@ -7,7 +7,7 @@
   },
   "files": {
     "ignoreUnknown": true,
-    "includes": ["**", "!**/src/route-tree.gen.ts"]
+    "includes": ["**", "!**/src/paraglide", "!**/package-lock.json"]
   },
   "formatter": {
     "enabled": true,
