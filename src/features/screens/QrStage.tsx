@@ -6,11 +6,9 @@ import type { ScreenConfig } from "./schema";
 import { palettes } from "./schema";
 
 const themeClasses = {
-	paper:
-		"[--stage-bg:#f4f0e8] [--stage-text:#394c3f] [--stage-muted:#898c78] [--stage-accent:#cc805c] [--stage-line:#394c3f20]",
-	mint: "[--stage-bg:#dce9df] [--stage-text:#284e3d] [--stage-muted:#6b8674] [--stage-accent:#b27452] [--stage-line:#284e3d22]",
-	night:
-		"[--stage-bg:#242b29] [--stage-text:#f1f0df] [--stage-muted:#a3b3a6] [--stage-accent:#e7aa77] [--stage-line:#f1f0df26]",
+	paper: "[--stage-bg:#f4f0e8] [--stage-text:#394c3f] [--stage-muted:#898c78]",
+	mint: "[--stage-bg:#dce9df] [--stage-text:#284e3d] [--stage-muted:#6b8674]",
+	night: "[--stage-bg:#242b29] [--stage-text:#f1f0df] [--stage-muted:#a3b3a6]",
 };
 
 export type StageHandle = { celebrate: () => void };
@@ -65,43 +63,7 @@ export function QrStage({
 			)}
 			aria-label="QRコード表示"
 		>
-			<div
-				className={cn(
-					"absolute inset-x-[4.7%] top-[5%] z-1 flex items-center justify-between tracking-[.16em] text-[color:var(--stage-muted)]",
-					preview
-						? "text-[1.25cqw]"
-						: "text-[min(13px,1.3cqw)] max-[760px]:top-[4%] max-[760px]:text-[8px]",
-				)}
-			>
-				<span
-					className={cn(
-						"font-[650] tracking-[-.06em] text-[color:var(--stage-text)]",
-						preview ? "text-[2.3cqw]" : "text-[clamp(19px,2.3cqw,28px)]",
-					)}
-				>
-					QR Pop
-					<span className="ml-[.3em] inline-block text-[1.1em] text-[color:var(--stage-accent)]">
-						✳
-					</span>
-				</span>
-				<span>SCAN & CELEBRATE</span>
-			</div>
-			<div
-				className={cn(
-					"flex flex-1 flex-col items-center justify-center px-[6cqw] py-[8cqh] text-center",
-					!preview && "pb-[10cqh] max-[760px]:pt-[9cqh] max-[760px]:pb-[17cqh]",
-				)}
-			>
-				<span
-					className={cn(
-						"mb-[1.8cqh] tracking-[.22em] text-[color:var(--stage-muted)]",
-						preview
-							? "text-[1cqw]"
-							: "text-[min(12px,1.5cqw)] max-[760px]:text-[9px]",
-					)}
-				>
-					A LITTLE SCAN. A LITTLE JOY.
-				</span>
+			<div className="flex flex-1 flex-col items-center justify-center px-[6cqw] py-[8cqh] text-center">
 				<h2
 					className={cn(
 						"max-w-[90%] font-semibold tracking-[-.06em] wrap-anywhere",
@@ -114,56 +76,20 @@ export function QrStage({
 				</h2>
 				<div
 					className={cn(
-						"relative mt-[3.5cqh] mb-[3cqh]",
+						"mt-[3.5cqh] mb-[3cqh]",
 						preview
 							? "w-[30cqw] max-w-[37cqh]"
 							: "w-[min(29cqw,42cqh)] max-w-[420px] max-[760px]:my-[5cqh] max-[760px]:w-[57cqw] max-[760px]:max-w-[40cqh]",
 					)}
 				>
-					<span
-						className={cn(
-							"absolute top-[6%] left-[-30%] rotate-12 text-[6cqw] font-normal leading-none text-[color:var(--stage-accent)]",
-							!preview && "max-[760px]:left-[-24%] max-[760px]:text-[12cqw]",
-						)}
-						aria-hidden="true"
-					>
-						✳
-					</span>
-					<span
-						className={cn(
-							"absolute top-[36%] right-[-29%] text-[4cqw] font-normal leading-none text-[#8e9d79]",
-							!preview && "max-[760px]:right-[-20%] max-[760px]:text-[8cqw]",
-						)}
-						aria-hidden="true"
-					>
-						✦
-					</span>
-					<span
-						className={cn(
-							"absolute bottom-[2%] left-[-19%] text-[2.6cqw] font-normal leading-none text-[#c6ad6c]",
-							!preview && "max-[760px]:left-[-17%] max-[760px]:text-[6cqw]",
-						)}
-						aria-hidden="true"
-					>
-						✺
-					</span>
-					<div
-						className={cn(
-							"relative -rotate-3 bg-white shadow-[0_1px_2px_#00000005,0_7px_20px_-7px_#0000001c]",
-							preview
-								? "rounded-[1cqw] p-[1.2cqw]"
-								: "rounded-xl p-[min(12px,1.2cqw)]",
-						)}
-					>
-						<QRCodeSVG
-							className="block h-auto w-full rotate-3"
-							value={value}
-							size={400}
-							level="M"
-							marginSize={4}
-							title="スマートフォンのカメラで読み取ってください"
-						/>
-					</div>
+					<QRCodeSVG
+						className="block h-auto w-full bg-white"
+						value={value}
+						size={400}
+						level="M"
+						marginSize={4}
+						title="スマートフォンのカメラで読み取ってください"
+					/>
 				</div>
 				<p
 					className={cn(
@@ -175,19 +101,6 @@ export function QrStage({
 				>
 					{config.message}
 				</p>
-			</div>
-			<div
-				className={cn(
-					"absolute inset-x-[4.7%] z-1 flex items-center justify-between border-t border-[color:var(--stage-line)] pt-[1.8cqh] tracking-[.05em] text-[color:var(--stage-muted)]",
-					preview
-						? "bottom-[4.3%] text-[1.05cqw]"
-						: "bottom-[10%] text-[min(12px,1.5cqw)] max-[760px]:hidden [:fullscreen_&]:bottom-[4%]",
-				)}
-			>
-				<span>スマートフォンのカメラでスキャン</span>
-				<span className="text-[2.3cqw] leading-none" aria-hidden="true">
-					↗
-				</span>
 			</div>
 			<canvas
 				className="pointer-events-none absolute inset-0 z-3 size-full"
