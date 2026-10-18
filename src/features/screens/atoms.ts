@@ -1,0 +1,94 @@
+import { atom } from "jotai/vanilla";
+import { atomWithStorage } from "jotai/vanilla/utils";
+import {
+	defaultScreen,
+	type SavedScreen,
+	type ScreenConfig,
+	screenSchema,
+} from "./schema";
+
+type Draft = { config: ScreenConfig; saved?: SavedScreen };
+
+const draftAtom = atomWithStorage<Draft>(
+	"qrpop.editor",
+	{ config: defaultScreen },
+	undefined,
+	{ getOnInit: true },
+);
+
+export const editorErrorAtom = atom("");
+export const savingScreenAtom = atom(false);
+export const screenConfigAtom = atom((get) => get(draftAtom).config);
+export const savedScreenAtom = atom((get) => get(draftAtom).saved);
+
+function settingAtom<Key extends keyof ScreenConfig>(key: Key) {
+	return atom(
+		(get) => get(screenConfigAtom)[key],
+		(_get, set, value: ScreenConfig[Key]) => {
+			set(draftAtom, (draft) => ({
+				...draft,
+				config: { ...draft.config, [key]: value },
+			}));
+			set(editorErrorAtom, "");
+		},
+	);
+}
+
+export const urlAtom = settingAtom("url");
+export const titleAtom = settingAtom("title");
+export const messageAtom = settingAtom("message");
+export const themeAtom = settingAtom("theme");
+export const confettiAtom = settingAtom("confetti");
+export const amountAtom = settingAtom("amount");
+
+export const hasDestinationAtom = atom((get) => Boolean(get(urlAtom).trim()));
+export const isScreenDirtyAtom = atom((get) => {
+	const saved = get(savedScreenAtom);
+	return (
+		!saved ||
+		JSON.stringify(get(screenConfigAtom)) !==
+			JSON.stringify(screenSchema.parse(saved))
+	);
+});
+
+export const saveScreenAtom = atom(null, async (get, set) => {
+	const config = get(screenConfigAtom);
+	const result = screenSchema.safeParse(config);
+	if (!result.success) {
+		set(editorErrorAtom, result.error.issues[0].message);
+		return;
+	}
+	const saved = get(savedScreenAtom);
+	set(savingScreenAtom, true);
+	set(editorErrorAtom, "");
+	try {
+		const response = await fetch(
+			saved ? `/api/screens/${saved.id}` : "/api/screens",
+			{
+				method: saved ? "PUT" : "POST",
+				headers: {
+					"Content-Type": "application/json",
+					...(saved ? { "X-Edit-Token": saved.editToken } : {}),
+				},
+				body: JSON.stringify(result.data),
+			},
+		);
+		const data = await response.json();
+		if (!response.ok) throw new Error(data.error);
+		const screen = data as SavedScreen;
+		set(draftAtom, (current) => ({
+			config: current.config === config ? result.data : current.config,
+			saved: screen,
+		}));
+		return screen;
+	} catch (error) {
+		set(
+			editorErrorAtom,
+			error instanceof Error
+				? error.message
+				: "保存できませんでした。もう一度お試しください。",
+		);
+	} finally {
+		set(savingScreenAtom, false);
+	}
+});

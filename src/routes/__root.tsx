@@ -4,6 +4,7 @@ import {
 	HeadContent,
 	Scripts,
 } from "@tanstack/react-router";
+import { Provider } from "jotai";
 import { buttonClassName } from "../components/Button";
 import appCss from "../styles.css?url";
 
@@ -54,7 +55,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 				<HeadContent />
 			</head>
 			<body>
-				{children}
+				<Provider>{children}</Provider>
 				<Scripts />
 			</body>
 		</html>
