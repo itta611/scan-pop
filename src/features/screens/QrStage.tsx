@@ -1,12 +1,6 @@
 import confetti from "canvas-confetti";
 import { QRCodeSVG } from "qrcode.react";
-import {
-	useEffect,
-	useImperativeHandle,
-	useRef,
-	useState,
-	type Ref,
-} from "react";
+import { type Ref, useEffect, useImperativeHandle, useRef } from "react";
 import { cn } from "../../lib/utils";
 import type { ScreenConfig } from "./schema";
 import { palettes } from "./schema";
@@ -34,7 +28,6 @@ export function QrStage({
 }) {
 	const canvas = useRef<HTMLCanvasElement>(null);
 	const party = useRef<ReturnType<typeof confetti.create> | null>(null);
-	const [celebration, setCelebration] = useState(0);
 
 	useEffect(() => {
 		const instance = confetti.create(canvas.current!, { resize: true });
@@ -59,7 +52,6 @@ export function QrStage({
 			};
 			party.current?.({ ...options, angle: 58, origin: { x: 0, y: 1 } });
 			party.current?.({ ...options, angle: 122, origin: { x: 1, y: 1 } });
-			setCelebration((count) => count + 1);
 		},
 	}));
 
@@ -197,18 +189,6 @@ export function QrStage({
 					↗
 				</span>
 			</div>
-			{celebration > 0 && (
-				<span
-					key={celebration}
-					className={cn(
-						"absolute top-[4.7cqh] left-1/2 z-4 block w-max animate-thanks rounded-full bg-white px-[1.2em] py-[.7em] font-[650] text-[#315340] shadow-[0_4px_16px_#00000012] motion-reduce:-translate-x-1/2 motion-reduce:animate-none motion-reduce:opacity-100",
-						preview ? "text-[2cqw]" : "text-[clamp(15px,2cqw,26px)]",
-					)}
-					role="status"
-				>
-					ありがとう！<span aria-hidden="true"> ✨</span>
-				</span>
-			)}
 			<canvas
 				className="pointer-events-none absolute inset-0 z-3 size-full"
 				aria-hidden="true"
