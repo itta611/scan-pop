@@ -27,10 +27,9 @@ export function Signage({
         "relative flex h-full min-h-0 w-full flex-col overflow-hidden bg-[color:var(--stage-bg)] text-[color:var(--stage-text)] [container-type:size]",
         themeClasses[config.theme],
       )}
-      aria-label="QRコード表示"
     >
       <div className="flex flex-1 flex-col items-center justify-center px-[6cqw] py-[8cqh] text-center">
-        <h2 className="max-w-[90%] font-semibold tracking-[-.06em] wrap-anywhere text-[clamp(24px,3.5cqw,60px)]/[1.5]">
+        <h2 className="max-w-[90%] font-semibold tracking-[-.06em] wrap-anywhere text-[clamp(32px,10cqw,60px)]/[1.5]">
           {config.title || "つながる、その瞬間を。"}
         </h2>
         <div className="mt-[3.5cqh] mb-[3cqh] w-[min(29cqw,42cqh)] max-w-[420px] max-[760px]:my-[5cqh] max-[760px]:w-[57cqw] max-[760px]:max-w-[40cqh]">
@@ -42,7 +41,7 @@ export function Signage({
             marginSize={4}
           />
         </div>
-        <p className="max-w-[85%] whitespace-pre-line text-[color:var(--stage-muted)] wrap-anywhere text-[clamp(12px,1.4cqw,20px)]/[1.9] max-[760px]:text-[12px]/[1.9]">
+        <p className="max-w-[85%] whitespace-pre-line text-[color:var(--stage-muted)] wrap-anywhere text-[clamp(12px,5cqw,20px)]/[1.9] max-[760px]:text-[12px]/[1.9]">
           {config.message}
         </p>
       </div>
