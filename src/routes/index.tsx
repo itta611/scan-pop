@@ -55,10 +55,10 @@ function Home() {
 	}
 
 	return (
-		<div className="mx-auto min-h-svh max-w-[1600px] bg-white">
+		<div className="mx-auto min-h-svh max-w-[1600px] bg-white pt-6">
 			<EditorHeader />
-			<main className="mx-auto max-w-[1320px] px-[5%] pt-[46px] min-[1500px]:px-10 max-[760px]:px-[22px] max-[760px]:pt-[30px]">
-				<div className="grid grid-cols-[minmax(0,1fr)_326px] items-start gap-9 max-[1050px]:grid-cols-[minmax(0,1fr)_295px] max-[1050px]:gap-6 max-[760px]:grid-cols-1 max-[760px]:gap-[30px]">
+			<main className="mx-auto max-w-[1200px] mt-8">
+				<div className="flex items-start gap-9">
 					<EditorPreview />
 					<form
 						id="screen-editor"
@@ -90,7 +90,7 @@ function EditorPreview() {
 		? `${location.origin}/go/${saved.id}`
 		: config.url || "https://example.com";
 	return (
-		<div className="min-w-0">
+		<div className="grow min-w-0">
 			<div className="rounded-2xl bg-white p-2 shadow-[0_0_0_1px_#293d3514,0_10px_28px_-16px_#293d3528] max-[760px]:rounded-[13px] max-[760px]:p-1.5">
 				<QrStage ref={stage} config={config} value={scanUrl} preview />
 			</div>

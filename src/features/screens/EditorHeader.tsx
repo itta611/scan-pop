@@ -1,14 +1,8 @@
 import { useAtomValue, useSetAtom } from "jotai";
-import {
-	ArrowUpRight,
-	Check,
-	Copy,
-	LoaderCircle,
-	Monitor,
-	Sparkles,
-} from "lucide-react";
+import { ArrowUpRight, Check, Copy, LoaderCircle, Monitor } from "lucide-react";
 import { useState } from "react";
-import { Button } from "../../components/Button";
+import Logo from "#/components/logo";
+import { Button } from "@/components/Button";
 import {
 	editorErrorAtom,
 	hasDestinationAtom,
@@ -18,14 +12,8 @@ import {
 
 export function EditorHeader() {
 	return (
-		<header className="flex h-17 items-center gap-8 border px-3 rounded-xl w-[1060px] mx-auto">
-			<span
-				className="grid size-9 place-items-center rounded-[10px] bg-[#e5ecdf] max-[760px]:size-6 [&_svg]:size-5.5"
-				aria-hidden="true"
-			>
-				<Sparkles />
-			</span>
-			<span>QR Pop</span>
+		<header className="flex h-17 items-center gap-8 border px-5 w-300 mx-auto">
+			<Logo className="mt-0.5" />
 			<div className="ml-auto flex items-center gap-3 max-[760px]:gap-1">
 				<CopyDisplayLinkButton />
 				<OpenDisplayButton />
@@ -40,7 +28,6 @@ function OpenDisplayButton() {
 	return (
 		<Button
 			variant="primary"
-			className="max-[760px]:gap-1.5 max-[760px]:p-2.5 max-[760px]:text-[10px] max-[760px]:[&>svg:last-child:not(:first-child)]:hidden"
 			type="submit"
 			form="screen-editor"
 			disabled={saving || !hasDestination}

@@ -16,7 +16,7 @@ export function buttonClassName(
 	className?: string,
 ) {
 	return cn(
-		"inline-flex min-h-[42px] touch-manipulation items-center justify-center gap-[9px] whitespace-nowrap rounded-lg border-0 px-4 py-2.5 text-[12px] font-semibold leading-[1.4] transition-[background-color,color,box-shadow,transform] duration-160 not-disabled:active:scale-[0.96] disabled:cursor-not-allowed disabled:opacity-40 [&_svg]:size-4 [&_svg]:shrink-0 [&_svg]:stroke-[1.65]",
+		"inline-flex min-h-[42px] touch-manipulation items-center justify-center gap-[9px] whitespace-nowrap border-0 px-4 py-2.5 text-[12px] font-semibold leading-[1.4] transition-[background-color,color,box-shadow,transform] duration-160 not-disabled:active:scale-[0.96] disabled:cursor-not-allowed disabled:opacity-40 [&_svg]:size-4 [&_svg]:shrink-0 [&_svg]:stroke-[1.65]",
 		variants[variant],
 		className,
 	);
