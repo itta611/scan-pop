@@ -17,9 +17,9 @@ TanStack Startで作る、スキャンに反応するQR表示アプリです。
 src/features/screens/
   atoms.ts            # 下書き、設定ごとのatom、派生値、保存アクション
   schema.ts           # サーバーと共有する設定の型・検証
-  ScreenSettings.tsx  # 必要なatomを直接購読する設定項目
-  SettingField.tsx    # 状態を持たない共通フィールド
-  QrStage.tsx         # propsを受け取るQR表示・演出
+  screen-settings.tsx  # 必要なatomを直接購読する設定項目
+  setting-field.tsx    # 状態を持たない共通フィールド
+  qr-stage.tsx         # propsを受け取るQR表示・演出
 ```
 
 - ルートの`Provider`でストアを分離します。サーバーでリクエスト間にストアを共有しません。

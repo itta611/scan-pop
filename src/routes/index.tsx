@@ -7,14 +7,14 @@ import {
 	screenConfigAtom,
 	themeAtom,
 } from "../features/screens/atoms";
-import { EditorHeader } from "../features/screens/EditorHeader";
-import { QrStage, type StageHandle } from "../features/screens/QrStage";
+import { EditorHeader } from "../features/screens/editor-header";
+import { QrStage, type StageHandle } from "../features/screens/qr-stage";
 import {
 	ConfettiSetting,
 	LinkSetting,
 	TextSetting,
 	ThemeSetting,
-} from "../features/screens/ScreenSettings";
+} from "../features/screens/screen-settings";
 import { themes } from "../features/screens/schema";
 import { cn } from "../lib/utils";
 

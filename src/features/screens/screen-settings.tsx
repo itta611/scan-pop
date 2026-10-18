@@ -1,6 +1,6 @@
 import { useAtom } from "jotai";
 import { Check, Link2, PartyPopper } from "lucide-react";
-import { Button } from "../../components/Button";
+import { Button } from "../../components/button";
 import { Input } from "../../components/ui/input";
 import { Textarea } from "../../components/ui/textarea";
 import { cn } from "../../lib/utils";
@@ -12,8 +12,8 @@ import {
 	titleAtom,
 	urlAtom,
 } from "./atoms";
-import { SettingField, SettingLabel } from "./SettingField";
 import { themes } from "./schema";
+import { SettingField, SettingLabel } from "./setting-field";
 
 const paletteSwatches = {
 	colorful: ["bg-[#ff795d]", "bg-[#f4c95d]", "bg-[#6d9d87]", "bg-[#8d9acc]"],

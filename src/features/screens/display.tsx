@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { QrStage, type StageHandle } from "./QrStage";
+import { QrStage, type StageHandle } from "./qr-stage";
 import type { PublishedScreen } from "./schema";
 
 export function Display({ initialScreen }: { initialScreen: PublishedScreen }) {

@@ -19,7 +19,7 @@ const config = defineConfig(({ mode }) => {
 				strategy: ["url", "baseLocale"],
 			}),
 			tailwindcss(),
-			tanstackStart(),
+			tanstackStart({ router: { generatedRouteTree: "route-tree.gen.ts" } }),
 			viteReact(),
 		],
 	};

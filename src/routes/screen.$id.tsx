@@ -1,17 +1,17 @@
-import { buttonClassName } from "../components/Button";
+import { buttonClassName } from "../components/button";
 import {
 	ClientOnly,
 	createFileRoute,
 	Link,
 	notFound,
 } from "@tanstack/react-router";
-import { Display } from "../features/screens/Display";
+import { Display } from "../features/screens/display";
 import { getScreen } from "../server/screens";
 
-export const Route = createFileRoute("/screen/$screenId")({
+export const Route = createFileRoute("/screen/$id")({
 	loader: async ({ params }) => {
 		try {
-			return await getScreen({ data: params.screenId });
+			return await getScreen({ data: params.id });
 		} catch (error) {
 			if (error instanceof Error && error.message.includes("見つかりません"))
 				throw notFound();

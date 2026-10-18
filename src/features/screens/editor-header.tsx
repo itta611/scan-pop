@@ -2,7 +2,7 @@ import { useAtomValue } from "jotai";
 import { ArrowUpRight, Check, Copy, LoaderCircle, Monitor } from "lucide-react";
 import { useState } from "react";
 import Logo from "#/components/logo";
-import { Button } from "@/components/Button";
+import { Button } from "@/components/button";
 import { hasDestinationAtom, savedScreenAtom, savingScreenAtom } from "./atoms";
 
 export function EditorHeader() {

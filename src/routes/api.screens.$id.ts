@@ -3,7 +3,7 @@ import { screenSchema } from "../features/screens/schema";
 import { handleApi } from "../server/http.server";
 import { updateScreen } from "../server/screens.server";
 
-export const Route = createFileRoute("/api/screens/$screenId")({
+export const Route = createFileRoute("/api/screens/$id")({
 	server: {
 		handlers: {
 			PUT: ({ request, params }) =>
@@ -11,7 +11,7 @@ export const Route = createFileRoute("/api/screens/$screenId")({
 					const config = screenSchema.parse(await request.json());
 					return Response.json(
 						await updateScreen(
-							params.screenId,
+							params.id,
 							request.headers.get("X-Edit-Token"),
 							config,
 						),

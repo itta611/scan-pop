@@ -5,7 +5,7 @@ import {
 	Scripts,
 } from "@tanstack/react-router";
 import { Provider } from "jotai";
-import { buttonClassName } from "../components/Button";
+import { buttonClassName } from "../components/button";
 import appCss from "../styles.css?url";
 
 interface MyRouterContext {
