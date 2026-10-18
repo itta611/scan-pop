@@ -68,7 +68,7 @@ function Home() {
 					<EditorPreview ref={stage} />
 					<form
 						id="screen-editor"
-						className="bg-background px-5"
+						className="bg-background px-5 w-80"
 						onSubmit={submit}
 						noValidate
 					>
