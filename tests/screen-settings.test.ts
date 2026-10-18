@@ -2,7 +2,6 @@ import assert from "node:assert/strict";
 import { afterEach, beforeEach, test, type TestContext } from "node:test";
 import { createStore } from "jotai/vanilla";
 import {
-	amountAtom,
 	savedScreenAtom,
 	saveScreenAtom,
 	savingScreenAtom,
@@ -119,7 +118,7 @@ test("saving creates a screen, normalizes text, and uses its owner token for upd
 		new Headers(requests[0].init?.headers).has("X-Edit-Token"),
 		false,
 	);
-	store.set(amountAtom, 180);
+	store.set(themeAtom, "night");
 	await store.set(saveScreenAtom);
 	assert.equal(requests[1].path, "/api/screens/test-screen");
 	assert.equal(requests[1].init?.method, "PUT");
@@ -127,7 +126,7 @@ test("saving creates a screen, normalizes text, and uses its owner token for upd
 		new Headers(requests[1].init?.headers).get("X-Edit-Token"),
 		saved.editToken,
 	);
-	assert.equal(store.get(savedScreenAtom)?.amount, 180);
+	assert.equal(store.get(savedScreenAtom)?.theme, "night");
 });
 
 test("edits made while saving remain as an unsaved draft when the request finishes", async (t) => {

@@ -11,7 +11,6 @@ export const screenSchema = z.object({
 	message: z.string().trim().max(120),
 	theme: z.enum(["paper", "mint", "night"]),
 	confetti: z.enum(["colorful", "pastel", "gold"]),
-	amount: z.number().int().min(40).max(200),
 });
 
 export type ScreenConfig = z.infer<typeof screenSchema>;
@@ -24,7 +23,6 @@ export const defaultScreen: ScreenConfig = {
 	message: "カメラをかざして、アクセスしてください",
 	theme: "paper",
 	confetti: "colorful",
-	amount: 120,
 };
 
 export const themes = [

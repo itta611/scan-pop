@@ -1,18 +1,16 @@
 import { useAtom } from "jotai";
-import { CheckIcon, Link2, PartyPopper } from "lucide-react";
-import { Button } from "../../components/button";
+import { CheckIcon } from "lucide-react";
 import { Input } from "../../components/ui/input";
 import { Textarea } from "../../components/ui/textarea";
 import { cn } from "../../lib/utils";
 import {
-	amountAtom,
 	confettiAtom,
 	messageAtom,
 	themeAtom,
 	titleAtom,
 	urlAtom,
 } from "./atoms";
-import { themes } from "./schema";
+import { type ScreenConfig, themes } from "./schema";
 import { SettingField, SettingLabel } from "./setting-field";
 
 const paletteSwatches = {
@@ -93,9 +91,12 @@ export function ThemeSetting() {
 	);
 }
 
-export function ConfettiSetting({ onPreview }: { onPreview: () => void }) {
+export function ConfettiSetting({
+	onPreview,
+}: {
+	onPreview: (palette: ScreenConfig["confetti"]) => void;
+}) {
 	const [confetti, setConfetti] = useAtom(confettiAtom);
-	const [amount, setAmount] = useAtom(amountAtom);
 	return (
 		<SettingField title="クラッカー">
 			<SettingLabel htmlFor="confetti-palette">紙吹雪のカラー</SettingLabel>
@@ -113,7 +114,10 @@ export function ConfettiSetting({ onPreview }: { onPreview: () => void }) {
 							}[palette]
 						}
 						className="flex min-h-10 flex-1 items-center justify-center gap-[3px] rounded-md border bg-[#fafbf8] px-[7px] py-[11px] transition-[border-color,background-color] duration-160 hover:border-[#a7b8a0] aria-pressed:border-[#759574] aria-pressed:bg-[#f2f6ee]"
-						onClick={() => setConfetti(palette)}
+						onClick={() => {
+							setConfetti(palette);
+							onPreview(palette);
+						}}
 					>
 						{paletteSwatches[palette].map((colorClassName) => (
 							<span
@@ -124,26 +128,6 @@ export function ConfettiSetting({ onPreview }: { onPreview: () => void }) {
 					</button>
 				))}
 			</div>
-			<SettingLabel htmlFor="confetti-amount">
-				紙吹雪の量
-				<span className="ml-auto text-[9px] text-[#a0aa9d]">
-					{amount < 90 ? "ひかえめ" : amount > 150 ? "たっぷり" : "ほどよく"}
-				</span>
-			</SettingLabel>
-			<input
-				className="m-0 block h-6 w-full cursor-pointer accent-[#577d5b]"
-				id="confetti-amount"
-				type="range"
-				min={40}
-				max={200}
-				step={10}
-				value={amount}
-				onChange={(e) => setAmount(Number(e.target.value))}
-			/>
-			<Button className="mt-3" onClick={onPreview}>
-				<PartyPopper />
-				演出を試す
-			</Button>
 		</SettingField>
 	);
 }

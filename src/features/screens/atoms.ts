@@ -37,7 +37,6 @@ export const titleAtom = settingAtom("title");
 export const messageAtom = settingAtom("message");
 export const themeAtom = settingAtom("theme");
 export const confettiAtom = settingAtom("confetti");
-export const amountAtom = settingAtom("amount");
 
 export const hasDestinationAtom = atom((get) => Boolean(get(urlAtom).trim()));
 export const saveScreenAtom = atom(null, async (get, set) => {

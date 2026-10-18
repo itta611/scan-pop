@@ -11,7 +11,9 @@ const themeClasses = {
 	night: "[--stage-bg:#242b29] [--stage-text:#f1f0df] [--stage-muted:#a3b3a6]",
 };
 
-export type StageHandle = { celebrate: () => void };
+export type StageHandle = {
+	celebrate: (palette?: ScreenConfig["confetti"]) => void;
+};
 
 export function QrStage({
 	config,
@@ -37,15 +39,15 @@ export function QrStage({
 	}, []);
 
 	useImperativeHandle(ref, () => ({
-		celebrate() {
+		celebrate(palette = config.confetti) {
 			const options = {
-				particleCount: config.amount,
+				particleCount: 100,
 				spread: 65,
 				startVelocity: preview ? 32 : 55,
 				gravity: 0.95,
 				ticks: 240,
 				scalar: preview ? 0.75 : 1.1,
-				colors: palettes[config.confetti],
+				colors: palettes[palette],
 				disableForReducedMotion: true,
 			};
 			party.current?.({ ...options, angle: 58, origin: { x: 0, y: 1 } });

@@ -65,7 +65,9 @@ function Home() {
 						<LinkSetting />
 						<TextSetting />
 						<ThemeSetting />
-						<ConfettiSetting onPreview={() => stage.current?.celebrate()} />
+						<ConfettiSetting
+							onPreview={(palette) => stage.current?.celebrate(palette)}
+						/>
 					</form>
 				</div>
 			</main>
