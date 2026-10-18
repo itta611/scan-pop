@@ -87,8 +87,16 @@ pnpm build
 
 テストには、即時配信、2秒以内の未受信分の再送、古い通知と受信済み通知の除外、設定配信、30秒後の接続終了を含みます。最後のテストのため約30秒かかります。
 
-## デプロイナウへの公開
+## 本番ビルドと公開準備
 
-ローカルのRedisは公開先から接続できません。公開時は、TLS接続と `XREAD BLOCK` に対応する外部Redisを用意し、デプロイナウの環境変数 `REDIS_URL` に接続URLを設定します。接続情報はクライアントへ配信しません。
+`npm run build` はNitroの `node-server` プリセットで `.output` を生成します。`node --env-file=.env.local .output/server/index.mjs` で本番サーバーを起動できます。
 
-公開先の対応状況、ビルド・起動方式、SSEの即時配信は、デプロイ時に確認します。
+公開用RedisはUpstashへTCP＋TLSで接続します。`REDIS_URL` を公開先の機密環境変数で管理し、REST API用のURL・トークンは使いません。Upstashで通知・再送・設定保存・30秒での切断を含む21件のテスト、および本番ビルド経由の保存・リダイレクト・SSEを確認済みです。
+
+ローカルの `.env.local` は現在Upstashに接続しています。ローカルRedisを使う場合は `.env.example` の接続先へ変更してください。
+
+### デプロイナウの制約（2026-10-18確認）
+
+CLI認証済み。作成したプロジェクトは `qr-pop`、IDは `01M577HPCGBGSH19NTKG6G9WC5` です。`REDIS_URL` は機密環境変数として設定済みです。
+
+対応フレームワークはNext.js・Nuxt・Astro・静的サイトで、TanStack Startは選べません。Nuxt設定でNitro出力を公開する試行は、`package.json に nuxt 依存がありません` という構成チェックで失敗しました。アプリは未公開です。公開先の変更についてユーザーの回答待ちです。
