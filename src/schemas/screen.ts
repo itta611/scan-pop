@@ -25,7 +25,7 @@ export const defaultScreen: ScreenConfig = {
   title: "つながる、その瞬間を。",
   message: "カメラをかざして、アクセスしてください",
   theme: "paper",
-  confetti: confettiPalettes[1],
+  confetti: confettiPalettes[0],
 };
 
 export const themes = [

@@ -13,7 +13,7 @@ type Draft = { config: EditorConfig; saved?: SavedScreen };
 
 const draftAtom = atomWithStorage<Draft>(
   "qrpop.editor",
-  { config: { ...defaultScreen, confetti: 1 } },
+  { config: { ...defaultScreen, confetti: 0 } },
   undefined,
   { getOnInit: true },
 );

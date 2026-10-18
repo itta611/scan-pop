@@ -105,7 +105,7 @@ test("existing drafts retain settings and owner credentials in the same storage 
 
 function screenConfig(screen: SavedScreen) {
   const { id: _id, editToken: _token, ...config } = screen;
-  return { ...config, confetti: 1 };
+  return { ...config, confetti: 0 };
 }
 
 test("editing text does not notify a theme subscriber or change another store", (t) => {
