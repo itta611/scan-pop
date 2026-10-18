@@ -8,21 +8,21 @@ import viteReact from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 
 const config = defineConfig(({ mode }) => {
-	Object.assign(process.env, loadEnv(mode, process.cwd(), "REDIS_"));
-	return {
-		resolve: { tsconfigPaths: true },
-		plugins: [
-			devtools(),
-			paraglideVitePlugin({
-				project: "./project.inlang",
-				outdir: "./src/paraglide",
-				strategy: ["url", "baseLocale"],
-			}),
-			tailwindcss(),
-			tanstackStart({ router: { generatedRouteTree: "route-tree.gen.ts" } }),
-			viteReact(),
-		],
-	};
+  Object.assign(process.env, loadEnv(mode, process.cwd(), "REDIS_"));
+  return {
+    resolve: { tsconfigPaths: true },
+    plugins: [
+      devtools(),
+      paraglideVitePlugin({
+        project: "./project.inlang",
+        outdir: "./src/paraglide",
+        strategy: ["url", "baseLocale"],
+      }),
+      tailwindcss(),
+      tanstackStart({ router: { generatedRouteTree: "route-tree.gen.ts" } }),
+      viteReact(),
+    ],
+  };
 });
 
 export default config;
