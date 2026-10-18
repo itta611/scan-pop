@@ -40,7 +40,6 @@ export function Signage({
             size={400}
             level="M"
             marginSize={4}
-            title="スマートフォンのカメラで読み取ってください"
           />
         </div>
         <p className="max-w-[85%] whitespace-pre-line text-[color:var(--stage-muted)] wrap-anywhere text-[clamp(12px,1.4cqw,20px)]/[1.9] max-[760px]:text-[12px]/[1.9]">

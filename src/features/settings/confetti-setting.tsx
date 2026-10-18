@@ -43,7 +43,7 @@ export function ConfettiSetting({
                 >
                   {index === palette.length - 1 &&
                     confetti === paletteIndex && (
-                      <span className="absolute right-1 bottom-1 rounded-full bg-primary p-0.75 text-white">
+                      <span className="absolute right-1 bottom-1 bg-primary p-0.75 text-white">
                         <CheckIcon size={11} />
                       </span>
                     )}
