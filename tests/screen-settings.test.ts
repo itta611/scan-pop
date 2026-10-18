@@ -4,7 +4,7 @@ import { Provider, type WritableAtom } from "jotai";
 import { createStore } from "jotai/vanilla";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { ConfettiSetting } from "../src/features/settings/index.tsx";
+import { ConfettiSetting } from "../src/features/settings/confetti-setting.tsx";
 import { confettiPalettes } from "../src/features/signage/confetti.tsx";
 import { useSaveScreen } from "../src/hooks/use-save-screen.ts";
 import { useScreenSetting } from "../src/hooks/use-screen-setting.ts";

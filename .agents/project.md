@@ -19,7 +19,10 @@ src/
   hooks/use-save-screen.ts             # 保存の検証・通信・保存順序の制御
   hooks/use-screen-setting.ts          # 設定の更新と自動保存
   schemas/screen.ts                    # API・サーバー・画面で共有する設定の型と検証
-  features/settings/index.tsx          # 設定項目
+  features/settings/link-setting.tsx   # リンク先の設定
+  features/settings/text-setting.tsx   # 見出し・メッセージの設定
+  features/settings/theme-setting.tsx  # 背景テーマの設定
+  features/settings/confetti-setting.tsx # 紙吹雪の設定
   features/settings/setting-field.tsx  # 設定欄の共通レイアウト
   features/editor-header/index.tsx     # 編集画面の操作ボタン
   features/signage/index.tsx           # 編集プレビュー・表示ページ共通のQR表示と演出
