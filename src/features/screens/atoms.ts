@@ -16,7 +16,6 @@ const draftAtom = atomWithStorage<Draft>(
 	{ getOnInit: true },
 );
 
-export const editorErrorAtom = atom("");
 export const savingScreenAtom = atom(false);
 export const screenConfigAtom = atom((get) => get(draftAtom).config);
 export const savedScreenAtom = atom((get) => get(draftAtom).saved);
@@ -29,7 +28,6 @@ function settingAtom<Key extends keyof ScreenConfig>(key: Key) {
 				...draft,
 				config: { ...draft.config, [key]: value },
 			}));
-			set(editorErrorAtom, "");
 		},
 	);
 }
@@ -53,14 +51,9 @@ export const isScreenDirtyAtom = atom((get) => {
 
 export const saveScreenAtom = atom(null, async (get, set) => {
 	const config = get(screenConfigAtom);
-	const result = screenSchema.safeParse(config);
-	if (!result.success) {
-		set(editorErrorAtom, result.error.issues[0].message);
-		return;
-	}
+	const parsed = screenSchema.parse(config);
 	const saved = get(savedScreenAtom);
 	set(savingScreenAtom, true);
-	set(editorErrorAtom, "");
 	try {
 		const response = await fetch(
 			saved ? `/api/screens/${saved.id}` : "/api/screens",
@@ -70,24 +63,17 @@ export const saveScreenAtom = atom(null, async (get, set) => {
 					"Content-Type": "application/json",
 					...(saved ? { "X-Edit-Token": saved.editToken } : {}),
 				},
-				body: JSON.stringify(result.data),
+				body: JSON.stringify(parsed),
 			},
 		);
 		const data = await response.json();
 		if (!response.ok) throw new Error(data.error);
 		const screen = data as SavedScreen;
 		set(draftAtom, (current) => ({
-			config: current.config === config ? result.data : current.config,
+			config: current.config === config ? parsed : current.config,
 			saved: screen,
 		}));
 		return screen;
-	} catch (error) {
-		set(
-			editorErrorAtom,
-			error instanceof Error
-				? error.message
-				: "保存できませんでした。もう一度お試しください。",
-		);
 	} finally {
 		set(savingScreenAtom, false);
 	}

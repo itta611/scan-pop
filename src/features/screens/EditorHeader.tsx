@@ -1,14 +1,9 @@
-import { useAtomValue, useSetAtom } from "jotai";
+import { useAtomValue } from "jotai";
 import { ArrowUpRight, Check, Copy, LoaderCircle, Monitor } from "lucide-react";
 import { useState } from "react";
 import Logo from "#/components/logo";
 import { Button } from "@/components/Button";
-import {
-	editorErrorAtom,
-	hasDestinationAtom,
-	savedScreenAtom,
-	savingScreenAtom,
-} from "./atoms";
+import { hasDestinationAtom, savedScreenAtom, savingScreenAtom } from "./atoms";
 
 export function EditorHeader() {
 	return (
@@ -45,20 +40,13 @@ function OpenDisplayButton() {
 
 function CopyDisplayLinkButton() {
 	const saved = useAtomValue(savedScreenAtom);
-	const setError = useSetAtom(editorErrorAtom);
 	const [copied, setCopied] = useState(false);
 	async function copyDisplayLink(screenId: string) {
-		try {
-			await navigator.clipboard.writeText(
-				`${location.origin}/screen/${screenId}`,
-			);
-			setCopied(true);
-			setTimeout(() => setCopied(false), 2000);
-		} catch {
-			setError(
-				"リンクをコピーできませんでした。ブラウザの設定を確認してください。",
-			);
-		}
+		await navigator.clipboard.writeText(
+			`${location.origin}/screen/${screenId}`,
+		);
+		setCopied(true);
+		setTimeout(() => setCopied(false), 2000);
 	}
 	return (
 		<Button

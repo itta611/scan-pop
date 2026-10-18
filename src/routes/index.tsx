@@ -8,7 +8,6 @@ import { PartyPopper } from "lucide-react";
 import { type FormEvent, useRef } from "react";
 import { Button } from "../components/Button";
 import {
-	editorErrorAtom,
 	isScreenDirtyAtom,
 	savedScreenAtom,
 	saveScreenAtom,
@@ -47,11 +46,10 @@ function Home() {
 	async function submit(event: FormEvent) {
 		event.preventDefault();
 		const saved = await saveScreen();
-		if (saved)
-			await navigate({
-				to: "/screen/$screenId",
-				params: { screenId: saved.id },
-			});
+		await navigate({
+			to: "/screen/$screenId",
+			params: { screenId: saved.id },
+		});
 	}
 
 	return (
@@ -74,7 +72,6 @@ function Home() {
 						<TextSetting />
 						<ThemeSetting />
 						<ConfettiSetting />
-						<EditorError />
 					</form>
 				</div>
 			</main>
@@ -115,13 +112,4 @@ function SaveStatus() {
 			{saved ? (isDirty ? "未保存の変更" : "保存済み") : ""}
 		</span>
 	);
-}
-
-function EditorError() {
-	const error = useAtomValue(editorErrorAtom);
-	return error ? (
-		<p role="alert" className="mt-4 text-[12px] text-red-700">
-			{error}
-		</p>
-	) : null;
 }

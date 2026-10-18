@@ -3,7 +3,6 @@ import { afterEach, beforeEach, test, type TestContext } from "node:test";
 import { createStore } from "jotai/vanilla";
 import {
 	amountAtom,
-	editorErrorAtom,
 	isScreenDirtyAtom,
 	savedScreenAtom,
 	saveScreenAtom,
@@ -89,16 +88,13 @@ test("editing text does not notify a theme subscriber or change another store", 
 	assert.equal(previous.title, defaultScreen.title);
 });
 
-test("invalid settings do not call the API, and editing clears the validation error", async (t) => {
+test("invalid settings reject without calling the API", async (t) => {
 	const store = editor(t);
 	const fetchMock = t.mock.method(globalThis, "fetch", async () => {
 		throw new Error("must not fetch");
 	});
-	assert.equal(await store.set(saveScreenAtom), undefined);
+	await assert.rejects(store.set(saveScreenAtom), /http/);
 	assert.equal(fetchMock.mock.callCount(), 0);
-	assert.match(store.get(editorErrorAtom), /URL/);
-	store.set(urlAtom, saved.url);
-	assert.equal(store.get(editorErrorAtom), "");
 	assert.equal(store.get(savingScreenAtom), false);
 });
 
@@ -164,16 +160,17 @@ test("edits made while saving remain as an unsaved draft when the request finish
 	);
 });
 
-test("a rejected save keeps the draft and exposes the server error", async (t) => {
+test("a rejected save keeps the draft and propagates the server error", async (t) => {
 	const store = editor(t);
 	t.mock.method(globalThis, "fetch", async () =>
 		Response.json({ error: "保存に失敗しました" }, { status: 503 }),
 	);
 	store.set(urlAtom, saved.url);
 	store.set(titleAtom, "残しておく下書き");
-	assert.equal(await store.set(saveScreenAtom), undefined);
+	await assert.rejects(store.set(saveScreenAtom), {
+		message: "保存に失敗しました",
+	});
 	assert.equal(store.get(savedScreenAtom), undefined);
 	assert.equal(store.get(titleAtom), "残しておく下書き");
-	assert.equal(store.get(editorErrorAtom), "保存に失敗しました");
 	assert.equal(store.get(savingScreenAtom), false);
 });
