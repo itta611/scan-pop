@@ -48,7 +48,7 @@ export default function Editor() {
   }
 
   return (
-    <div className={cn("min-h-svh pt-6 px-5 bg-accent")}>
+    <div className="h-svh pt-6 px-5 bg-accent flex flex-col">
       <EditorHeader />
       {saveError && (
         <p
@@ -58,23 +58,21 @@ export default function Editor() {
           {saveError}
         </p>
       )}
-      <main className="mx-auto max-w-300 mt-8">
-        <div className="flex items-start gap-9">
-          <EditorPreview ref={stage} screenId={screenId} />
-          <form
-            id="screen-editor"
-            className="bg-background px-5 w-80"
-            onSubmit={submit}
-            noValidate
-          >
-            <LinkSetting />
-            <TextSetting />
-            <ThemeSetting />
-            <ConfettiSetting
-              onPreview={(palette) => stage.current?.celebrate(palette)}
-            />
-          </form>
-        </div>
+      <main className="mx-auto w-full flex gap-9 max-w-300 mt-8 grow pb-8">
+        <EditorPreview ref={stage} screenId={screenId} />
+        <form
+          id="screen-editor"
+          className="bg-background px-5 w-80"
+          onSubmit={submit}
+          noValidate
+        >
+          <LinkSetting />
+          <TextSetting />
+          <ThemeSetting />
+          <ConfettiSetting
+            onPreview={(palette) => stage.current?.celebrate(palette)}
+          />
+        </form>
       </main>
     </div>
   );
@@ -89,7 +87,7 @@ function EditorPreview({
 }) {
   const config = useAtomValue(screenConfigAtom);
   return (
-    <div className="grow min-w-0 aspect-[16/10]">
+    <div className="grow min-w-0">
       <Signage
         ref={ref}
         config={{ ...config, confetti: confettiPalettes[config.confetti] }}
