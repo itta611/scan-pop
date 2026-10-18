@@ -5,11 +5,9 @@ import {
 	savedScreenAtom,
 	saveScreenAtom,
 	screenConfigAtom,
-	themeAtom,
 } from "../features/screens/atoms";
 import { EditorHeader } from "../features/screens/editor-header";
 import { QrStage, type StageHandle } from "../features/screens/qr-stage";
-import { themes } from "../features/screens/schema";
 import {
 	ConfettiSetting,
 	LinkSetting,
@@ -60,7 +58,7 @@ function Home() {
 					<EditorPreview ref={stage} />
 					<form
 						id="screen-editor"
-						className="bg-background p-5"
+						className="bg-background px-5"
 						onSubmit={submit}
 						noValidate
 					>

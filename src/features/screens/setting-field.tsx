@@ -2,17 +2,14 @@ import type { LabelHTMLAttributes, ReactNode } from "react";
 
 export function SettingField({
 	title,
-	icon,
 	children,
 }: {
 	title: string;
-	icon?: ReactNode;
 	children: ReactNode;
 }) {
 	return (
-		<fieldset className="mb-4 min-w-0 border-0 border-b border-[#eff1eb] p-0 pb-5 last-of-type:mb-0 last-of-type:border-b-0 last-of-type:pb-4">
+		<fieldset className="pt-4 min-w-0 border-b pb-5 last:border-b-0">
 			<legend className="float-left mb-3.5 flex w-full items-center gap-2 text-xs font-semibold max-[760px]:text-[12px] [&_svg]:size-4 [&_svg]:text-[#7f917e]">
-				{icon}
 				{title}
 			</legend>
 			{children}
