@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import { after, test } from 'node:test'
 import { setTimeout as delay } from 'node:timers/promises'
-import { defaultScreen } from '../src/features/screens/schema.ts'
+import { defaultScreen } from '../src/schemas/screen.ts'
 import { getRedis } from '../src/server/redis.server.ts'
 import { CONNECTION_MS, replayCursor, scanStream } from '../src/server/scan-stream.server.ts'
 import { countKey, createScreen, publicScreen, recordScan, streamKey, updateScreen } from '../src/server/screens.server.ts'

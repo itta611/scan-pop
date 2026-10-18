@@ -1,20 +1,20 @@
 import { ClientOnly, createFileRoute } from "@tanstack/react-router";
 import { useAtomValue, useSetAtom } from "jotai";
 import { type FormEvent, type Ref, useRef } from "react";
-import {
-	savedScreenAtom,
-	saveErrorAtom,
-	saveScreenAtom,
-	screenConfigAtom,
-} from "../features/screens/atoms";
-import { EditorHeader } from "../features/screens/editor-header";
-import { QrStage, type StageHandle } from "../features/screens/qr-stage";
+import { EditorHeader } from "@/features/editor-header";
 import {
 	ConfettiSetting,
 	LinkSetting,
 	TextSetting,
 	ThemeSetting,
-} from "../features/screens/screen-settings";
+} from "@/features/settings";
+import { Signage, type SignageHandle } from "@/features/signage";
+import {
+	savedScreenAtom,
+	saveErrorAtom,
+	saveScreenAtom,
+	screenConfigAtom,
+} from "@/jotai/atoms";
 import { cn } from "../lib/utils";
 
 export const Route = createFileRoute("/")({ component: HomeRoute });
@@ -34,7 +34,7 @@ function HomeRoute() {
 }
 
 function Home() {
-	const stage = useRef<StageHandle>(null);
+	const stage = useRef<SignageHandle>(null);
 	const saveScreen = useSetAtom(saveScreenAtom);
 	const saveError = useAtomValue(saveErrorAtom);
 
@@ -85,7 +85,7 @@ function Home() {
 	);
 }
 
-function EditorPreview({ ref }: { ref: Ref<StageHandle> }) {
+function EditorPreview({ ref }: { ref: Ref<SignageHandle> }) {
 	const config = useAtomValue(screenConfigAtom);
 	const saved = useAtomValue(savedScreenAtom);
 	const scanUrl = saved
@@ -94,7 +94,7 @@ function EditorPreview({ ref }: { ref: Ref<StageHandle> }) {
 	return (
 		<div className="grow min-w-0">
 			<div className="rounded-2xl bg-white p-2 shadow-[0_0_0_1px_#293d3514,0_10px_28px_-16px_#293d3528] max-[760px]:rounded-[13px] max-[760px]:p-1.5">
-				<QrStage ref={ref} config={config} value={scanUrl} preview />
+				<Signage ref={ref} config={config} value={scanUrl} preview />
 			</div>
 		</div>
 	);

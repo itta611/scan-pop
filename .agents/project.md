@@ -11,15 +11,17 @@ TanStack Startで作る、スキャンに反応するQR表示アプリです。
 
 ## 設定の状態管理
 
-編集するプロジェクト設定はJotai 3で管理します。atomはモジュールスコープで定義し、機能に関係するファイルの近くへまとめます。この配置はプロジェクトに合わせた選択で、Jotaiが固定のディレクトリ構成を指定しているわけではありません。
+編集するプロジェクト設定はJotai 3で管理します。atomはモジュールスコープで定義し、src/jotai/ にまとめます。
 
 ```text
-src/features/screens/
-  atoms.ts            # 下書き、設定ごとのatom、派生値、保存アクション
-  schema.ts           # サーバーと共有する設定の型・検証
-  screen-settings.tsx  # 必要なatomを直接購読する設定項目
-  setting-field.tsx    # 状態を持たない共通フィールド
-  qr-stage.tsx         # propsを受け取るQR表示・演出
+src/
+  jotai/atoms.ts                       # 下書き、設定ごとのatom、派生値、保存アクション
+  schemas/screen.ts                    # API・サーバー・画面で共有する設定の型と検証
+  features/settings/index.tsx          # 設定項目
+  features/settings/setting-field.tsx  # 設定欄の共通レイアウト
+  features/editor-header/index.tsx     # 編集画面の操作ボタン
+  features/signage/index.tsx           # 編集プレビュー・表示ページ共通のQR表示と演出
+  routes/screen.$id.tsx                # 表示ページと専用のSSE購読
 ```
 
 - ルートの`Provider`でストアを分離します。サーバーでリクエスト間にストアを共有しません。

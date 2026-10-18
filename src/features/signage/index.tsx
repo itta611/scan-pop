@@ -1,9 +1,9 @@
 import confetti from "canvas-confetti";
 import { QRCodeSVG } from "qrcode.react";
 import { type Ref, useEffect, useImperativeHandle, useRef } from "react";
+import type { ScreenConfig } from "@/schemas/screen";
+import { palettes } from "@/schemas/screen";
 import { cn } from "../../lib/utils";
-import type { ScreenConfig } from "./schema";
-import { palettes } from "./schema";
 
 const themeClasses = {
 	paper: "[--stage-bg:#f4f0e8] [--stage-text:#394c3f] [--stage-muted:#898c78]",
@@ -11,11 +11,11 @@ const themeClasses = {
 	night: "[--stage-bg:#242b29] [--stage-text:#f1f0df] [--stage-muted:#a3b3a6]",
 };
 
-export type StageHandle = {
+export type SignageHandle = {
 	celebrate: (palette?: ScreenConfig["confetti"]) => void;
 };
 
-export function QrStage({
+export function Signage({
 	config,
 	value,
 	preview = false,
@@ -24,7 +24,7 @@ export function QrStage({
 	config: ScreenConfig;
 	value: string;
 	preview?: boolean;
-	ref?: Ref<StageHandle>;
+	ref?: Ref<SignageHandle>;
 }) {
 	const canvas = useRef<HTMLCanvasElement>(null);
 	const party = useRef<ReturnType<typeof confetti.create> | null>(null);

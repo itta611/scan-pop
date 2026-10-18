@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { screenSchema } from "../features/screens/schema";
+import { screenSchema } from "@/schemas/screen";
 import { handleApi } from "../server/http.server";
 import { updateScreen } from "../server/screens.server";
 

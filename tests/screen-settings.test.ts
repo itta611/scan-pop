@@ -10,11 +10,11 @@ import {
 	themeAtom,
 	titleAtom,
 	urlAtom,
-} from "../src/features/screens/atoms.ts";
+} from "../src/jotai/atoms.ts";
 import {
 	defaultScreen,
 	type SavedScreen,
-} from "../src/features/screens/schema.ts";
+} from "../src/schemas/screen.ts";
 
 let storage: Map<string, string>;
 beforeEach(() => {

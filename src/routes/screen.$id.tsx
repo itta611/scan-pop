@@ -4,8 +4,10 @@ import {
 	Link,
 	notFound,
 } from "@tanstack/react-router";
+import { useEffect, useRef, useState } from "react";
 import { buttonClassName } from "@/components/ui/button";
-import { Display } from "../features/screens/display";
+import { Signage, type SignageHandle } from "@/features/signage";
+import type { PublishedScreen } from "@/schemas/screen";
 import { getScreen } from "../server/screens";
 
 export const Route = createFileRoute("/screen/$id")({
@@ -36,5 +38,32 @@ function DisplayPage() {
 		<ClientOnly fallback={<div className="fixed inset-0 bg-white" />}>
 			<Display initialScreen={screen} />
 		</ClientOnly>
+	);
+}
+
+function Display({ initialScreen }: { initialScreen: PublishedScreen }) {
+	const [screen, setScreen] = useState(initialScreen);
+	const stage = useRef<SignageHandle>(null);
+
+	useEffect(() => {
+		const source = new EventSource(`/api/events/${initialScreen.id}`);
+		source.addEventListener("ready", (event) =>
+			setScreen(JSON.parse(event.data).screen),
+		);
+		source.addEventListener("scan", () => stage.current?.celebrate());
+		source.addEventListener("config", (event) =>
+			setScreen(JSON.parse(event.data)),
+		);
+		return () => source.close();
+	}, [initialScreen.id]);
+
+	return (
+		<main className="fixed inset-0">
+			<Signage
+				ref={stage}
+				config={screen}
+				value={`${location.origin}/go/${screen.id}`}
+			/>
+		</main>
 	);
 }

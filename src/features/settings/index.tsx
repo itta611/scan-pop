@@ -1,17 +1,17 @@
 import { useAtom } from "jotai";
 import { CheckIcon } from "lucide-react";
 import { Fragment } from "react";
-import { Input } from "../../components/ui/input";
-import { Textarea } from "../../components/ui/textarea";
-import { cn } from "../../lib/utils";
 import {
 	confettiAtom,
 	messageAtom,
 	themeAtom,
 	titleAtom,
 	urlAtom,
-} from "./atoms";
-import { type ScreenConfig, themes } from "./schema";
+} from "@/jotai/atoms";
+import { type ScreenConfig, themes } from "@/schemas/screen";
+import { Input } from "../../components/ui/input";
+import { Textarea } from "../../components/ui/textarea";
+import { cn } from "../../lib/utils";
 import { SettingField, SettingLabel } from "./setting-field";
 
 const paletteSwatches = {

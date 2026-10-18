@@ -5,7 +5,7 @@ import {
 	type SavedScreen,
 	type ScreenConfig,
 	screenSchema,
-} from "./schema";
+} from "@/schemas/screen";
 
 type Draft = { config: ScreenConfig; saved?: SavedScreen };
 

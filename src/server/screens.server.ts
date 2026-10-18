@@ -3,7 +3,7 @@ import type {
 	PublishedScreen,
 	SavedScreen,
 	ScreenConfig,
-} from "../features/screens/schema";
+} from "@/schemas/screen";
 import { HttpError } from "./http.server";
 import { getRedis } from "./redis.server";
 

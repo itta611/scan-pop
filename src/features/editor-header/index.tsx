@@ -3,7 +3,11 @@ import { ArrowUpRight, Check, Copy, LoaderCircle, Monitor } from "lucide-react";
 import { useState } from "react";
 import Logo from "#/components/logo";
 import { Button } from "@/components/ui/button";
-import { hasDestinationAtom, savedScreenAtom, savingScreenAtom } from "./atoms";
+import {
+	hasDestinationAtom,
+	savedScreenAtom,
+	savingScreenAtom,
+} from "@/jotai/atoms";
 
 export function EditorHeader() {
 	return (

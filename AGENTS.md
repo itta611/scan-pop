@@ -7,6 +7,7 @@
 - 不必要な useEffect、useMemo、useCallback を使わない。「念のため」の防御的なコードや過剰な実装を追加しない。
 - Next.js の Image の width・height は想定表示領域のおおまかな値でよい。同じ値でもよく、表示幅の調整は Tailwind で行う。
 - 作業完了後は、その作業の変更をコミットする。ユーザーの別の変更を混ぜない。
+- features/ 内で feature 名とファイル名が一致する入口ファイルは index.tsx にする。
 - AI 向けの参照メモは .agents/ に置く。継続的な作業ルールはこの AGENTS.md に記録する。
 - ユーザーから指示があるまで、ルートの readme.md は空のままにする。
 

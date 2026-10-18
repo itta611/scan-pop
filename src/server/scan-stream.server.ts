@@ -1,4 +1,4 @@
-import type { PublishedScreen } from "../features/screens/schema";
+import type { PublishedScreen } from "@/schemas/screen";
 import { getRedis } from "./redis.server";
 import { countKey, streamKey } from "./screens.server";
 
