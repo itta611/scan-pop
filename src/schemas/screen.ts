@@ -1,4 +1,7 @@
 import { z } from "zod";
+import { confettiPalettes } from "@/constants/confetti";
+
+const hexColor = z.string().regex(/^#[0-9a-f]{6}$/i);
 
 export const screenSchema = z.object({
   url: z
@@ -10,7 +13,7 @@ export const screenSchema = z.object({
   title: z.string().trim().min(1, "見出しを入力してください。"),
   message: z.string().trim().max(120),
   theme: z.enum(["paper", "mint", "night"]),
-  confetti: z.enum(["colorful", "pastel", "gold"]),
+  confetti: z.tuple([hexColor, hexColor, hexColor, hexColor]),
 });
 
 export type ScreenConfig = z.infer<typeof screenSchema>;
@@ -22,7 +25,7 @@ export const defaultScreen: ScreenConfig = {
   title: "つながる、その瞬間を。",
   message: "カメラをかざして、アクセスしてください",
   theme: "paper",
-  confetti: "colorful",
+  confetti: confettiPalettes[1],
 };
 
 export const themes = [
@@ -30,9 +33,3 @@ export const themes = [
   { value: "mint", label: "ミント", className: "bg-[#dce9df]" },
   { value: "night", label: "ナイト", className: "bg-[#242b29]" },
 ] as const;
-
-export const palettes = {
-  colorful: ["#ff795d", "#f4c95d", "#6d9d87", "#8d9acc", "#e9a4b5"],
-  pastel: ["#f3b9c8", "#b7c8ed", "#a8d5bf", "#f4d9a6", "#d2b9e8"],
-  gold: ["#b58a38", "#d5b46b", "#f1db9d", "#e8c373", "#fff1c3"],
-};

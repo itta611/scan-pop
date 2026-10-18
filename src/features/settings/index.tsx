@@ -1,5 +1,6 @@
 import { CheckIcon } from "lucide-react";
 import { Fragment } from "react";
+import { confettiPalettes } from "@/constants/confetti";
 import { useScreenSetting } from "@/hooks/use-screen-setting";
 import {
   confettiAtom,
@@ -13,12 +14,6 @@ import { Input } from "../../components/ui/input";
 import { Textarea } from "../../components/ui/textarea";
 import { cn } from "../../lib/utils";
 import { SettingField, SettingLabel } from "./setting-field";
-
-const paletteSwatches = {
-  colorful: ["#ff795d", "#f4c95d", "#8d9acc", "#6d9d87"],
-  pastel: ["#f3b9c8", "#b7c8ed", "#f4d9a6", "#a8d5bf"],
-  gold: ["#b58a38", "#d5b46b", "#e8c373", "#f1db9d"],
-};
 
 export function LinkSetting() {
   const [url, setUrl] = useScreenSetting(urlAtom);
@@ -101,24 +96,24 @@ export function ConfettiSetting({
   return (
     <SettingField title="クラッカー">
       <div className="flex gap-3">
-        {(["colorful", "pastel", "gold"] as const).map((palette) => (
+        {Object.entries(confettiPalettes).map(([id, palette]) => (
           <button
-            key={palette}
+            key={id}
             type="button"
-            aria-pressed={confetti === palette}
+            aria-pressed={confetti === Number(id)}
             className="flex flex-1 items-center justify-center gap-0 transition-[border-color,background-color] aria-pressed:border-primary border-2 border-transparent"
             onClick={() => {
-              setConfetti(palette);
+              setConfetti(Number(id));
               onPreview(palette);
             }}
           >
-            {paletteSwatches[palette].map((color, index) => (
+            {palette.map((color, index) => (
               <Fragment key={color}>
                 {index > 0 && (
                   <div
                     className="size-0 border-r-10 border-t-40"
                     style={{
-                      borderTopColor: paletteSwatches[palette][index - 1],
+                      borderTopColor: palette[index - 1],
                       borderRightColor: color,
                     }}
                   />

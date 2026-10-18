@@ -1,6 +1,5 @@
 import { useAtom, useStore, type WritableAtom } from "jotai";
-import { screenConfigAtom } from "@/jotai/atoms";
-import { screenSchema } from "@/schemas/screen";
+import { hasDestinationAtom } from "@/jotai/atoms";
 import { useSaveScreen } from "./use-save-screen";
 
 export function useScreenSetting<Value>(
@@ -13,7 +12,7 @@ export function useScreenSetting<Value>(
   function update(next: Value) {
     if (store.get(setting) === next) return;
     setValue(next);
-    if (!screenSchema.safeParse(store.get(screenConfigAtom)).success) return;
+    if (!store.get(hasDestinationAtom)) return;
     return saveScreen().catch(() => undefined);
   }
 

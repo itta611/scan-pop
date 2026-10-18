@@ -199,14 +199,24 @@ test("settings updates are broadcast without exposing the edit token", {
   );
   await stream.next();
   const waiting = stream.next();
+  const colors: typeof screen.confetti = [
+    "#123456",
+    "#abcdef",
+    "#789abc",
+    "#def012",
+  ];
   await updateScreen(screen.id, screen.editToken, {
     ...screen,
     theme: "night",
+    confetti: colors,
   });
   const event = await waiting;
-  assert.equal(event?.type, "config");
-  assert.equal(event?.data.theme, "night");
-  assert.equal("editToken" in event?.data, false);
+  assert.ok(event);
+  assert.equal(event.type, "config");
+  assert.equal(event.data.theme, "night");
+  assert.deepEqual(event.data.confetti, colors);
+  assert.deepEqual((await publicScreen(screen.id)).confetti, colors);
+  assert.equal("editToken" in event.data, false);
   await stream.close();
 });
 

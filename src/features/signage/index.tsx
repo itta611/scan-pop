@@ -2,7 +2,6 @@ import confetti from "canvas-confetti";
 import { QRCodeSVG } from "qrcode.react";
 import { type Ref, useEffect, useImperativeHandle, useRef } from "react";
 import type { ScreenConfig } from "@/schemas/screen";
-import { palettes } from "@/schemas/screen";
 import { cn } from "../../lib/utils";
 
 const themeClasses = {
@@ -47,7 +46,7 @@ export function Signage({
         gravity: 0.95,
         ticks: 240,
         scalar: preview ? 0.75 : 1.1,
-        colors: palettes[palette],
+        colors: palette,
         disableForReducedMotion: true,
       };
       party.current?.({ ...options, angle: 58, origin: { x: 0, y: 1 } });

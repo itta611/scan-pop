@@ -1,5 +1,7 @@
 import { useStore } from "jotai";
+import { confettiPalettes } from "@/constants/confetti";
 import {
+  hasDestinationAtom,
   pendingSaveAtom,
   savedScreenAtom,
   saveErrorAtom,
@@ -14,12 +16,14 @@ export function useSaveScreen() {
     const pending = store.get(pendingSaveAtom);
     if (pending) return pending;
 
-    screenSchema.parse(store.get(screenConfigAtom));
     store.set(saveErrorAtom, null);
     const saving = (async () => {
       while (true) {
         const config = store.get(screenConfigAtom);
-        const parsed = screenSchema.parse(config);
+        const parsed = screenSchema.parse({
+          ...config,
+          confetti: confettiPalettes[config.confetti],
+        });
         const saved = store.get(savedScreenAtom);
         const response = await fetch(
           saved ? `/api/screens/${saved.id}` : "/api/screens",
@@ -38,7 +42,7 @@ export function useSaveScreen() {
         store.set(savedScreenAtom, screen);
         if (
           store.get(screenConfigAtom) === config ||
-          !screenSchema.safeParse(store.get(screenConfigAtom)).success
+          !store.get(hasDestinationAtom)
         ) {
           return screen;
         }

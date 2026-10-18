@@ -1,5 +1,6 @@
 import { atom } from "jotai/vanilla";
 import { atomWithStorage } from "jotai/vanilla/utils";
+import { confettiPalettes } from "@/constants/confetti";
 import {
   defaultScreen,
   type SavedScreen,
@@ -7,11 +8,12 @@ import {
   screenSchema,
 } from "@/schemas/screen";
 
-type Draft = { config: ScreenConfig; saved?: SavedScreen };
+type EditorConfig = Omit<ScreenConfig, "confetti"> & { confetti: number };
+type Draft = { config: EditorConfig; saved?: SavedScreen };
 
 const draftAtom = atomWithStorage<Draft>(
   "qrpop.editor",
-  { config: defaultScreen },
+  { config: { ...defaultScreen, confetti: 1 } },
   undefined,
   { getOnInit: true },
 );
@@ -27,10 +29,10 @@ export const savedScreenAtom = atom(
   },
 );
 
-function settingAtom<Key extends keyof ScreenConfig>(key: Key) {
+function settingAtom<Key extends keyof EditorConfig>(key: Key) {
   return atom(
     (get) => get(screenConfigAtom)[key],
-    (_get, set, value: ScreenConfig[Key]) => {
+    (_get, set, value: EditorConfig[Key]) => {
       set(draftAtom, (draft) => ({
         ...draft,
         config: { ...draft.config, [key]: value },
@@ -45,6 +47,10 @@ export const messageAtom = settingAtom("message");
 export const themeAtom = settingAtom("theme");
 export const confettiAtom = settingAtom("confetti");
 
-export const hasDestinationAtom = atom(
-  (get) => screenSchema.safeParse(get(screenConfigAtom)).success,
-);
+export const hasDestinationAtom = atom((get) => {
+  const config = get(screenConfigAtom);
+  return screenSchema.safeParse({
+    ...config,
+    confetti: confettiPalettes[config.confetti],
+  }).success;
+});

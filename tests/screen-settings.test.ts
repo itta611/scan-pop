@@ -4,9 +4,12 @@ import { Provider, type WritableAtom } from "jotai";
 import { createStore } from "jotai/vanilla";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
+import { confettiPalettes } from "../src/constants/confetti.ts";
+import { ConfettiSetting } from "../src/features/settings/index.tsx";
 import { useSaveScreen } from "../src/hooks/use-save-screen.ts";
 import { useScreenSetting } from "../src/hooks/use-screen-setting.ts";
 import {
+  confettiAtom,
   savedScreenAtom,
   saveErrorAtom,
   savingScreenAtom,
@@ -15,7 +18,12 @@ import {
   titleAtom,
   urlAtom,
 } from "../src/jotai/atoms.ts";
-import { defaultScreen, type SavedScreen } from "../src/schemas/screen.ts";
+import {
+  defaultScreen,
+  type SavedScreen,
+  type ScreenConfig,
+  screenSchema,
+} from "../src/schemas/screen.ts";
 
 let storage: Map<string, string>;
 beforeEach(() => {
@@ -97,7 +105,7 @@ test("existing drafts retain settings and owner credentials in the same storage 
 
 function screenConfig(screen: SavedScreen) {
   const { id: _id, editToken: _token, ...config } = screen;
-  return config;
+  return { ...config, confetti: 1 };
 }
 
 test("editing text does not notify a theme subscriber or change another store", (t) => {
@@ -284,4 +292,61 @@ test("invalid edits during a save remain local until corrected", async (t) => {
   );
   await update(store, titleAtom, "入力再開");
   assert.equal(store.get(savedScreenAtom)?.title, "入力再開");
+});
+
+test("confetti accepts exactly four six-digit HEX colors", () => {
+  const colors = ["#123456", "#ABCDEF", "#789abc", "#def012"];
+  assert.deepEqual(
+    screenSchema.parse({ ...saved, confetti: colors }).confetti,
+    colors,
+  );
+  for (const confetti of [
+    "colorful",
+    2,
+    colors.slice(0, 3),
+    [...colors, "#ffffff"],
+    ["#12345g", ...colors.slice(1)],
+  ]) {
+    assert.equal(screenSchema.safeParse({ ...saved, confetti }).success, false);
+  }
+});
+
+test("a client palette ID is sent as four HEX colors", async (t) => {
+  const store = editor(t);
+  const requests: ScreenConfig[] = [];
+  t.mock.method(
+    globalThis,
+    "fetch",
+    async (_path: unknown, init?: RequestInit) => {
+      const config = screenSchema.parse(JSON.parse(String(init?.body)));
+      requests.push(config);
+      return Response.json({ ...saved, ...config });
+    },
+  );
+  await update(store, urlAtom, saved.url);
+  const colors = confettiPalettes[2];
+  await update(store, confettiAtom, 2);
+  assert.equal(store.get(confettiAtom), 2);
+  assert.equal(store.get(screenConfigAtom).confetti, 2);
+  assert.deepEqual(requests[1].confetti, colors);
+  assert.deepEqual(store.get(savedScreenAtom)?.confetti, colors);
+  const persisted = JSON.parse(storage.get("qrpop.editor") ?? "{}");
+  assert.equal(persisted.config.confetti, 2);
+  assert.deepEqual(persisted.saved.confetti, colors);
+});
+
+test("a restored palette ID stays selected after JSON serialization", (t) => {
+  storage.set(
+    "qrpop.editor",
+    JSON.stringify({ config: screenConfig(saved), saved }),
+  );
+  const store = editor(t);
+  const markup = renderToStaticMarkup(
+    createElement(
+      Provider,
+      { store },
+      createElement(ConfettiSetting, { onPreview: () => {} }),
+    ),
+  );
+  assert.equal((markup.match(/aria-pressed="true"/g) ?? []).length, 1);
 });
