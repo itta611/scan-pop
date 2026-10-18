@@ -1,10 +1,14 @@
 import assert from "node:assert/strict";
-import { afterEach, beforeEach, test, type TestContext } from "node:test";
+import { afterEach, beforeEach, type TestContext, test } from "node:test";
+import { Provider, type WritableAtom } from "jotai";
 import { createStore } from "jotai/vanilla";
+import { createElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
+import { useSaveScreen } from "../src/hooks/use-save-screen.ts";
+import { useScreenSetting } from "../src/hooks/use-screen-setting.ts";
 import {
   savedScreenAtom,
   saveErrorAtom,
-  saveScreenAtom,
   savingScreenAtom,
   screenConfigAtom,
   themeAtom,
@@ -37,6 +41,33 @@ function editor(t: TestContext) {
   return store;
 }
 
+function renderHook<Result>(
+  store: ReturnType<typeof createStore>,
+  useHook: () => Result,
+) {
+  let result!: Result;
+  function Component() {
+    result = useHook();
+    return null;
+  }
+  renderToStaticMarkup(
+    createElement(Provider, { store }, createElement(Component)),
+  );
+  return result;
+}
+
+function saveScreen(store: ReturnType<typeof createStore>) {
+  return renderHook(store, useSaveScreen)();
+}
+
+function update<Value>(
+  store: ReturnType<typeof createStore>,
+  setting: WritableAtom<Value, [Value], void>,
+  value: Value,
+) {
+  return renderHook(store, () => useScreenSetting(setting))[1](value);
+}
+
 const saved: SavedScreen = {
   ...defaultScreen,
   url: "https://example.com/",
@@ -58,7 +89,7 @@ test("existing drafts retain settings and owner credentials in the same storage 
     async (_path: unknown, init?: RequestInit) =>
       Response.json({ ...saved, ...JSON.parse(String(init?.body)) }),
   );
-  await store.set(titleAtom, "新しい見出し");
+  await update(store, titleAtom, "新しい見出し");
   const persisted = JSON.parse(storage.get("qrpop.editor") ?? "{}");
   assert.equal(persisted.config.title, "新しい見出し");
   assert.equal(persisted.saved.editToken, saved.editToken);
@@ -91,7 +122,7 @@ test("invalid settings reject without calling the API", async (t) => {
   const fetchMock = t.mock.method(globalThis, "fetch", async () => {
     throw new Error("must not fetch");
   });
-  await assert.rejects(store.set(saveScreenAtom), /http/);
+  await assert.rejects(saveScreen(store), /http/);
   assert.equal(fetchMock.mock.callCount(), 0);
   assert.equal(store.get(savingScreenAtom), false);
 });
@@ -111,8 +142,8 @@ test("saving creates a screen, normalizes text, and uses its owner token for upd
       });
     },
   );
-  store.set(titleAtom, "  ようこそ  ");
-  const saving = store.set(urlAtom, saved.url);
+  update(store, titleAtom, "  ようこそ  ");
+  const saving = update(store, urlAtom, saved.url);
   assert.equal(requests.length, 1);
   assert.equal(store.get(savingScreenAtom), true);
   await saving;
@@ -126,7 +157,7 @@ test("saving creates a screen, normalizes text, and uses its owner token for upd
     new Headers(requests[0].init?.headers).has("X-Edit-Token"),
     false,
   );
-  await store.set(themeAtom, "night");
+  await update(store, themeAtom, "night");
   assert.equal(requests[1].path, "/api/screens/test-screen");
   assert.equal(requests[1].init?.method, "PUT");
   assert.equal(
@@ -151,10 +182,10 @@ test("edits made while creating save the latest draft next with the same screen 
         requests.push({ path, init, respond }),
       ),
   );
-  const firstSave = store.set(urlAtom, saved.url);
+  const firstSave = update(store, urlAtom, saved.url);
   assert.equal(store.get(savingScreenAtom), true);
-  const latestSave = store.set(titleAtom, "保存中の編集 ");
-  store.set(themeAtom, "night");
+  const latestSave = update(store, titleAtom, "保存中の編集 ");
+  update(store, themeAtom, "night");
   assert.equal(requests.length, 1);
   const nextRequest = new Promise<void>((resolve) => {
     const unsubscribe = store.sub(savedScreenAtom, () => {
@@ -192,17 +223,17 @@ test("a rejected autosave keeps the draft, exposes the error, and can be retried
   t.mock.method(globalThis, "fetch", async () =>
     Response.json({ error: "保存に失敗しました" }, { status: 503 }),
   );
-  store.set(titleAtom, "残しておく下書き");
-  await store.set(urlAtom, saved.url);
+  update(store, titleAtom, "残しておく下書き");
+  await update(store, urlAtom, saved.url);
   assert.equal(store.get(saveErrorAtom), "保存に失敗しました");
-  await assert.rejects(store.set(saveScreenAtom), {
+  await assert.rejects(saveScreen(store), {
     message: "保存に失敗しました",
   });
   assert.equal(store.get(savedScreenAtom), undefined);
   assert.equal(store.get(titleAtom), "残しておく下書き");
   assert.equal(store.get(savingScreenAtom), false);
   t.mock.method(globalThis, "fetch", async () => Response.json(saved));
-  await store.set(saveScreenAtom);
+  await saveScreen(store);
   assert.equal(store.get(saveErrorAtom), null);
   assert.equal(store.get(savedScreenAtom)?.id, saved.id);
 });
@@ -215,15 +246,15 @@ test("incomplete input stays local and saves as soon as it becomes valid", async
     async (_path: unknown, init?: RequestInit) =>
       Response.json({ ...saved, ...JSON.parse(String(init?.body)) }),
   );
-  await store.set(urlAtom, "https://");
-  await store.set(titleAtom, "");
-  await store.set(urlAtom, saved.url);
+  await update(store, urlAtom, "https://");
+  await update(store, titleAtom, "");
+  await update(store, urlAtom, saved.url);
   assert.equal(fetchMock.mock.callCount(), 0);
   assert.equal(store.get(savingScreenAtom), false);
-  await store.set(titleAtom, "有効な見出し");
+  await update(store, titleAtom, "有効な見出し");
   assert.equal(fetchMock.mock.callCount(), 1);
   assert.equal(store.get(savedScreenAtom)?.title, "有効な見出し");
-  await store.set(titleAtom, "有効な見出し");
+  await update(store, titleAtom, "有効な見出し");
   assert.equal(fetchMock.mock.callCount(), 1);
 });
 
@@ -238,8 +269,8 @@ test("invalid edits during a save remain local until corrected", async (t) => {
         respond = resolve;
       }),
   );
-  const saving = store.set(urlAtom, saved.url);
-  store.set(titleAtom, "");
+  const saving = update(store, urlAtom, saved.url);
+  update(store, titleAtom, "");
   respond(Response.json(saved));
   await saving;
   assert.equal(fetchMock.mock.callCount(), 1);
@@ -251,6 +282,6 @@ test("invalid edits during a save remain local until corrected", async (t) => {
     async (_path: unknown, init?: RequestInit) =>
       Response.json({ ...saved, ...JSON.parse(String(init?.body)) }),
   );
-  await store.set(titleAtom, "入力再開");
+  await update(store, titleAtom, "入力再開");
   assert.equal(store.get(savedScreenAtom)?.title, "入力再開");
 });

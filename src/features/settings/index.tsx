@@ -1,6 +1,6 @@
-import { useAtom } from "jotai";
 import { CheckIcon } from "lucide-react";
 import { Fragment } from "react";
+import { useScreenSetting } from "@/hooks/use-screen-setting";
 import {
   confettiAtom,
   messageAtom,
@@ -21,7 +21,7 @@ const paletteSwatches = {
 };
 
 export function LinkSetting() {
-  const [url, setUrl] = useAtom(urlAtom);
+  const [url, setUrl] = useScreenSetting(urlAtom);
   return (
     <SettingField title="リンク先">
       <Input
@@ -37,8 +37,8 @@ export function LinkSetting() {
 }
 
 export function TextSetting() {
-  const [title, setTitle] = useAtom(titleAtom);
-  const [message, setMessage] = useAtom(messageAtom);
+  const [title, setTitle] = useScreenSetting(titleAtom);
+  const [message, setMessage] = useScreenSetting(messageAtom);
   return (
     <SettingField title="画面のテキスト">
       <SettingLabel htmlFor="screen-title">見出し</SettingLabel>
@@ -60,7 +60,7 @@ export function TextSetting() {
 }
 
 export function ThemeSetting() {
-  const [theme, setTheme] = useAtom(themeAtom);
+  const [theme, setTheme] = useScreenSetting(themeAtom);
   return (
     <SettingField title="背景テーマ">
       <div className="grid clear-both grid-cols-3 gap-3">
@@ -97,7 +97,7 @@ export function ConfettiSetting({
 }: {
   onPreview: (palette: ScreenConfig["confetti"]) => void;
 }) {
-  const [confetti, setConfetti] = useAtom(confettiAtom);
+  const [confetti, setConfetti] = useScreenSetting(confettiAtom);
   return (
     <SettingField title="クラッカー">
       <div className="flex gap-3">

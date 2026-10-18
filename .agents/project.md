@@ -15,7 +15,9 @@ TanStack Startで作る、スキャンに反応するQR表示アプリです。
 
 ```text
 src/
-  jotai/atoms.ts                       # 下書き、設定ごとのatom、派生値、保存アクション
+  jotai/atoms.ts                       # 下書き、設定ごとのatom、保存状態
+  hooks/use-save-screen.ts             # 保存の検証・通信・保存順序の制御
+  hooks/use-screen-setting.ts          # 設定の更新と自動保存
   schemas/screen.ts                    # API・サーバー・画面で共有する設定の型と検証
   features/settings/index.tsx          # 設定項目
   features/settings/setting-field.tsx  # 設定欄の共通レイアウト
@@ -27,7 +29,7 @@ src/
 - ルートの`Provider`でストアを分離します。サーバーでリクエスト間にストアを共有しません。
 - 非公開の`atomWithStorage`が、従来と同じ`qrpop.editor`キーと`{ config, saved }`形式で下書きを保存します。既存の下書きと編集用トークンを引き継ぎ、別タブの変更にも同期します。
 - 各設定項目は狭い読み書き可能な派生atomを使います。読み取り専用は`useAtomValue`、操作だけなら`useSetAtom`、両方必要なら`useAtom`を使います。
-- 保存は`saveScreenAtom`にまとめます。テキストはonBlur、背景・紙吹雪はクリックで設定atomを更新して保存を開始し、保存中の編集は現在のリクエストが完了してから最新の内容を続けて保存します。入力途中の不正な設定は下書きに残し、有効になるまでAPIへ送りません。保存したテキストの前後の空白は除去しますが、入力中の下書きは書き換えません。
+- 保存処理は`useSaveScreen`にまとめ、atomは状態だけを管理します。設定項目は`useScreenSetting`を通じて更新・保存します。テキストはonBlur、背景・紙吹雪はクリックで設定atomを更新して保存を開始し、保存中の編集は現在のリクエストが完了してから最新の内容を続けて保存します。入力途中の不正な設定は下書きに残し、有効になるまでAPIへ送りません。保存したテキストの前後の空白は除去しますが、入力中の下書きは書き換えません。
 - ブラウザ保存値を使う編集画面は`ClientOnly`内で描画します。コピー完了など、その場だけのUI状態はコンポーネントの`useState`に置きます。
 - 公開設定の保存先はRedisです。表示ページはSSEで届く公開設定を使い、編集用ストアには依存しません。
 

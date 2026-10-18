@@ -1,5 +1,5 @@
 import { ClientOnly, createFileRoute } from "@tanstack/react-router";
-import { useAtomValue, useSetAtom } from "jotai";
+import { useAtomValue } from "jotai";
 import { type FormEvent, type Ref, useRef } from "react";
 import { EditorHeader } from "@/features/editor-header";
 import {
@@ -9,10 +9,10 @@ import {
   ThemeSetting,
 } from "@/features/settings";
 import { Signage, type SignageHandle } from "@/features/signage";
+import { useSaveScreen } from "@/hooks/use-save-screen";
 import {
   savedScreenAtom,
   saveErrorAtom,
-  saveScreenAtom,
   screenConfigAtom,
 } from "@/jotai/atoms";
 import { cn } from "../lib/utils";
@@ -35,7 +35,7 @@ function HomeRoute() {
 
 function Home() {
   const stage = useRef<SignageHandle>(null);
-  const saveScreen = useSetAtom(saveScreenAtom);
+  const saveScreen = useSaveScreen();
   const saveError = useAtomValue(saveErrorAtom);
 
   async function submit(event: FormEvent) {
