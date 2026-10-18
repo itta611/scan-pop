@@ -1,6 +1,6 @@
-import { useAtomValue } from "jotai";
-import { ArrowUpRight, Check, Copy, LoaderCircle, Monitor } from "lucide-react";
-import { useState } from "react";
+import { useAtomValue, useStore } from "jotai";
+import { ArrowUpRight, Check, Copy, Monitor } from "lucide-react";
+import { useEffect, useState } from "react";
 import Logo from "#/components/logo";
 import { Button } from "@/components/ui/button";
 import {
@@ -22,8 +22,23 @@ export function EditorHeader() {
 }
 
 function OpenDisplayButton() {
+  const store = useStore();
+  const [justSaved, setJustSaved] = useState(false);
   const saving = useAtomValue(savingScreenAtom);
   const hasDestination = useAtomValue(hasDestinationAtom);
+
+  useEffect(() => {
+    let timer: ReturnType<typeof setTimeout>;
+    const unsubscribe = store.sub(savedScreenAtom, () => {
+      setJustSaved(true);
+      clearTimeout(timer);
+      timer = setTimeout(() => setJustSaved(false), 1000);
+    });
+    return () => {
+      unsubscribe();
+      clearTimeout(timer);
+    };
+  }, [store]);
   return (
     <Button
       variant="primary"
@@ -32,13 +47,9 @@ function OpenDisplayButton() {
       disabled={saving || !hasDestination}
       aria-busy={saving}
     >
-      {saving ? (
-        <LoaderCircle className="animate-spin motion-reduce:[animation-duration:2s]" />
-      ) : (
-        <Monitor />
-      )}
-      <span>{saving ? "保存しています" : "表示ページを開く"}</span>
-      <ArrowUpRight />
+      {justSaved ? <Check /> : <Monitor />}
+      <span>{justSaved ? "保存しました" : "表示ページを開く"}</span>
+      {!justSaved && <ArrowUpRight />}
     </Button>
   );
 }
