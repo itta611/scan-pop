@@ -8,14 +8,16 @@ export function TextSetting() {
   const [message, setMessage] = useAtom(messageAtom);
   return (
     <SettingField title="画面のテキスト">
-      <SettingLabel htmlFor="screen-title">見出し</SettingLabel>
+      <SettingLabel htmlFor="screen-title">タイトル</SettingLabel>
       <Textarea
         id="screen-title"
         className="min-h-9"
         value={title}
         onChange={(e) => setTitle(e.currentTarget.value)}
       />
-      <SettingLabel htmlFor="screen-message">ひとことメッセージ</SettingLabel>
+      <SettingLabel htmlFor="screen-message">
+        ひとことメッセージ（任意）
+      </SettingLabel>
       <Textarea
         id="screen-message"
         value={message}

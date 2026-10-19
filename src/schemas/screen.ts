@@ -9,7 +9,7 @@ export const screenSchema = z.object({
       error: "http:// または https:// から始まるURLを入力してください。",
     })
     .max(2048),
-  title: z.string().trim().min(1, "見出しを入力してください。"),
+  title: z.string().trim().min(1, "タイトルを入力してください。"),
   message: z.string().trim().max(120),
   theme: z.enum(["paper", "mint", "sky", "rose", "night"]),
   confetti: z.tuple([hexColor, hexColor, hexColor, hexColor]),
@@ -21,8 +21,8 @@ export type SavedScreen = PublishedScreen & { editToken: string };
 
 export const defaultScreen: ScreenConfig = {
   url: "",
-  title: "つながる、その瞬間を。",
-  message: "カメラをかざして、アクセスしてください",
+  title: "タイトル",
+  message: "ひとことメッセージ",
   theme: "paper",
   confetti: ["#ffffff", "#ffffff", "#ffffff", "#ffffff"],
 };
