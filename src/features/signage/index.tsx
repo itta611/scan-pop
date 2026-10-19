@@ -31,7 +31,7 @@ export function Signage({
         <div className="relative z-4 mt-[4.5cqh] mb-[3.5cqh] w-[min(68cqw,40cqh)] max-w-[480px] shrink-0">
           <QRCodeSVG
             className="block h-auto w-full"
-            bgColor={config.theme === "night" ? "#f1f0e9" : "var(--stage-bg)"}
+            bgColor="#ffffff"
             fgColor={config.theme === "night" ? "#242b29" : "var(--stage-text)"}
             value={value}
             size={400}
