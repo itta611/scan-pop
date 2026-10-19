@@ -12,7 +12,6 @@ import { useScreenSetting } from "../src/hooks/use-screen-setting.ts";
 import {
   confettiAtom,
   savedScreenAtom,
-  saveErrorAtom,
   savingScreenAtom,
   screenConfigAtom,
   themeAtom,
@@ -99,6 +98,7 @@ test("editing text does not notify a theme subscriber or change another store", 
 
 test("invalid settings reject without calling the API", async (t) => {
   const store = editor(t);
+  t.mock.method(console, "error", () => {});
   const fetchMock = t.mock.method(globalThis, "fetch", async () => {
     throw new Error("must not fetch");
   });
@@ -194,14 +194,19 @@ test("edits made while creating save the latest draft next with the same screen 
   assert.equal(store.get(savingScreenAtom), false);
 });
 
-test("a rejected autosave keeps the draft, exposes the error, and can be retried", async (t) => {
+test("a rejected autosave keeps the draft, logs the error, and can be retried", async (t) => {
   const store = editor(t);
+  const log = t.mock.method(console, "error", () => {});
   t.mock.method(globalThis, "fetch", async () =>
     Response.json({ error: "保存に失敗しました" }, { status: 503 }),
   );
   update(store, titleAtom, "残しておく下書き");
   await update(store, urlAtom, saved.url);
-  assert.equal(store.get(saveErrorAtom), "保存に失敗しました");
+  assert.equal(log.mock.callCount(), 1);
+  assert.equal(
+    (log.mock.calls[0].arguments[0] as Error).message,
+    "保存に失敗しました",
+  );
   await assert.rejects(saveScreen(store), {
     message: "保存に失敗しました",
   });
@@ -210,7 +215,7 @@ test("a rejected autosave keeps the draft, exposes the error, and can be retried
   assert.equal(store.get(savingScreenAtom), false);
   t.mock.method(globalThis, "fetch", async () => Response.json(saved));
   await saveScreen(store);
-  assert.equal(store.get(saveErrorAtom), null);
+  assert.equal(log.mock.callCount(), 2);
   assert.equal(store.get(savedScreenAtom)?.id, saved.id);
 });
 

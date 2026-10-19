@@ -4,7 +4,6 @@ import {
   pendingSaveAtom,
   requestedScreenConfigAtom,
   savedScreenAtom,
-  saveErrorAtom,
   screenConfigAtom,
 } from "@/jotai/atoms";
 import { type SavedScreen, screenSchema } from "@/schemas/screen";
@@ -17,7 +16,6 @@ export function useSaveScreen() {
     const pending = store.get(pendingSaveAtom);
     if (pending) return pending;
 
-    store.set(saveErrorAtom, null);
     const saving = (async () => {
       while (true) {
         const config = store.get(requestedScreenConfigAtom);
@@ -50,10 +48,7 @@ export function useSaveScreen() {
     try {
       return await saving;
     } catch (error) {
-      store.set(
-        saveErrorAtom,
-        error instanceof Error ? error.message : "保存に失敗しました",
-      );
+      console.error(error);
       throw error;
     } finally {
       store.set(pendingSaveAtom, null);

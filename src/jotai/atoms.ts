@@ -15,7 +15,6 @@ export const requestedScreenConfigAtom = atom(defaultEditorConfig);
 export const pendingSaveAtom = atom<Promise<SavedScreen> | null>(null);
 
 export const savingScreenAtom = atom((get) => get(pendingSaveAtom) !== null);
-export const saveErrorAtom = atom<string | null>(null);
 export const screenConfigAtom = atom(defaultEditorConfig);
 export const savedScreenAtom = atom<SavedScreen | undefined>(undefined);
 

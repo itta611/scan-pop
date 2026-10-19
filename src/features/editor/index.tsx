@@ -12,16 +12,13 @@ import { useSaveScreen } from "@/hooks/use-save-screen";
 import {
   pendingSaveAtom,
   savedScreenAtom,
-  saveErrorAtom,
   screenConfigAtom,
 } from "@/jotai/atoms";
-import { cn } from "@/lib/utils";
 
 export default function Editor() {
   const store = useStore();
   const stage = useRef<SignageHandle>(null);
   const saveScreen = useSaveScreen();
-  const saveError = useAtomValue(saveErrorAtom);
   const screenId = useAtomValue(savedScreenAtom)?.id;
 
   useEffect(() => {
@@ -41,23 +38,14 @@ export default function Editor() {
         store.get(savedScreenAtom) ??
         saveScreen());
       displayWindow.location.replace(`/screen/${saved.id}`);
-    } catch (error) {
+    } catch {
       displayWindow.close();
-      throw error;
     }
   }
 
   return (
     <div className="h-svh pt-6 px-5 bg-accent flex flex-col">
       <EditorHeader />
-      {saveError && (
-        <p
-          role="alert"
-          className="mx-auto mt-4 max-w-300 px-5 text-sm text-destructive"
-        >
-          {saveError}
-        </p>
-      )}
       <main className="mx-auto w-full flex gap-9 max-w-300 mt-8 grow pb-8">
         <EditorPreview ref={stage} screenId={screenId} />
         <form
