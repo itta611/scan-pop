@@ -32,7 +32,7 @@ export function Signage({
           <QRCodeSVG
             className="block h-auto w-full"
             bgColor="#ffffff"
-            fgColor={config.theme === "night" ? "#242b29" : "var(--stage-text)"}
+            fgColor="#000000"
             value={value}
             size={400}
             level="M"

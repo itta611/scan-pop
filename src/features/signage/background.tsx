@@ -3,12 +3,12 @@ import type { ScreenConfig } from "@/schemas/screen";
 
 export const themeClasses = {
   paper:
-    "[--stage-bg:#ffffff] [--stage-text:#252823] [--stage-pattern:#e6e0d4] [--stage-accent:#efeae1]",
-  mint: "[--stage-bg:#ffffff] [--stage-text:#263d34] [--stage-pattern:#d7e3d9] [--stage-accent:#e5ede5]",
-  sky: "[--stage-bg:#ffffff] [--stage-text:#293b49] [--stage-pattern:#d8e4ec] [--stage-accent:#e6edf2]",
-  rose: "[--stage-bg:#ffffff] [--stage-text:#493431] [--stage-pattern:#ecdad7] [--stage-accent:#f2e7e3]",
+    "[--stage-bg:#ffffff] [--stage-text:#000000] [--stage-pattern:#e6e0d4] [--stage-accent:#efeae1]",
+  mint: "[--stage-bg:#ffffff] [--stage-text:#000000] [--stage-pattern:#d7e3d9] [--stage-accent:#e5ede5]",
+  sky: "[--stage-bg:#ffffff] [--stage-text:#000000] [--stage-pattern:#d8e4ec] [--stage-accent:#e6edf2]",
+  rose: "[--stage-bg:#ffffff] [--stage-text:#000000] [--stage-pattern:#ecdad7] [--stage-accent:#f2e7e3]",
   night:
-    "[--stage-bg:#242b29] [--stage-text:#f1f0e9] [--stage-pattern:#3a4b43] [--stage-accent:#303d36]",
+    "[--stage-bg:#242b29] [--stage-text:#ffffff] [--stage-pattern:#3a4b43] [--stage-accent:#303d36]",
 };
 
 export function SignageBackground({ theme }: { theme: ScreenConfig["theme"] }) {
