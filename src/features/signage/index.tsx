@@ -39,7 +39,7 @@ export function Signage({
             marginSize={4}
           />
         </div>
-        <p className="max-w-[76cqw] whitespace-pre-line text-[color:var(--stage-muted)] wrap-anywhere text-[clamp(14px,min(5cqw,3cqh),34px)]/[1.45]">
+        <p className="max-w-[76cqw] whitespace-pre-line wrap-anywhere text-[clamp(14px,min(5cqw,3cqh),34px)]/[1.45]">
           {config.message}
         </p>
       </div>

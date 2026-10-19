@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { IBM_Plex_Sans_JP, Plus_Jakarta_Sans } from "next/font/google";
+import { BIZ_UDPGothic, Plus_Jakarta_Sans } from "next/font/google";
 import { Providers } from "./providers";
 import "../styles.css";
 const englishFont = Plus_Jakarta_Sans({
@@ -8,8 +8,8 @@ const englishFont = Plus_Jakarta_Sans({
   display: "swap",
 });
 
-const japaneseFont = IBM_Plex_Sans_JP({
-  weight: ["400", "500", "600", "700"],
+const japaneseFont = BIZ_UDPGothic({
+  weight: ["400", "700"],
   variable: "--font-japanese",
   display: "swap",
   preload: false,
