@@ -25,7 +25,7 @@ export function Signage({
     >
       <SignageBackground theme={config.theme} />
       <div className="relative flex flex-1 flex-col items-center justify-center px-[10cqw] py-[9cqh] text-center">
-        <h2 className="w-full max-w-[76cqw] whitespace-pre-line text-center font-semibold tracking-[-.055em] wrap-anywhere text-[clamp(28px,min(14cqw,9cqh),120px)]/[1.06]">
+        <h2 className="w-full max-w-[76cqw] whitespace-pre-line text-center font-semibold wrap-anywhere text-[clamp(28px,min(14cqw,9cqh),120px)]/[1.06]">
           {config.title || "タイトル"}
         </h2>
         <div className="relative z-4 mt-[4.5cqh] mb-[3.5cqh] w-[min(68cqw,40cqh)] max-w-[480px] shrink-0">
