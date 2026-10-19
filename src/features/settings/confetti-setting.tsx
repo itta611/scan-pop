@@ -1,7 +1,7 @@
+import { useAtom } from "jotai";
 import { CheckIcon } from "lucide-react";
 import { Fragment } from "react";
 import { confettiPalettes } from "@/features/signage/confetti";
-import { useScreenSetting } from "@/hooks/use-screen-setting";
 import { confettiAtom } from "@/jotai/atoms";
 import type { ScreenConfig } from "@/schemas/screen";
 import { SettingField } from "./setting-field";
@@ -11,7 +11,7 @@ export function ConfettiSetting({
 }: {
   onPreview: (palette: ScreenConfig["confetti"]) => void;
 }) {
-  const [confetti, setConfetti] = useScreenSetting(confettiAtom);
+  const [confetti, setConfetti] = useAtom(confettiAtom);
   return (
     <SettingField title="クラッカー">
       <div className="grid grid-cols-3 gap-3">

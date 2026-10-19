@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { type TestContext, test } from "node:test";
-import { Provider, type WritableAtom } from "jotai";
+import { Provider } from "jotai";
 import { createStore } from "jotai/vanilla";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
@@ -8,7 +8,6 @@ import { ConfettiSetting } from "../src/features/settings/confetti-setting.tsx";
 import { LinkSetting } from "../src/features/settings/link-setting.tsx";
 import { confettiPalettes } from "../src/features/signage/confetti.tsx";
 import { useSaveScreen } from "../src/hooks/use-save-screen.ts";
-import { useScreenSetting } from "../src/hooks/use-screen-setting.ts";
 import {
   confettiAtom,
   savedScreenAtom,
@@ -50,14 +49,6 @@ function saveScreen(store: ReturnType<typeof createStore>) {
   return renderHook(store, useSaveScreen)();
 }
 
-function update<Value>(
-  store: ReturnType<typeof createStore>,
-  setting: WritableAtom<Value, [Value], void>,
-  value: Value,
-) {
-  return renderHook(store, () => useScreenSetting(setting))[1](value);
-}
-
 const saved: SavedScreen = {
   ...defaultScreen,
   url: "https://example.com/",
@@ -69,7 +60,8 @@ test("a fresh editor starts with default settings and no saved screen", async (t
   const first = editor(t);
   t.mock.method(globalThis, "fetch", async () => Response.json(saved));
   first.set(titleAtom, "リロード前の見出し");
-  await update(first, urlAtom, saved.url);
+  first.set(urlAtom, saved.url);
+  await saveScreen(first);
   assert.equal(first.get(savedScreenAtom)?.id, saved.id);
   const reloaded = editor(t);
   assert.deepEqual(reloaded.get(screenConfigAtom), {
@@ -122,8 +114,9 @@ test("saving creates a screen, normalizes text, and uses its owner token for upd
       });
     },
   );
-  update(store, titleAtom, "  ようこそ  ");
-  const saving = update(store, urlAtom, saved.url);
+  store.set(titleAtom, "  ようこそ  ");
+  store.set(urlAtom, saved.url);
+  const saving = saveScreen(store);
   assert.equal(requests.length, 1);
   assert.equal(store.get(savingScreenAtom), true);
   await saving;
@@ -137,7 +130,8 @@ test("saving creates a screen, normalizes text, and uses its owner token for upd
     new Headers(requests[0].init?.headers).has("X-Edit-Token"),
     false,
   );
-  await update(store, themeAtom, "night");
+  store.set(themeAtom, "night");
+  await saveScreen(store);
   assert.equal(requests[1].path, "/api/screens/test-screen");
   assert.equal(requests[1].init?.method, "PUT");
   assert.equal(
@@ -162,10 +156,13 @@ test("edits made while creating save the latest draft next with the same screen 
         requests.push({ path, init, respond }),
       ),
   );
-  const firstSave = update(store, urlAtom, saved.url);
+  store.set(urlAtom, saved.url);
+  const firstSave = saveScreen(store);
   assert.equal(store.get(savingScreenAtom), true);
-  const latestSave = update(store, titleAtom, "保存中の編集 ");
-  update(store, themeAtom, "night");
+  store.set(titleAtom, "保存中の編集 ");
+  const latestSave = saveScreen(store);
+  store.set(themeAtom, "night");
+  void saveScreen(store);
   assert.equal(requests.length, 1);
   const nextRequest = new Promise<void>((resolve) => {
     const unsubscribe = store.sub(savedScreenAtom, () => {
@@ -200,8 +197,9 @@ test("a rejected autosave keeps the draft, logs the error, and can be retried", 
   t.mock.method(globalThis, "fetch", async () =>
     Response.json({ error: "保存に失敗しました" }, { status: 503 }),
   );
-  update(store, titleAtom, "残しておく下書き");
-  await update(store, urlAtom, saved.url);
+  store.set(titleAtom, "残しておく下書き");
+  store.set(urlAtom, saved.url);
+  await saveScreen(store).catch(() => undefined);
   assert.equal(log.mock.callCount(), 1);
   assert.equal(
     (log.mock.calls[0].arguments[0] as Error).message,
@@ -219,26 +217,6 @@ test("a rejected autosave keeps the draft, logs the error, and can be retried", 
   assert.equal(store.get(savedScreenAtom)?.id, saved.id);
 });
 
-test("incomplete input stays local and saves as soon as it becomes valid", async (t) => {
-  const store = editor(t);
-  const fetchMock = t.mock.method(
-    globalThis,
-    "fetch",
-    async (_path: unknown, init?: RequestInit) =>
-      Response.json({ ...saved, ...JSON.parse(String(init?.body)) }),
-  );
-  await update(store, urlAtom, "https://");
-  await update(store, titleAtom, "");
-  await update(store, urlAtom, saved.url);
-  assert.equal(fetchMock.mock.callCount(), 0);
-  assert.equal(store.get(savingScreenAtom), false);
-  await update(store, titleAtom, "有効な見出し");
-  assert.equal(fetchMock.mock.callCount(), 1);
-  assert.equal(store.get(savedScreenAtom)?.title, "有効な見出し");
-  await update(store, titleAtom, "有効な見出し");
-  assert.equal(fetchMock.mock.callCount(), 1);
-});
-
 test("invalid edits during a save remain local until corrected", async (t) => {
   const store = editor(t);
   let respond!: (response: Response) => void;
@@ -250,8 +228,9 @@ test("invalid edits during a save remain local until corrected", async (t) => {
         respond = resolve;
       }),
   );
-  const saving = update(store, urlAtom, saved.url);
-  update(store, titleAtom, "");
+  store.set(urlAtom, saved.url);
+  const saving = saveScreen(store);
+  store.set(titleAtom, "");
   respond(Response.json(saved));
   await saving;
   assert.equal(fetchMock.mock.callCount(), 1);
@@ -263,7 +242,8 @@ test("invalid edits during a save remain local until corrected", async (t) => {
     async (_path: unknown, init?: RequestInit) =>
       Response.json({ ...saved, ...JSON.parse(String(init?.body)) }),
   );
-  await update(store, titleAtom, "入力再開");
+  store.set(titleAtom, "入力再開");
+  await saveScreen(store);
   assert.equal(store.get(savedScreenAtom)?.title, "入力再開");
 });
 
@@ -296,9 +276,11 @@ test("a client palette ID is sent as four HEX colors", async (t) => {
       return Response.json({ ...saved, ...config });
     },
   );
-  await update(store, urlAtom, saved.url);
+  store.set(urlAtom, saved.url);
+  await saveScreen(store);
   const colors = confettiPalettes[2];
-  await update(store, confettiAtom, 2);
+  store.set(confettiAtom, 2);
+  await saveScreen(store);
   assert.equal(store.get(confettiAtom), 2);
   assert.equal(store.get(screenConfigAtom).confetti, 2);
   assert.deepEqual(requests[1].confetti, colors);
@@ -318,32 +300,23 @@ test("the chosen palette is selected in the current editor", (t) => {
   assert.equal((markup.match(/aria-pressed="true"/g) ?? []).length, 1);
 });
 
-test("typing updates the preview immediately and only saves after blur", async (t) => {
+test("typing updates the draft immediately without saving on blur", (t) => {
   const store = editor(t);
-  const fetchMock = t.mock.method(
-    globalThis,
-    "fetch",
-    async (_path: unknown, init?: RequestInit) =>
-      Response.json({ ...saved, ...JSON.parse(String(init?.body)) }),
+  const fetchMock = t.mock.method(globalThis, "fetch", async () =>
+    Response.json(saved),
   );
   const input = renderHook(store, LinkSetting).props.children;
-  await input.props.onBlur({ currentTarget: { value: "" } });
-  assert.equal(fetchMock.mock.callCount(), 0);
   input.props.onChange({ currentTarget: { value: saved.url } });
   assert.equal(store.get(screenConfigAtom).url, saved.url);
   assert.equal(
     renderHook(store, LinkSetting).props.children.props.value,
     saved.url,
   );
+  assert.equal(input.props.onBlur, undefined);
   assert.equal(fetchMock.mock.callCount(), 0);
-  await input.props.onBlur({ currentTarget: { value: saved.url } });
-  assert.equal(fetchMock.mock.callCount(), 1);
-  assert.equal(store.get(savedScreenAtom)?.url, saved.url);
-  await input.props.onBlur({ currentTarget: { value: saved.url } });
-  assert.equal(fetchMock.mock.callCount(), 1);
 });
 
-test("typing during an ongoing save stays local until committed", async (t) => {
+test("typing during an ongoing save stays local until the next save request", async (t) => {
   const store = editor(t);
   let respond!: (response: Response) => void;
   const fetchMock = t.mock.method(
@@ -354,11 +327,9 @@ test("typing during an ongoing save stays local until committed", async (t) => {
         respond = resolve;
       }),
   );
-  const saving = update(store, urlAtom, saved.url);
-  const [, commit, preview] = renderHook(store, () =>
-    useScreenSetting(titleAtom),
-  );
-  preview("入力中の見出し");
+  store.set(urlAtom, saved.url);
+  const saving = saveScreen(store);
+  store.set(titleAtom, "入力中の見出し");
   respond(Response.json(saved));
   await saving;
   assert.equal(fetchMock.mock.callCount(), 1);
@@ -370,6 +341,46 @@ test("typing during an ongoing save stays local until committed", async (t) => {
     async (_path: unknown, init?: RequestInit) =>
       Response.json({ ...saved, ...JSON.parse(String(init?.body)) }),
   );
-  await commit("入力中の見出し");
+  await saveScreen(store);
   assert.equal(store.get(savedScreenAtom)?.title, "入力中の見出し");
+});
+
+test("opening an unchanged screen does not save again or show saving feedback", async (t) => {
+  const store = editor(t);
+  const fetchMock = t.mock.method(
+    globalThis,
+    "fetch",
+    async (_path: unknown, init?: RequestInit) =>
+      Response.json({ ...saved, ...JSON.parse(String(init?.body)) }),
+  );
+  store.set(urlAtom, saved.url);
+  store.set(titleAtom, "  見出し  ");
+  await saveScreen(store);
+  let savingUpdates = 0;
+  t.after(
+    store.sub(savingScreenAtom, () => {
+      savingUpdates += 1;
+    }),
+  );
+  await saveScreen(store);
+  assert.equal(fetchMock.mock.callCount(), 1);
+  assert.equal(savingUpdates, 0);
+  store.set(themeAtom, "night");
+  await saveScreen(store);
+  assert.equal(fetchMock.mock.callCount(), 2);
+  assert.equal(store.get(savedScreenAtom)?.theme, "night");
+});
+
+test("selecting the current setting does not reset the save timer", (t) => {
+  const store = editor(t);
+  let changes = 0;
+  t.after(
+    store.sub(screenConfigAtom, () => {
+      changes += 1;
+    }),
+  );
+  store.set(themeAtom, store.get(themeAtom));
+  assert.equal(changes, 0);
+  store.set(themeAtom, "night");
+  assert.equal(changes, 1);
 });

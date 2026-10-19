@@ -1,5 +1,5 @@
 "use client";
-import { useAtomValue, useStore } from "jotai";
+import { useAtomValue } from "jotai";
 import { type FormEvent, type Ref, useEffect, useRef } from "react";
 import { EditorHeader } from "@/features/editor-header";
 import { ConfettiSetting } from "@/features/settings/confetti-setting";
@@ -8,15 +8,12 @@ import { TextSetting } from "@/features/settings/text-setting";
 import { ThemeSetting } from "@/features/settings/theme-setting";
 import { Signage, type SignageHandle } from "@/features/signage";
 import { confettiPalettes } from "@/features/signage/confetti";
+import { useAutosaveScreen } from "@/hooks/use-autosave-screen";
 import { useSaveScreen } from "@/hooks/use-save-screen";
-import {
-  pendingSaveAtom,
-  savedScreenAtom,
-  screenConfigAtom,
-} from "@/jotai/atoms";
+import { savedScreenAtom, screenConfigAtom } from "@/jotai/atoms";
 
 export default function Editor() {
-  const store = useStore();
+  useAutosaveScreen();
   const stage = useRef<SignageHandle>(null);
   const saveScreen = useSaveScreen();
   const screenId = useAtomValue(savedScreenAtom)?.id;
@@ -34,9 +31,7 @@ export default function Editor() {
     if (!displayWindow) return;
     displayWindow.opener = null;
     try {
-      const saved = await (store.get(pendingSaveAtom) ??
-        store.get(savedScreenAtom) ??
-        saveScreen());
+      const saved = await saveScreen();
       displayWindow.location.replace(`/screen/${saved.id}`);
     } catch {
       displayWindow.close();

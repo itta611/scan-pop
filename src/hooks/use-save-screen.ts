@@ -12,9 +12,24 @@ export function useSaveScreen() {
   const store = useStore();
 
   return async function saveScreen(): Promise<SavedScreen> {
-    store.set(requestedScreenConfigAtom, store.get(screenConfigAtom));
+    const config = store.get(screenConfigAtom);
+    store.set(requestedScreenConfigAtom, config);
     const pending = store.get(pendingSaveAtom);
     if (pending) return pending;
+
+    const saved = store.get(savedScreenAtom);
+    if (
+      saved &&
+      saved.url === config.url &&
+      saved.title === config.title.trim() &&
+      saved.message === config.message.trim() &&
+      saved.theme === config.theme &&
+      confettiPalettes[config.confetti].every(
+        (color, index) => color === saved.confetti[index],
+      )
+    ) {
+      return saved;
+    }
 
     const saving = (async () => {
       while (true) {

@@ -1,12 +1,12 @@
+import { useAtom } from "jotai";
 import { CheckIcon } from "lucide-react";
 import { SignageBackground } from "@/features/signage/background";
-import { useScreenSetting } from "@/hooks/use-screen-setting";
 import { themeAtom } from "@/jotai/atoms";
 import { themes } from "@/schemas/screen";
 import { SettingField } from "./setting-field";
 
 export function ThemeSetting() {
-  const [theme, setTheme] = useScreenSetting(themeAtom);
+  const [theme, setTheme] = useAtom(themeAtom);
   return (
     <SettingField title="背景テーマ">
       <div className="grid clear-both grid-cols-3 gap-3">

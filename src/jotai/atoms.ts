@@ -22,7 +22,9 @@ function settingAtom<Key extends keyof EditorConfig>(key: Key) {
   return atom(
     (get) => get(screenConfigAtom)[key],
     (_get, set, value: EditorConfig[Key]) => {
-      set(screenConfigAtom, (config) => ({ ...config, [key]: value }));
+      set(screenConfigAtom, (config) =>
+        config[key] === value ? config : { ...config, [key]: value },
+      );
     },
   );
 }
