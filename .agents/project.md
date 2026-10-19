@@ -4,10 +4,10 @@ Next.js App Routerで作る、スキャンに反応するQR表示アプリです
 
 ## 画面
 
-- `/`: URL、見出し、メッセージ、背景、紙吹雪を編集します。保存後のプレビューのQRは `/go/:screenId` を使い、スマホでリンクを開くとプレビューでも紙吹雪が出ます。転送先は保存時に更新します。編集内容と編集用トークンはメモリ内で保持し、リロードすると新規作成状態に戻ります。
+- `/`: URL、タイトル、メッセージ、背景、紙吹雪を編集します。初期URLは `https://scan.itta.dev`、URL欄のplaceholderは `https://scan.example.com` です。エディタの初期化時にプロジェクトID・編集用トークンをそれぞれUUID v4で発行し、即時にサーバーへ初期作成します。作成とSSEの `ready` 受信が完了したら、固定の `/go/:screenId` をQRに表示します。初回から読み取りで転送と紙吹雪が動作し、URLの編集や保存ではQRを変えません。転送先は保存成功時に更新します。編集内容と編集用トークンはメモリ内で保持し、リロードや別タブでは新しいUUIDで初期作成します。
 - `/screen/:screenId`: QRを表示します。スマホでリンクを開くと、表示画面の左右下から紙吹雪が出ます。
 
-すべての設定変更は直後にプレビューへ反映し、最後の変更から1秒間変更がなければ保存します。表示ページを開く操作では待機中の変更を即時保存します。有効な設定は自動保存し、開いている表示ページにも配信します。保存開始時に表示ページを開くボタンへチェックアイコンと「保存しました」を1秒間表示します。保存中もボタンは操作できます。表示ページのURLには編集権限を含めません。
+すべての設定変更は直後にプレビューへ反映し、最後の変更から1秒間変更がなければ保存します。表示ページを開く操作では待機中の変更を即時保存します。有効な設定は自動保存し、開いている表示ページにも配信します。ユーザーの変更の保存開始時に表示ページを開くボタンへチェックアイコンと「保存しました」を1秒間表示します。初期作成では表示しません。保存中もボタンは操作できます。表示ページのURLには編集権限を含めません。
 
 ## 設定の状態管理
 
@@ -26,19 +26,19 @@ src/
   features/settings/setting-field.tsx  # 設定欄の共通レイアウト
   features/editor-header/index.tsx     # 編集画面の操作ボタン
   features/signage/index.tsx           # 編集プレビュー・表示ページ共通のQR表示と演出
-  features/editor/index.tsx            # 編集画面と読み取り通知のみのSSE購読
+  features/editor/index.tsx            # エディタ専用ストアとready・scanのSSE購読
   features/display/index.tsx           # 表示画面と設定同期を含むSSE購読
   features/signage/background.tsx      # 共通の曲線模様と5テーマの色
   app/                                # Next.jsのページとRoute Handler
 ```
 
-- ルートの`Provider`でストアを分離します。サーバーでリクエスト間にストアを共有しません。
+- エディタ専用の`Provider`でストアを分離し、`atomWithLazy`でID・編集用トークンをストアごとに一度だけ初期化します。UUID生成にはHTTPのローカル開発環境でも使える`crypto.getRandomValues`を使います。サーバーでリクエスト間にストアを共有しません。
 - 編集設定と保存済み画面情報は通常のatomでメモリ内に保持します。localStorageやCookieには保存せず、リロードや新しいタブでは初期状態から始まります。
 - 各設定項目は狭い読み書き可能な派生atomを使います。読み取り専用は`useAtomValue`、操作だけなら`useSetAtom`、両方必要なら`useAtom`を使います。
-- 保存処理は`useSaveScreen`にまとめ、atomは状態だけを管理します。設定項目は`useAtom`で即時更新し、編集画面の`useAutosaveScreen`で設定全体の変更を購読します。変更のたびに1秒の保存タイマーをリセットし、保存済みと同じ内容は送信しません。保存中の保存要求は現在のリクエストが完了してから最新の要求内容を続けて保存し、1秒経過前の編集は送信しません。入力途中の不正な設定は下書きに残し、有効になるまでAPIへ送りません。保存したテキストの前後の空白は除去しますが、入力中の下書きは書き換えません。
+- 保存処理は`useSaveScreen`にまとめ、atomは状態だけを管理します。設定項目は`useAtom`で即時更新し、編集画面の`useAutosaveScreen`で設定全体の変更を購読します。初期化時は待ち時間なしで初期作成し、以降は変更のたびに1秒の保存タイマーをリセットします。保存済みと同じ内容は送信しません。保存中の保存要求は現在のリクエストが完了してから最新の要求内容を続けて保存し、1秒経過前の編集は送信しません。入力途中の不正な設定は下書きに残し、有効になるまでAPIへ送りません。保存したテキストの前後の空白は除去しますが、入力中の下書きは書き換えません。
 - ブラウザAPIを使う編集画面はNext.jsの`dynamic`で`ssr: false`を指定して描画します。コピー完了など、その場だけのUI状態はコンポーネントの`useState`に置きます。
 - クラッカーの配色はクライアントの設定では数値IDで管理し、src/features/signage/confetti.tsx に4色ずつの配色を配列で定義します。IDは0から始まる配列のインデックスです。保存hookで4個のHEX値（#RRGGBB）の配列へ変換して送信します。API・Redis・SSEは配列を扱い、描画にもその配列を使います。
-- 公開設定の保存先はRedisです。表示ページはSSEで届く公開設定を使い、編集用ストアには依存しません。
+- 保存APIは `PUT /api/screens/:screenId` に統一し、UUIDと `X-Edit-Token` を検証します。初回作成にはRedisの `SET NX` を使い、既存IDの更新は編集用トークンの一致を必須にします。公開設定の保存先はRedisです。表示ページはSSEで届く公開設定を使い、編集用ストアには依存しません。
 
 設計の参照元: [Composing atoms](https://jotai.org/docs/guides/composing-atoms)、[Performance](https://jotai.org/docs/guides/performance)、[Provider](https://jotai.org/docs/core/provider)、[Storage](https://jotai.org/docs/utilities/storage)。
 
@@ -67,7 +67,7 @@ npm run dev -- --hostname 0.0.0.0
 
 1. QRには `/go/:screenId` を埋め込みます。
 2. スマホのGETアクセスでRedis Streamsへイベントを追加し、指定URLへ302で転送します。
-3. 編集画面と表示画面は `/api/events/:screenId` をSSEで購読します。購読処理は共通化せず、編集画面は `scan` のみ、表示画面は `ready`・`scan`・`config` を扱います。
+3. 編集画面と表示画面は `/api/events/:screenId` をSSEで購読します。購読処理は共通化せず、編集画面は `ready` でQR表示を開始し、`scan` で紙吹雪を出します。表示画面は `ready`・`scan`・`config` を扱います。
 4. サーバーが `XREAD BLOCK` でイベントの追加を待ち、そのままSSEへ流します。
 5. 接続は30秒で終了します。`retry: 0` によりEventSourceが再接続します。
 6. 再接続時はLast-Event-IDより新しく、復帰時点から2秒以内のイベントだけを再送します。初回接続は接続時点以降のイベントを受信します。

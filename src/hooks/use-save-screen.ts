@@ -1,9 +1,11 @@
 import { useStore } from "jotai";
 import { confettiPalettes } from "@/features/signage/confetti";
 import {
+  editorIdentityAtom,
   pendingSaveAtom,
   requestedScreenConfigAtom,
   savedScreenAtom,
+  savingScreenAtom,
   screenConfigAtom,
 } from "@/jotai/atoms";
 import { type SavedScreen, screenSchema } from "@/schemas/screen";
@@ -11,11 +13,17 @@ import { type SavedScreen, screenSchema } from "@/schemas/screen";
 export function useSaveScreen() {
   const store = useStore();
 
-  return async function saveScreen(): Promise<SavedScreen> {
+  return async function saveScreen({
+    initial = false,
+  } = {}): Promise<SavedScreen> {
     const config = store.get(screenConfigAtom);
+    const requested = store.get(requestedScreenConfigAtom);
     store.set(requestedScreenConfigAtom, config);
     const pending = store.get(pendingSaveAtom);
-    if (pending) return pending;
+    if (pending) {
+      if (!initial && config !== requested) store.set(savingScreenAtom, true);
+      return pending;
+    }
 
     const saved = store.get(savedScreenAtom);
     if (
@@ -38,18 +46,15 @@ export function useSaveScreen() {
           ...config,
           confetti: confettiPalettes[config.confetti],
         });
-        const saved = store.get(savedScreenAtom);
-        const response = await fetch(
-          saved ? `/api/screens/${saved.id}` : "/api/screens",
-          {
-            method: saved ? "PUT" : "POST",
-            headers: {
-              "Content-Type": "application/json",
-              ...(saved ? { "X-Edit-Token": saved.editToken } : {}),
-            },
-            body: JSON.stringify(parsed),
+        const { id, editToken } = store.get(editorIdentityAtom);
+        const response = await fetch(`/api/screens/${id}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Edit-Token": editToken,
           },
-        );
+          body: JSON.stringify(parsed),
+        });
         const data = await response.json();
         if (!response.ok) throw new Error(data.error);
         const screen = data as SavedScreen;
@@ -60,6 +65,7 @@ export function useSaveScreen() {
       }
     })();
     store.set(pendingSaveAtom, saving);
+    store.set(savingScreenAtom, !initial);
     try {
       return await saving;
     } catch (error) {
@@ -67,6 +73,7 @@ export function useSaveScreen() {
       throw error;
     } finally {
       store.set(pendingSaveAtom, null);
+      store.set(savingScreenAtom, false);
     }
   };
 }

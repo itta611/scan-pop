@@ -1,4 +1,3 @@
-import { randomUUID } from "node:crypto";
 import type {
   PublishedScreen,
   SavedScreen,
@@ -10,12 +9,6 @@ import { getRedis } from "./redis.server";
 const screenKey = (id: string) => "qrpop:screen:" + id;
 export const streamKey = (id: string) => "qrpop:scans:" + id;
 export const countKey = (id: string) => "qrpop:count:" + id;
-
-export async function createScreen(config: ScreenConfig): Promise<SavedScreen> {
-  const screen = { ...config, id: randomUUID(), editToken: randomUUID() };
-  await (await getRedis()).set(screenKey(screen.id), JSON.stringify(screen));
-  return screen;
-}
 
 export async function readScreen(id: string): Promise<SavedScreen> {
   const value = await (await getRedis()).get(screenKey(id));
@@ -29,16 +22,21 @@ export async function publicScreen(id: string): Promise<PublishedScreen> {
   return screen;
 }
 
-export async function updateScreen(
+export async function saveScreen(
   id: string,
-  token: string | null,
+  editToken: string,
   config: ScreenConfig,
-) {
-  const current = await readScreen(id);
-  if (token !== current.editToken)
-    throw new HttpError(403, "この表示ページを編集する権限がありません。");
-  const screen = { ...current, ...config };
+): Promise<SavedScreen> {
+  const screen = { ...config, id, editToken };
   const redis = await getRedis();
+  const created = await redis.set(screenKey(id), JSON.stringify(screen), {
+    NX: true,
+  });
+  if (created) return screen;
+
+  const current = await readScreen(id);
+  if (editToken !== current.editToken)
+    throw new HttpError(403, "この表示ページを編集する権限がありません。");
   await redis.set(screenKey(id), JSON.stringify(screen));
   const { editToken: _editToken, ...publicConfig } = screen;
   await redis.xAdd(streamKey(id), "*", {

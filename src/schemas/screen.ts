@@ -15,12 +15,17 @@ export const screenSchema = z.object({
   confetti: z.tuple([hexColor, hexColor, hexColor, hexColor]),
 });
 
+export const screenIdentitySchema = z.object({
+  id: z.uuid(),
+  editToken: z.uuid(),
+});
+
 export type ScreenConfig = z.infer<typeof screenSchema>;
 export type PublishedScreen = ScreenConfig & { id: string };
 export type SavedScreen = PublishedScreen & { editToken: string };
 
 export const defaultScreen: ScreenConfig = {
-  url: "",
+  url: "https://scan.itta.dev",
   title: "タイトル",
   message: "ひとことメッセージ",
   theme: "paper",

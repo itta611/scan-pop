@@ -10,6 +10,7 @@ import { confettiPalettes } from "../src/features/signage/confetti.tsx";
 import { useSaveScreen } from "../src/hooks/use-save-screen.ts";
 import {
   confettiAtom,
+  editorIdentityAtom,
   savedScreenAtom,
   savingScreenAtom,
   screenConfigAtom,
@@ -21,11 +22,13 @@ import {
   defaultScreen,
   type SavedScreen,
   type ScreenConfig,
+  screenIdentitySchema,
   screenSchema,
 } from "../src/schemas/screen.ts";
 
 function editor(t: TestContext) {
   const store = createStore();
+  store.set(editorIdentityAtom, { id: saved.id, editToken: saved.editToken });
   t.after(store.sub(screenConfigAtom, () => {}));
   return store;
 }
@@ -45,15 +48,18 @@ function renderHook<Result>(
   return result;
 }
 
-function saveScreen(store: ReturnType<typeof createStore>) {
-  return renderHook(store, useSaveScreen)();
+function saveScreen(
+  store: ReturnType<typeof createStore>,
+  options?: { initial: boolean },
+) {
+  return renderHook(store, useSaveScreen)(options);
 }
 
 const saved: SavedScreen = {
   ...defaultScreen,
   url: "https://example.com/",
-  id: "test-screen",
-  editToken: "test-owner-token",
+  id: "9f2e2633-d8ab-4c2a-a724-39c335fe04e4",
+  editToken: "4e245455-61a2-4467-a75d-9b08d53e5c0b",
 };
 
 test("a fresh editor starts with default settings and no saved screen", async (t) => {
@@ -94,6 +100,7 @@ test("invalid settings reject without calling the API", async (t) => {
   const fetchMock = t.mock.method(globalThis, "fetch", async () => {
     throw new Error("must not fetch");
   });
+  store.set(urlAtom, "");
   await assert.rejects(saveScreen(store), /http/);
   assert.equal(fetchMock.mock.callCount(), 0);
   assert.equal(store.get(savingScreenAtom), false);
@@ -124,15 +131,15 @@ test("saving creates a screen, normalizes text, and uses its owner token for upd
   assert.equal(created?.id, saved.id);
   assert.equal(created?.title, "ようこそ");
   assert.equal(store.get(titleAtom), "  ようこそ  ");
-  assert.equal(requests[0].path, "/api/screens");
-  assert.equal(requests[0].init?.method, "POST");
+  assert.equal(requests[0].path, `/api/screens/${saved.id}`);
+  assert.equal(requests[0].init?.method, "PUT");
   assert.equal(
-    new Headers(requests[0].init?.headers).has("X-Edit-Token"),
-    false,
+    new Headers(requests[0].init?.headers).get("X-Edit-Token"),
+    saved.editToken,
   );
   store.set(themeAtom, "night");
   await saveScreen(store);
-  assert.equal(requests[1].path, "/api/screens/test-screen");
+  assert.equal(requests[1].path, `/api/screens/${saved.id}`);
   assert.equal(requests[1].init?.method, "PUT");
   assert.equal(
     new Headers(requests[1].init?.headers).get("X-Edit-Token"),
@@ -174,7 +181,7 @@ test("edits made while creating save the latest draft next with the same screen 
   await nextRequest;
   assert.equal(requests.length, 2);
   assert.equal(store.get(savingScreenAtom), true);
-  assert.equal(requests[1].path, "/api/screens/test-screen");
+  assert.equal(requests[1].path, `/api/screens/${saved.id}`);
   assert.equal(requests[1].init?.method, "PUT");
   assert.equal(
     new Headers(requests[1].init?.headers).get("X-Edit-Token"),
@@ -383,4 +390,70 @@ test("selecting the current setting does not reset the save timer", (t) => {
   assert.equal(changes, 0);
   store.set(themeAtom, "night");
   assert.equal(changes, 1);
+});
+
+test("an identity is generated once per editor store and is independent of edits", () => {
+  const first = createStore();
+  const second = createStore();
+  const identity = first.get(editorIdentityAtom);
+  assert.deepEqual(screenIdentitySchema.parse(identity), identity);
+  assert.notEqual(identity.id, identity.editToken);
+  first.set(urlAtom, "https://example.com/changed");
+  assert.equal(first.get(editorIdentityAtom), identity);
+  assert.notEqual(second.get(editorIdentityAtom).id, identity.id);
+});
+
+test("initial creation immediately saves the default URL without saving feedback", async (t) => {
+  const store = editor(t);
+  let savingUpdates = 0;
+  t.after(
+    store.sub(savingScreenAtom, () => {
+      savingUpdates += 1;
+    }),
+  );
+  const fetchMock = t.mock.method(
+    globalThis,
+    "fetch",
+    async (_path: unknown, init?: RequestInit) =>
+      Response.json({
+        ...JSON.parse(String(init?.body)),
+        ...store.get(editorIdentityAtom),
+      }),
+  );
+  const initial = saveScreen(store, { initial: true });
+  assert.equal(fetchMock.mock.callCount(), 1);
+  assert.equal(store.get(savingScreenAtom), false);
+  const screen = await initial;
+  assert.equal(screen.url, "https://scan.itta.dev");
+  assert.equal(screen.id, store.get(editorIdentityAtom).id);
+  assert.equal(savingUpdates, 0);
+  await saveScreen(store);
+  assert.equal(fetchMock.mock.callCount(), 1);
+});
+
+test("opening during initial creation shares the request without save feedback", async (t) => {
+  const store = editor(t);
+  let respond!: (response: Response) => void;
+  const fetchMock = t.mock.method(
+    globalThis,
+    "fetch",
+    () =>
+      new Promise<Response>((resolve) => {
+        respond = resolve;
+      }),
+  );
+  const initializing = saveScreen(store, { initial: true });
+  const opening = saveScreen(store);
+  assert.equal(fetchMock.mock.callCount(), 1);
+  assert.equal(store.get(savingScreenAtom), false);
+  respond(
+    Response.json({
+      ...saved,
+      ...defaultScreen,
+      confetti: confettiPalettes[0],
+    }),
+  );
+  const [initialized, opened] = await Promise.all([initializing, opening]);
+  assert.equal(initialized.id, opened.id);
+  assert.equal(store.get(savingScreenAtom), false);
 });

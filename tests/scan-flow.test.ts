@@ -1,6 +1,9 @@
 import assert from "node:assert/strict";
+import { randomUUID } from "node:crypto";
 import { after, test } from "node:test";
 import { setTimeout as delay } from "node:timers/promises";
+import { PUT } from "../src/app/api/screens/[id]/route.ts";
+import { GET as visitScreen } from "../src/app/go/[id]/route.ts";
 import { defaultScreen } from "../src/schemas/screen.ts";
 import { getRedis } from "../src/server/redis.server.ts";
 import {
@@ -10,16 +13,15 @@ import {
 } from "../src/server/scan-stream.server.ts";
 import {
   countKey,
-  createScreen,
   publicScreen,
   recordScan,
+  saveScreen,
   streamKey,
-  updateScreen,
 } from "../src/server/screens.server.ts";
 
 const ids: string[] = [];
 async function fixture() {
-  const screen = await createScreen({
+  const screen = await saveScreen(randomUUID(), randomUUID(), {
     ...defaultScreen,
     url: "https://example.com/?test=scan-pop",
   });
@@ -82,10 +84,10 @@ test("public settings omit the edit token, and only the owner can update them", 
   const screen = await fixture();
   assert.equal("editToken" in (await publicScreen(screen.id)), false);
   await assert.rejects(
-    updateScreen(screen.id, "wrong-token", { ...screen, title: "上書き" }),
+    saveScreen(screen.id, "wrong-token", { ...screen, title: "上書き" }),
     { status: 403 },
   );
-  await updateScreen(screen.id, screen.editToken, {
+  await saveScreen(screen.id, screen.editToken, {
     ...screen,
     title: "ようこそ！",
   });
@@ -205,7 +207,7 @@ test("settings updates are broadcast without exposing the edit token", {
     "#789abc",
     "#def012",
   ];
-  await updateScreen(screen.id, screen.editToken, {
+  await saveScreen(screen.id, screen.editToken, {
     ...screen,
     theme: "night",
     confetti: colors,
@@ -241,4 +243,69 @@ test("the stream closes after 30 seconds and releases its reader", {
   const elapsed = performance.now() - started;
   assert.ok(elapsed >= CONNECTION_MS - 100, "stream closed too early");
   assert.ok(elapsed < CONNECTION_MS + 3000, "stream did not close on schedule");
+});
+
+test("PUT creates a client UUID and rejects missing credentials and other owners", async () => {
+  const id = randomUUID();
+  const token = randomUUID();
+  ids.push(id);
+  const put = (editToken?: string) =>
+    PUT(
+      new Request(`http://localhost/api/screens/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          ...(editToken ? { "X-Edit-Token": editToken } : {}),
+        },
+        body: JSON.stringify(defaultScreen),
+      }),
+      { params: Promise.resolve({ id }) },
+    );
+  assert.equal((await put()).status, 400);
+  await assert.rejects(publicScreen(id), { status: 404 });
+  const created = await put(token);
+  assert.equal(created.status, 200);
+  assert.equal((await created.json()).id, id);
+  assert.equal((await publicScreen(id)).url, "https://scan.itta.dev");
+  assert.equal((await put(randomUUID())).status, 403);
+  assert.equal((await put(token)).status, 200);
+});
+
+test("concurrent creation of the same ID never replaces the winning owner", async () => {
+  const id = randomUUID();
+  ids.push(id);
+  const results = await Promise.allSettled([
+    saveScreen(id, randomUUID(), { ...defaultScreen, title: "first" }),
+    saveScreen(id, randomUUID(), { ...defaultScreen, title: "second" }),
+  ]);
+  const success = results.find((result) => result.status === "fulfilled");
+  const rejected = results.find((result) => result.status === "rejected");
+  assert.ok(success && success.status === "fulfilled");
+  assert.ok(rejected && rejected.status === "rejected");
+  assert.equal(rejected.reason.status, 403);
+  assert.equal((await publicScreen(id)).title, success.value.title);
+});
+
+test("a default project's first QR visit redirects home and notifies the ready editor", {
+  timeout: 8000,
+}, async () => {
+  const id = randomUUID();
+  ids.push(id);
+  const screen = await saveScreen(id, randomUUID(), defaultScreen);
+  const stream = events(
+    await scanStream(screen, null, new AbortController().signal),
+  );
+  try {
+    assert.equal((await stream.next())?.type, "ready");
+    const waiting = stream.next();
+    const response = await visitScreen(
+      new Request(`http://localhost/go/${id}`),
+      { params: Promise.resolve({ id }) },
+    );
+    assert.equal(response.status, 302);
+    assert.equal(response.headers.get("Location"), "https://scan.itta.dev");
+    assert.equal((await waiting)?.type, "scan");
+  } finally {
+    await stream.close();
+  }
 });

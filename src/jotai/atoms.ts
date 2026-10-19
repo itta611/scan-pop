@@ -1,4 +1,5 @@
 import { atom } from "jotai/vanilla";
+import { atomWithLazy } from "jotai/vanilla/utils";
 import { confettiPalettes } from "@/features/signage/confetti";
 import {
   defaultScreen,
@@ -11,10 +12,32 @@ type EditorConfig = Omit<ScreenConfig, "confetti"> & { confetti: number };
 
 const defaultEditorConfig: EditorConfig = { ...defaultScreen, confetti: 0 };
 
+// crypto.randomUUID requires HTTPS; LAN development also uses HTTP.
+function createUuid() {
+  const bytes = crypto.getRandomValues(new Uint8Array(16));
+  bytes[6] = (bytes[6] & 0x0f) | 0x40;
+  bytes[8] = (bytes[8] & 0x3f) | 0x80;
+  const hex = Array.from(bytes, (byte) =>
+    byte.toString(16).padStart(2, "0"),
+  ).join("");
+  return [
+    hex.slice(0, 8),
+    hex.slice(8, 12),
+    hex.slice(12, 16),
+    hex.slice(16, 20),
+    hex.slice(20),
+  ].join("-");
+}
+
+export const editorIdentityAtom = atomWithLazy(() => ({
+  id: createUuid(),
+  editToken: createUuid(),
+}));
+
 export const requestedScreenConfigAtom = atom(defaultEditorConfig);
 export const pendingSaveAtom = atom<Promise<SavedScreen> | null>(null);
 
-export const savingScreenAtom = atom((get) => get(pendingSaveAtom) !== null);
+export const savingScreenAtom = atom(false);
 export const screenConfigAtom = atom(defaultEditorConfig);
 export const savedScreenAtom = atom<SavedScreen | undefined>(undefined);
 

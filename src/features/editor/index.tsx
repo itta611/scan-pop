@@ -1,6 +1,6 @@
 "use client";
-import { useAtomValue } from "jotai";
-import { type FormEvent, type Ref, useEffect, useRef } from "react";
+import { Provider, useAtomValue } from "jotai";
+import { type FormEvent, type Ref, useEffect, useRef, useState } from "react";
 import { EditorHeader } from "@/features/editor-header";
 import { ConfettiSetting } from "@/features/settings/confetti-setting";
 import { LinkSetting } from "@/features/settings/link-setting";
@@ -10,20 +10,35 @@ import { Signage, type SignageHandle } from "@/features/signage";
 import { confettiPalettes } from "@/features/signage/confetti";
 import { useAutosaveScreen } from "@/hooks/use-autosave-screen";
 import { useSaveScreen } from "@/hooks/use-save-screen";
-import { savedScreenAtom, screenConfigAtom } from "@/jotai/atoms";
+import {
+  editorIdentityAtom,
+  savedScreenAtom,
+  screenConfigAtom,
+} from "@/jotai/atoms";
 
 export default function Editor() {
+  return (
+    <Provider>
+      <EditorSession />
+    </Provider>
+  );
+}
+
+function EditorSession() {
   useAutosaveScreen();
   const stage = useRef<SignageHandle>(null);
   const saveScreen = useSaveScreen();
-  const screenId = useAtomValue(savedScreenAtom)?.id;
+  const { id: screenId } = useAtomValue(editorIdentityAtom);
+  const created = useAtomValue(savedScreenAtom) !== undefined;
+  const [qrReady, setQrReady] = useState(false);
 
   useEffect(() => {
-    if (!screenId) return;
+    if (!created) return;
     const source = new EventSource(`/api/events/${screenId}`);
+    source.addEventListener("ready", () => setQrReady(true));
     source.addEventListener("scan", () => stage.current?.celebrate());
     return () => source.close();
-  }, [screenId]);
+  }, [created, screenId]);
 
   async function submit(event: FormEvent) {
     event.preventDefault();
@@ -42,7 +57,7 @@ export default function Editor() {
     <div className="h-svh pt-6 px-5 bg-accent flex flex-col">
       <EditorHeader />
       <main className="mx-auto w-full flex gap-9 max-w-300 mt-8 grow pb-8">
-        <EditorPreview ref={stage} screenId={screenId} />
+        <EditorPreview ref={stage} screenId={screenId} qrReady={qrReady} />
         <form
           id="screen-editor"
           className="bg-background px-5 w-80"
@@ -64,9 +79,11 @@ export default function Editor() {
 function EditorPreview({
   ref,
   screenId,
+  qrReady,
 }: {
   ref: Ref<SignageHandle>;
-  screenId?: string;
+  screenId: string;
+  qrReady: boolean;
 }) {
   const config = useAtomValue(screenConfigAtom);
   return (
@@ -74,11 +91,7 @@ function EditorPreview({
       <Signage
         ref={ref}
         config={{ ...config, confetti: confettiPalettes[config.confetti] }}
-        value={
-          screenId
-            ? `${location.origin}/go/${screenId}`
-            : config.url || "https://example.com"
-        }
+        value={qrReady ? `${location.origin}/go/${screenId}` : undefined}
       />
     </div>
   );

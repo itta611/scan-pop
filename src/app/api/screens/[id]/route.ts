@@ -1,6 +1,6 @@
-import { screenSchema } from "@/schemas/screen";
+import { screenIdentitySchema, screenSchema } from "@/schemas/screen";
 import { handleApi } from "@/server/http.server";
-import { updateScreen } from "@/server/screens.server";
+import { saveScreen } from "@/server/screens.server";
 
 export async function PUT(
   request: Request,
@@ -9,9 +9,13 @@ export async function PUT(
   return handleApi(async () => {
     const { id } = await params;
 
+    const identity = screenIdentitySchema.parse({
+      id,
+      editToken: request.headers.get("X-Edit-Token"),
+    });
     const config = screenSchema.parse(await request.json());
     return Response.json(
-      await updateScreen(id, request.headers.get("X-Edit-Token"), config),
+      await saveScreen(identity.id, identity.editToken, config),
       { headers: { "Cache-Control": "no-store" } },
     );
   });
