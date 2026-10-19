@@ -1,6 +1,5 @@
 import { useAtom } from "jotai";
 import { messageAtom, titleAtom } from "@/jotai/atoms";
-import { Input } from "../../components/ui/input";
 import { Textarea } from "../../components/ui/textarea";
 import { SettingField, SettingLabel } from "./setting-field";
 
@@ -10,8 +9,9 @@ export function TextSetting() {
   return (
     <SettingField title="画面のテキスト">
       <SettingLabel htmlFor="screen-title">見出し</SettingLabel>
-      <Input
+      <Textarea
         id="screen-title"
+        className="min-h-9"
         value={title}
         onChange={(e) => setTitle(e.currentTarget.value)}
       />
