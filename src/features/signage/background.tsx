@@ -22,7 +22,7 @@ export function SignageBackground({ theme }: { theme: ScreenConfig["theme"] }) {
       <svg
         aria-hidden="true"
         viewBox="560 0 440 295"
-        className="absolute top-0 right-0 h-auto w-[44cqmin]"
+        className="absolute top-0 right-0 h-auto w-[44cqmax]"
       >
         <path
           d="M560 0H1000V295C907 260 914 178 795 136C669 92 626 68 560 0Z"
@@ -32,7 +32,7 @@ export function SignageBackground({ theme }: { theme: ScreenConfig["theme"] }) {
       <svg
         aria-hidden="true"
         viewBox="0 786 330 214"
-        className="absolute bottom-0 left-0 h-auto w-[33cqmin]"
+        className="absolute bottom-0 left-0 h-auto w-[33cqmax]"
       >
         <path
           d="M0 786C125 819 238 891 330 1000H0Z"
@@ -42,7 +42,7 @@ export function SignageBackground({ theme }: { theme: ScreenConfig["theme"] }) {
       <svg
         aria-hidden="true"
         viewBox="660 820 340 180"
-        className="absolute right-0 bottom-0 h-auto w-[34cqmin]"
+        className="absolute right-0 bottom-0 h-auto w-[34cqmax]"
       >
         <path
           d="M680 1000C663 881 807 813 1000 824V1000Z"
