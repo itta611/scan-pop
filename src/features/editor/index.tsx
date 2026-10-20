@@ -54,13 +54,13 @@ function EditorSession() {
   }
 
   return (
-    <div className="h-svh pt-6 px-5 bg-accent flex flex-col">
+    <div className="min-h-svh pt-3 px-3 bg-accent flex flex-col md:h-svh md:pt-6 md:px-5">
       <EditorHeader />
-      <main className="mx-auto w-full flex gap-9 max-w-300 mt-8 grow pb-8">
+      <main className="mx-auto w-full flex flex-col gap-5 max-w-300 mt-5 grow pb-5 md:flex-row md:gap-9 md:mt-8 md:pb-8">
         <EditorPreview ref={stage} screenId={screenId} qrReady={qrReady} />
         <form
           id="screen-editor"
-          className="bg-background px-5 w-80"
+          className="bg-background px-5 w-full shrink-0 md:w-80"
           onSubmit={submit}
           noValidate
         >
@@ -87,7 +87,7 @@ function EditorPreview({
 }) {
   const config = useAtomValue(screenConfigAtom);
   return (
-    <div className="grow min-w-0">
+    <div className="h-[60svh] min-h-80 w-full min-w-0 md:h-auto md:min-h-0 md:w-auto md:grow">
       <Signage
         ref={ref}
         config={{ ...config, confetti: confettiPalettes[config.confetti] }}

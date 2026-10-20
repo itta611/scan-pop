@@ -11,9 +11,9 @@ import {
 
 export function EditorHeader() {
   return (
-    <header className="bg-background w-full flex h-17 items-center gap-8 px-5 max-w-300 mx-auto">
-      <Logo className="ml-1" />
-      <div className="ml-auto flex items-center gap-3 max-[760px]:gap-1">
+    <header className="bg-background w-full flex h-17 items-center gap-2 px-3 md:gap-8 md:px-5 max-w-300 mx-auto">
+      <Logo className="md:ml-1" />
+      <div className="ml-auto flex items-center gap-1 md:gap-3">
         <CopyDisplayLinkButton />
         <OpenDisplayButton />
       </div>
@@ -46,8 +46,15 @@ function OpenDisplayButton() {
       form="screen-editor"
       disabled={!hasDestination}
     >
-      {justSaved ? <Check /> : <Monitor />}
-      <span>{justSaved ? "保存しました" : "表示ページを開く"}</span>
+      {justSaved ? (
+        <Check className="max-md:hidden" />
+      ) : (
+        <Monitor className="max-md:hidden" />
+      )}
+      <span className="md:hidden">{justSaved ? "保存しました" : "開く"}</span>
+      <span className="hidden md:inline">
+        {justSaved ? "保存しました" : "表示ページを開く"}
+      </span>
       {!justSaved && <ArrowUpRight />}
     </Button>
   );
@@ -71,7 +78,7 @@ function CopyDisplayLinkButton() {
       onClick={saved ? () => copyDisplayLink(saved.id) : undefined}
     >
       {copied ? <Check /> : <Copy />}
-      <span className="max-[760px]:hidden">
+      <span className="max-md:hidden">
         {copied ? "コピーしました" : "表示URLをコピー"}
       </span>
     </Button>
