@@ -38,7 +38,7 @@ src/
 - 保存処理は`useSaveScreen`にまとめ、atomは状態だけを管理します。設定項目は`useAtom`で即時更新し、編集画面の`useAutosaveScreen`で設定全体の変更を購読します。初期化時は待ち時間なしで初期作成し、以降は変更のたびに1秒の保存タイマーをリセットします。保存済みと同じ内容は送信しません。保存中の保存要求は現在のリクエストが完了してから最新の要求内容を続けて保存し、1秒経過前の編集は送信しません。入力途中の不正な設定は下書きに残し、有効になるまでAPIへ送りません。保存したテキストの前後の空白は除去しますが、入力中の下書きは書き換えません。
 - ブラウザAPIを使う編集画面はNext.jsの`dynamic`で`ssr: false`を指定して描画します。コピー完了など、その場だけのUI状態はコンポーネントの`useState`に置きます。
 - クラッカーの配色はクライアントの設定では数値IDで管理し、src/features/signage/confetti.tsx に4色ずつの配色を配列で定義します。IDは0から始まる配列のインデックスです。保存hookで4個のHEX値（#RRGGBB）の配列へ変換して送信します。API・Redis・SSEは配列を扱い、描画にもその配列を使います。
-- 保存APIは `PUT /api/screens/:screenId` に統一し、UUIDと `X-Edit-Token` を検証します。初回作成にはRedisの `SET NX` を使い、既存IDの更新は編集用トークンの一致を必須にします。公開設定の保存先はRedisです。表示ページはSSEで届く公開設定を使い、編集用ストアには依存しません。
+- 保存APIは `PUT /api/screens/:screenId` に統一し、UUIDと `X-Edit-Token` を検証します。初回作成にはRedisの `SET NX` を使い、既存IDの更新は編集用トークンの一致を必須にします。公開設定の保存先はRedisです。`getRedis` は接続済みクライアントと接続中のPromiseを別々に管理し、切断済みなら次の取得時に再接続します。同時リクエストは接続処理を共有します。表示ページはSSEで届く公開設定を使い、編集用ストアには依存しません。
 
 設計の参照元: [Composing atoms](https://jotai.org/docs/guides/composing-atoms)、[Performance](https://jotai.org/docs/guides/performance)、[Provider](https://jotai.org/docs/core/provider)、[Storage](https://jotai.org/docs/utilities/storage)。
 

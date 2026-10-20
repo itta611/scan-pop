@@ -12,12 +12,21 @@ async function connectRedis() {
   return client;
 }
 
-let connection: ReturnType<typeof connectRedis> | undefined;
+type RedisClient = Awaited<ReturnType<typeof connectRedis>>;
+let client: RedisClient | undefined;
+let connecting: Promise<RedisClient> | undefined;
 
-export function getRedis() {
+export async function getRedis() {
   if (!process.env.REDIS_URL) throw new Error("REDIS_URL is not configured");
-  return (connection ??= connectRedis().catch((error) => {
-    connection = undefined;
-    throw error;
-  }));
+  if (client?.isOpen) return client;
+
+  connecting ??= connectRedis()
+    .then((connected) => {
+      client = connected;
+      return connected;
+    })
+    .finally(() => {
+      connecting = undefined;
+    });
+  return connecting;
 }
