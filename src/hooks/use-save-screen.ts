@@ -8,7 +8,11 @@ import {
   savingScreenAtom,
   screenConfigAtom,
 } from "@/jotai/atoms";
-import { type SavedScreen, screenSchema } from "@/schemas/screen";
+import {
+  defaultScreen,
+  type SavedScreen,
+  screenSchema,
+} from "@/schemas/screen";
 
 export function useSaveScreen() {
   const store = useStore();
@@ -28,7 +32,7 @@ export function useSaveScreen() {
     const saved = store.get(savedScreenAtom);
     if (
       saved &&
-      saved.url === config.url &&
+      saved.url === (config.url || defaultScreen.url) &&
       saved.title === config.title.trim() &&
       saved.message === config.message.trim() &&
       saved.theme === config.theme &&
@@ -44,6 +48,7 @@ export function useSaveScreen() {
         const config = store.get(requestedScreenConfigAtom);
         const parsed = screenSchema.parse({
           ...config,
+          url: config.url || defaultScreen.url,
           confetti: confettiPalettes[config.confetti],
         });
         const { id, editToken } = store.get(editorIdentityAtom);

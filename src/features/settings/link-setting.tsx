@@ -10,7 +10,7 @@ export function LinkSetting() {
       <Input
         type="url"
         value={url}
-        placeholder="https://scan.example.com"
+        placeholder="https://scan.itta.dev"
         onChange={(e) => setUrl(e.currentTarget.value)}
         autoComplete="url"
         maxLength={2048}

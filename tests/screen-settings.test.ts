@@ -72,6 +72,7 @@ test("a fresh editor starts with default settings and no saved screen", async (t
   const reloaded = editor(t);
   assert.deepEqual(reloaded.get(screenConfigAtom), {
     ...defaultScreen,
+    url: "",
     confetti: 0,
   });
   assert.equal(reloaded.get(savedScreenAtom), undefined);
@@ -100,7 +101,7 @@ test("invalid settings reject without calling the API", async (t) => {
   const fetchMock = t.mock.method(globalThis, "fetch", async () => {
     throw new Error("must not fetch");
   });
-  store.set(urlAtom, "");
+  store.set(urlAtom, "https://");
   await assert.rejects(saveScreen(store), /http/);
   assert.equal(fetchMock.mock.callCount(), 0);
   assert.equal(store.get(savingScreenAtom), false);
@@ -425,6 +426,11 @@ test("initial creation immediately saves the default URL without saving feedback
   assert.equal(store.get(savingScreenAtom), false);
   const screen = await initial;
   assert.equal(screen.url, "https://scan.itta.dev");
+  assert.equal(store.get(urlAtom), "");
+  assert.equal(
+    renderHook(store, LinkSetting).props.children.props.placeholder,
+    "https://scan.itta.dev",
+  );
   assert.equal(screen.id, store.get(editorIdentityAtom).id);
   assert.equal(savingUpdates, 0);
   await saveScreen(store);
@@ -456,4 +462,24 @@ test("opening during initial creation shares the request without save feedback",
   const [initialized, opened] = await Promise.all([initializing, opening]);
   assert.equal(initialized.id, opened.id);
   assert.equal(store.get(savingScreenAtom), false);
+});
+
+test("an empty URL uses the default destination without changing the input", async (t) => {
+  const store = editor(t);
+  const fetchMock = t.mock.method(
+    globalThis,
+    "fetch",
+    async (_path: unknown, init?: RequestInit) =>
+      Response.json({ ...saved, ...JSON.parse(String(init?.body)) }),
+  );
+  store.set(urlAtom, "https://example.com/custom");
+  await saveScreen(store);
+  store.set(urlAtom, "");
+  store.set(titleAtom, "空欄でも設定を保存");
+  await saveScreen(store);
+  assert.equal(store.get(savedScreenAtom)?.url, "https://scan.itta.dev");
+  assert.equal(store.get(savedScreenAtom)?.title, "空欄でも設定を保存");
+  assert.equal(store.get(urlAtom), "");
+  await saveScreen(store);
+  assert.equal(fetchMock.mock.callCount(), 2);
 });

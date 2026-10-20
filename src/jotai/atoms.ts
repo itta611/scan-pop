@@ -10,7 +10,11 @@ import {
 
 type EditorConfig = Omit<ScreenConfig, "confetti"> & { confetti: number };
 
-const defaultEditorConfig: EditorConfig = { ...defaultScreen, confetti: 0 };
+const defaultEditorConfig: EditorConfig = {
+  ...defaultScreen,
+  url: "",
+  confetti: 0,
+};
 
 // crypto.randomUUID requires HTTPS; LAN development also uses HTTP.
 function createUuid() {
@@ -62,6 +66,7 @@ export const hasDestinationAtom = atom((get) => {
   const config = get(screenConfigAtom);
   return screenSchema.safeParse({
     ...config,
+    url: config.url || defaultScreen.url,
     confetti: confettiPalettes[config.confetti],
   }).success;
 });
