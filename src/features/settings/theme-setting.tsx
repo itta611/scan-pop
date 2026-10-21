@@ -19,7 +19,7 @@ export function ThemeSetting() {
             onClick={() => setTheme(option.value)}
           >
             <span className="relative mb-1.5 flex h-14 overflow-hidden group-aria-pressed:ring-2 group-focus-visible:ring-2 ring-primary">
-              <SignageBackground theme={option.value} />
+              <SignageBackground theme={option.value} sizeBasis="long" />
               {theme === option.value && (
                 <span className="absolute right-1 bottom-1 bg-primary p-0.75 text-white">
                   <CheckIcon size={11} />
