@@ -23,16 +23,19 @@ const patternClasses = {
 export function SignageBackground({
   background,
   sizeBasis = "short",
+  className,
 }: {
   background: ScreenConfig["background"];
   sizeBasis?: "short" | "long";
+  className?: string;
 }) {
   return (
     <div
       className={cn(
         "pointer-events-none absolute inset-0 overflow-hidden [container-type:size]",
-        { "bg-white border": background.theme === "light" },
+        { "bg-white": background.theme === "light" },
         { "bg-gray-800": background.theme === "dark" },
+        className,
       )}
     >
       <svg

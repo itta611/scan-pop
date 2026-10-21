@@ -2,6 +2,7 @@ import { useAtom } from "jotai";
 import { CheckIcon } from "lucide-react";
 import { SignageBackground } from "@/features/signage/background";
 import { backgroundAtom } from "@/jotai/atoms";
+import { cn } from "@/lib/utils";
 import { backgrounds } from "@/schemas/screen";
 import { SettingField } from "./setting-field";
 
@@ -18,7 +19,12 @@ export function BackgroundSetting() {
             className="group text-xs text-accent-foreground outline-none!"
             onClick={() => setBackground(option)}
           >
-            <span className="relative mb-1.5 flex h-14 overflow-hidden group-aria-pressed:ring-2 group-focus-visible:ring-2 ring-primary">
+            <span
+              className={cn(
+                "relative mb-1.5 flex h-14 overflow-hidden transition-all ring-0 ring-border group-aria-pressed:ring-2 group-focus-visible:ring-2 group-aria-pressed:ring-primary",
+                { "ring-1": option.theme === "light" },
+              )}
+            >
               <SignageBackground background={option} sizeBasis="long" />
               {background === option && (
                 <span className="absolute right-1 bottom-1 bg-primary p-0.75 text-white">

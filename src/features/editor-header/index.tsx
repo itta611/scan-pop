@@ -64,50 +64,35 @@ function OpenDisplayButton() {
           <span
             key={state}
             className={cn(
-              "inline-flex items-center justify-center gap-2",
-              state !== "idle" && "opacity-50",
+              "inline-flex items-center justify-center gap-2 transition-[opacity,filter,scale] duration-100 motion-reduce:transition-none",
+              status === state
+                ? "scale-100 blur-0 ease-[cubic-bezier(0.2,0,0,1)]"
+                : "scale-25 blur-[4px] ease-in",
+              status !== state
+                ? "opacity-0"
+                : state === "idle"
+                  ? "opacity-100"
+                  : "opacity-50",
             )}
           >
-            <span
-              className={cn(
-                "max-md:hidden transition-[opacity,filter,scale] duration-100 ease-[cubic-bezier(0.2,0,0,1)] motion-reduce:transition-none",
-                status === state
-                  ? "scale-100 opacity-100 blur-0"
-                  : "scale-25 opacity-0 blur-[4px]",
-              )}
-            >
-              {state === "saved" ? (
-                <Check />
-              ) : state === "saving" ? (
-                <LoaderCircle className="motion-safe:animate-spin" />
-              ) : (
-                <Monitor />
-              )}
-            </span>
-            <span className={status === state ? "opacity-100" : "opacity-0"}>
-              <span>
-                {state === "idle" ? (
-                  <>
-                    <span className="md:hidden">開く</span>
-                    <span className="hidden md:inline">{labels[state]}</span>
-                  </>
-                ) : (
-                  labels[state]
-                )}
-              </span>
-            </span>
-            {state === "idle" && (
-              <span
-                className={cn(
-                  "transition-[opacity,filter,scale] duration-100 ease-[cubic-bezier(0.2,0,0,1)] motion-reduce:transition-none",
-                  status === state
-                    ? "scale-100 opacity-100 blur-0"
-                    : "scale-25 opacity-0 blur-[4px]",
-                )}
-              >
-                <ArrowUpRight />
-              </span>
+            {state === "saved" ? (
+              <Check className="max-md:hidden" />
+            ) : state === "saving" ? (
+              <LoaderCircle className="max-md:hidden motion-safe:animate-spin" />
+            ) : (
+              <Monitor className="max-md:hidden" />
             )}
+            <span>
+              {state === "idle" ? (
+                <>
+                  <span className="md:hidden">開く</span>
+                  <span className="hidden md:inline">{labels[state]}</span>
+                </>
+              ) : (
+                labels[state]
+              )}
+            </span>
+            {state === "idle" && <ArrowUpRight />}
           </span>
         ))}
       </span>
@@ -137,27 +122,20 @@ function CopyDisplayLinkButton() {
           <span
             key={isCopied ? "copied" : "idle"}
             className={cn(
-              "inline-flex items-center justify-center gap-2",
-              isCopied && "opacity-50",
+              "inline-flex items-center justify-center gap-2 transition-[opacity,filter,scale] duration-100 motion-reduce:transition-none",
+              copied === isCopied
+                ? "scale-100 blur-0 ease-[cubic-bezier(0.2,0,0,1)]"
+                : "scale-25 blur-[4px] ease-in",
+              copied !== isCopied
+                ? "opacity-0"
+                : isCopied
+                  ? "opacity-50"
+                  : "opacity-100",
             )}
           >
-            <span
-              className={cn(
-                "transition-[opacity,filter,scale] duration-100 ease-[cubic-bezier(0.2,0,0,1)] motion-reduce:transition-none",
-                copied === isCopied
-                  ? "scale-100 opacity-100 blur-0"
-                  : "scale-25 opacity-0 blur-[4px]",
-              )}
-            >
-              {isCopied ? <Check /> : <Copy />}
-            </span>
-            <span
-              className={cn(
-                "max-md:hidden",
-                copied === isCopied ? "opacity-100" : "opacity-0",
-              )}
-            >
-              <span>{isCopied ? "コピーしました" : "表示URLをコピー"}</span>
+            {isCopied ? <Check /> : <Copy />}
+            <span className="max-md:hidden">
+              {isCopied ? "コピーしました" : "表示URLをコピー"}
             </span>
           </span>
         ))}
