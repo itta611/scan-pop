@@ -5,6 +5,7 @@ import Logo from "#/components/logo";
 import { Button } from "@/components/ui/button";
 import {
   hasDestinationAtom,
+  hasUrlInputAtom,
   requestedScreenConfigAtom,
   savedScreenAtom,
   waitingToSaveAtom,
@@ -27,6 +28,7 @@ function OpenDisplayButton() {
   const store = useStore();
   const [justSaved, setJustSaved] = useState(false);
   const hasDestination = useAtomValue(hasDestinationAtom);
+  const hasUrlInput = useAtomValue(hasUrlInputAtom);
   const waitingToSave = useAtomValue(waitingToSaveAtom);
   const status = waitingToSave
     ? "saving"
@@ -57,7 +59,7 @@ function OpenDisplayButton() {
       type="submit"
       form="screen-editor"
       aria-label={labels[status]}
-      disabled={!hasDestination}
+      disabled={!hasDestination || !hasUrlInput}
     >
       <span aria-hidden="true" className="grid *:col-start-1 *:row-start-1">
         {(["idle", "saving", "saved"] as const).map((state) => (
@@ -102,6 +104,7 @@ function OpenDisplayButton() {
 
 function CopyDisplayLinkButton() {
   const saved = useAtomValue(savedScreenAtom);
+  const hasUrlInput = useAtomValue(hasUrlInputAtom);
   const [copied, setCopied] = useState(false);
   async function copyDisplayLink(screenId: string) {
     await navigator.clipboard.writeText(
@@ -114,7 +117,7 @@ function CopyDisplayLinkButton() {
     <Button
       variant="ghost"
       aria-label={copied ? "表示URLをコピーしました" : "表示URLをコピー"}
-      disabled={!saved}
+      disabled={!saved || !hasUrlInput}
       onClick={saved ? () => copyDisplayLink(saved.id) : undefined}
     >
       <span aria-hidden="true" className="grid *:col-start-1 *:row-start-1">

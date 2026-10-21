@@ -57,6 +57,7 @@ function settingAtom<Key extends keyof EditorConfig>(key: Key) {
 }
 
 export const urlAtom = settingAtom("url");
+export const hasUrlInputAtom = atom((get) => get(urlAtom).trim().length > 0);
 export const titleAtom = settingAtom("title");
 export const messageAtom = settingAtom("message");
 export const backgroundAtom = settingAtom("background");
