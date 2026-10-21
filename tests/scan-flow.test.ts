@@ -309,3 +309,36 @@ test("a default project's first QR visit redirects home and notifies the ready e
     await stream.close();
   }
 });
+
+test("a QR visit redirects to the latest saved URL and increments the scan count once", async () => {
+  const screen = await fixture();
+  const url = "https://example.com/updated?from=qr&lang=ja";
+  await saveScreen(screen.id, screen.editToken, { ...screen, url });
+  const response = await visitScreen(
+    new Request(`http://localhost/go/${screen.id}`),
+    { params: Promise.resolve({ id: screen.id }) },
+  );
+  assert.equal(response.status, 302);
+  assert.equal(response.headers.get("Location"), url);
+  assert.equal(response.headers.get("Cache-Control"), "no-store");
+  assert.equal(await response.text(), "");
+  const redis = await getRedis();
+  assert.equal(await redis.get(countKey(screen.id)), "1");
+  const notifications = await redis.xRange(streamKey(screen.id), "-", "+");
+  assert.ok(notifications);
+  assert.equal(
+    notifications.filter((event) => event.message.kind === "scan").length,
+    1,
+  );
+});
+
+test("a missing QR destination returns 404 without creating scan data", async () => {
+  const id = randomUUID();
+  ids.push(id);
+  const response = await visitScreen(new Request(`http://localhost/go/${id}`), {
+    params: Promise.resolve({ id }),
+  });
+  assert.equal(response.status, 404);
+  const redis = await getRedis();
+  assert.equal(await redis.exists([streamKey(id), countKey(id)]), 0);
+});

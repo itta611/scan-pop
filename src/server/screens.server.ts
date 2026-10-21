@@ -47,17 +47,23 @@ export async function saveScreen(
   return screen;
 }
 
-export async function recordScan(id: string) {
+export async function recordScan(id: string): Promise<string> {
   const redis = await getRedis();
-  await redis.eval(
+  const url = (await redis.eval(
     `
-    local count = redis.call('INCR', KEYS[2])
+    local screen = redis.call('GET', KEYS[1])
+    if not screen then return nil end
+    local url = cjson.decode(screen).url
+    local count = redis.call('INCR', KEYS[3])
     local time = redis.call('TIME')
     local cutoff = tostring(tonumber(time[1]) * 1000 - 60000) .. '-0'
-    local id = redis.call('XADD', KEYS[1], 'MINID', '~', cutoff, '*', 'kind', 'scan', 'count', tostring(count))
-    redis.call('EXPIRE', KEYS[1], 3600)
-    return id
+    redis.call('XADD', KEYS[2], 'MINID', '~', cutoff, '*', 'kind', 'scan', 'count', tostring(count))
+    redis.call('EXPIRE', KEYS[2], 3600)
+    return url
   `,
-    { keys: [streamKey(id), countKey(id)], arguments: [] },
-  );
+    { keys: [screenKey(id), streamKey(id), countKey(id)], arguments: [] },
+  )) as string | null;
+  if (url === null)
+    throw new HttpError(404, "この表示ページは見つかりませんでした。");
+  return url;
 }

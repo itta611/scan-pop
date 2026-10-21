@@ -66,7 +66,7 @@ npm run dev -- --hostname 0.0.0.0
 ## 通知の仕様
 
 1. QRには `/go/:screenId` を埋め込みます。
-2. スマホのGETアクセスでRedis Streamsへイベントを追加し、指定URLへ302で転送します。
+2. スマホのGETアクセスで、転送先の取得とRedis Streamsへのスキャン記録を1回のLuaスクリプトで処理し、指定URLへ302で転送します。転送先が存在しなければ404を返し、スキャン記録は作成しません。プリフェッチ用の分岐は設けません。
 3. 編集画面と表示画面は `/api/events/:screenId` をSSEで購読します。購読処理は共通化せず、編集画面は `ready` でQR表示を開始し、`scan` で紙吹雪を出します。表示画面は `ready`・`scan`・`config` を扱います。
 4. サーバーが `XREAD BLOCK` でイベントの追加を待ち、そのままSSEへ流します。
 5. 接続は30秒で終了します。`retry: 0` によりEventSourceが再接続します。
