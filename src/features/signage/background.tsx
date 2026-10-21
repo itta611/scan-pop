@@ -1,22 +1,27 @@
+import { cva } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 import type { ScreenConfig } from "@/schemas/screen";
 
-export const themeClasses = {
-  paper:
-    "[--stage-bg:#ffffff] [--stage-text:#000000] [--stage-pattern:#e6e0d4] [--stage-accent:#efeae1]",
-  mint: "[--stage-bg:#ffffff] [--stage-text:#000000] [--stage-pattern:#d7e3d9] [--stage-accent:#e5ede5]",
-  sky: "[--stage-bg:#ffffff] [--stage-text:#000000] [--stage-pattern:#d8e4ec] [--stage-accent:#e6edf2]",
-  rose: "[--stage-bg:#ffffff] [--stage-text:#000000] [--stage-pattern:#ecdad7] [--stage-accent:#f2e7e3]",
-  night:
-    "[--stage-bg:#242b29] [--stage-text:#ffffff] [--stage-pattern:#3a4b43] [--stage-accent:#303d36]",
-};
+export const themeClasses = cva("bg-white text-black", {
+  variants: {
+    theme: {
+      paper:
+        "[--stage-pattern:var(--color-stone-200)] [--stage-accent:var(--color-stone-100)]",
+      mint: "[--stage-pattern:var(--color-emerald-100)] [--stage-accent:var(--color-emerald-50)]",
+      sky: "[--stage-pattern:var(--color-sky-100)] [--stage-accent:var(--color-sky-50)]",
+      rose: "[--stage-pattern:var(--color-rose-100)] [--stage-accent:var(--color-rose-50)]",
+      night:
+        "bg-zinc-800 text-white [--stage-pattern:var(--color-zinc-700)] [--stage-accent:var(--color-zinc-800)]",
+    },
+  },
+});
 
 export function SignageBackground({ theme }: { theme: ScreenConfig["theme"] }) {
   return (
     <div
       className={cn(
-        "pointer-events-none absolute inset-0 overflow-hidden bg-[color:var(--stage-bg)] [container-type:size]",
-        themeClasses[theme],
+        "pointer-events-none absolute inset-0 overflow-hidden [container-type:size]",
+        themeClasses({ theme }),
       )}
     >
       <svg

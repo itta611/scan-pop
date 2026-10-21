@@ -19,8 +19,8 @@ export function Signage({
   return (
     <section
       className={cn(
-        "relative flex h-full min-h-0 w-full flex-col overflow-hidden bg-[color:var(--stage-bg)] text-[color:var(--stage-text)] [container-type:size]",
-        themeClasses[config.theme],
+        "relative flex h-full min-h-0 w-full flex-col overflow-hidden [container-type:size]",
+        themeClasses({ theme: config.theme }),
       )}
     >
       <SignageBackground theme={config.theme} />
