@@ -1,6 +1,7 @@
 "use client";
 import { Provider, useAtomValue } from "jotai";
 import { type FormEvent, type Ref, useEffect, useRef, useState } from "react";
+import { EditorFooter } from "@/features/editor-footer";
 import { EditorHeader } from "@/features/editor-header";
 import { BackgroundSetting } from "@/features/settings/background-setting";
 import { ConfettiSetting } from "@/features/settings/confetti-setting";
@@ -56,7 +57,7 @@ function EditorSession() {
   return (
     <div className="min-h-svh pt-3 px-3 bg-accent flex flex-col md:h-svh md:pt-6 md:px-5">
       <EditorHeader />
-      <main className="mx-auto w-full flex flex-col gap-5 max-w-300 mt-5 grow pb-5 md:flex-row md:gap-9 md:mt-8 md:pb-8">
+      <main className="mx-auto w-full flex flex-col gap-5 max-w-300 mt-5 grow md:flex-row md:gap-9 md:mt-8">
         <EditorPreview ref={stage} screenId={screenId} qrReady={qrReady} />
         <form
           id="screen-editor"
@@ -72,6 +73,7 @@ function EditorSession() {
           />
         </form>
       </main>
+      <EditorFooter />
     </div>
   );
 }
