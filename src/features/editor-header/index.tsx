@@ -1,5 +1,5 @@
 import { useAtomValue, useStore } from "jotai";
-import { ArrowUpRight, Check, Copy, Monitor } from "lucide-react";
+import { ArrowUpRight, Check, Copy, LoaderCircle, Monitor } from "lucide-react";
 import { useEffect, useState } from "react";
 import Logo from "#/components/logo";
 import { Button } from "@/components/ui/button";
@@ -69,7 +69,13 @@ function OpenDisplayButton() {
                   : "scale-25 opacity-0 blur-[4px]",
               )}
             >
-              {state === "saved" ? <Check /> : <Monitor />}
+              {state === "saved" ? (
+                <Check />
+              ) : state === "saving" ? (
+                <LoaderCircle className="motion-safe:animate-spin" />
+              ) : (
+                <Monitor />
+              )}
             </span>
             <span className={status === state ? "opacity-100" : "opacity-0"}>
               {state === "idle" ? (
