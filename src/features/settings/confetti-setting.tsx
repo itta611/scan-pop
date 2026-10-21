@@ -20,7 +20,7 @@ export function ConfettiSetting({
             key={palette[0]}
             type="button"
             aria-pressed={confetti === paletteIndex}
-            className="relative flex items-center justify-center gap-0 transition-[border-color,background-color] aria-pressed:border-primary border-2 border-transparent"
+            className="relative flex items-center justify-center gap-0 transition-[border-color,background-color] aria-pressed:border-primary focus-visible:border-primary border-2 border-transparent outline-none!"
             onClick={() => {
               setConfetti(paletteIndex);
               onPreview(palette);
