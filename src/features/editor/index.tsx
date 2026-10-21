@@ -10,7 +10,6 @@ import { TextSetting } from "@/features/settings/text-setting";
 import { Signage, type SignageHandle } from "@/features/signage";
 import { confettiPalettes } from "@/features/signage/confetti";
 import { useAutosaveScreen } from "@/hooks/use-autosave-screen";
-import { useSaveScreen } from "@/hooks/use-save-screen";
 import {
   editorIdentityAtom,
   savedScreenAtom,
@@ -27,8 +26,7 @@ export default function Editor() {
 
 function EditorSession() {
   const stage = useRef<SignageHandle>(null);
-  const saveScreen = useSaveScreen();
-  useAutosaveScreen(saveScreen);
+  useAutosaveScreen();
   const { id: screenId } = useAtomValue(editorIdentityAtom);
   const created = useAtomValue(savedScreenAtom) !== undefined;
   const [qrReady, setQrReady] = useState(false);
@@ -41,17 +39,9 @@ function EditorSession() {
     return () => source.close();
   }, [created, screenId]);
 
-  async function submit(event: FormEvent) {
+  function submit(event: FormEvent) {
     event.preventDefault();
-    const displayWindow = window.open("about:blank", "_blank");
-    if (!displayWindow) return;
-    displayWindow.opener = null;
-    try {
-      const saved = await saveScreen();
-      displayWindow.location.replace(`/screen/${saved.id}`);
-    } catch {
-      displayWindow.close();
-    }
+    window.open(`/screen/${screenId}`, "_blank", "noopener");
   }
 
   return (

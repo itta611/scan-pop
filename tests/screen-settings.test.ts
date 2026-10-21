@@ -356,7 +356,7 @@ test("typing during an ongoing save stays local until the next save request", as
   assert.equal(store.get(savedScreenAtom)?.title, "入力中の見出し");
 });
 
-test("opening an unchanged screen does not save again", async (t) => {
+test("saving an unchanged screen does not call the API again", async (t) => {
   const store = editor(t);
   const fetchMock = t.mock.method(
     globalThis,
@@ -428,7 +428,7 @@ test("initial creation immediately saves the default URL", async (t) => {
   assert.equal(fetchMock.mock.callCount(), 1);
 });
 
-test("opening during initial creation shares the request", async (t) => {
+test("saving during initial creation shares the request", async (t) => {
   const store = editor(t);
   let respond!: (response: Response) => void;
   const fetchMock = t.mock.method(
@@ -440,7 +440,7 @@ test("opening during initial creation shares the request", async (t) => {
       }),
   );
   const initializing = saveScreen(store);
-  const opening = saveScreen(store);
+  const saving = saveScreen(store);
   assert.equal(fetchMock.mock.callCount(), 1);
   respond(
     Response.json({
@@ -449,8 +449,8 @@ test("opening during initial creation shares the request", async (t) => {
       confetti: confettiPalettes[0],
     }),
   );
-  const [initialized, opened] = await Promise.all([initializing, opening]);
-  assert.equal(initialized.id, opened.id);
+  const [initialized, result] = await Promise.all([initializing, saving]);
+  assert.equal(initialized.id, result.id);
 });
 
 test("an empty URL uses the default destination without changing the input", async (t) => {
