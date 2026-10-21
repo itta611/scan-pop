@@ -12,10 +12,10 @@ const patternClasses = {
   },
   dark: {
     gray: "fill-gray-700",
-    mint: "fill-green-300/25",
-    sky: "fill-sky-300/25",
-    purple: "fill-purple-300/25",
-    rose: "fill-rose-300/25",
+    mint: "fill-green-300/15",
+    sky: "fill-sky-300/15",
+    purple: "fill-purple-300/15",
+    rose: "fill-rose-300/15",
     none: "fill-transparent",
   },
 };
