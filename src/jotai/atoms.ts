@@ -39,9 +39,7 @@ export const editorIdentityAtom = atomWithLazy(() => ({
 }));
 
 export const requestedScreenConfigAtom = atom(defaultEditorConfig);
-export const pendingSaveAtom = atom<Promise<SavedScreen> | null>(null);
 
-export const savingScreenAtom = atom(false);
 export const screenConfigAtom = atom(defaultEditorConfig);
 export const savedScreenAtom = atom<SavedScreen | undefined>(undefined);
 
@@ -57,13 +55,12 @@ function settingAtom<Key extends keyof EditorConfig>(key: Key) {
 }
 
 export const urlAtom = settingAtom("url");
-export const hasUrlInputAtom = atom((get) => get(urlAtom).trim().length > 0);
 export const titleAtom = settingAtom("title");
 export const messageAtom = settingAtom("message");
 export const backgroundAtom = settingAtom("background");
 export const confettiAtom = settingAtom("confetti");
 
-export const hasDestinationAtom = atom((get) => {
+export const isScreenConfigValidAtom = atom((get) => {
   const config = get(screenConfigAtom);
   return screenSchema.safeParse({
     ...config,
@@ -71,9 +68,3 @@ export const hasDestinationAtom = atom((get) => {
     confetti: confettiPalettes[config.confetti],
   }).success;
 });
-
-export const waitingToSaveAtom = atom(
-  (get) =>
-    get(hasDestinationAtom) &&
-    get(screenConfigAtom) !== get(requestedScreenConfigAtom),
-);

@@ -6,7 +6,7 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { EditorHeader } from "../src/features/editor-header/index.tsx";
 import {
-  hasDestinationAtom,
+  isScreenConfigValidAtom,
   savedScreenAtom,
   urlAtom,
 } from "../src/jotai/atoms.ts";
@@ -45,5 +45,5 @@ test("display actions require URL input even after a screen is created", (t) => 
     assert.deepEqual(buttons(), disabled);
   }
   store.set(urlAtom, "");
-  assert.equal(store.get(hasDestinationAtom), true);
+  assert.equal(store.get(isScreenConfigValidAtom), true);
 });

@@ -1,11 +1,10 @@
 import { useStore } from "jotai";
+import { useRef } from "react";
 import { confettiPalettes } from "@/features/signage/confetti";
 import {
   editorIdentityAtom,
-  pendingSaveAtom,
   requestedScreenConfigAtom,
   savedScreenAtom,
-  savingScreenAtom,
   screenConfigAtom,
 } from "@/jotai/atoms";
 import {
@@ -16,18 +15,12 @@ import {
 
 export function useSaveScreen() {
   const store = useStore();
+  const pending = useRef<Promise<SavedScreen> | null>(null);
 
-  return async function saveScreen({
-    initial = false,
-  } = {}): Promise<SavedScreen> {
+  return async function saveScreen(): Promise<SavedScreen> {
     const config = store.get(screenConfigAtom);
-    const requested = store.get(requestedScreenConfigAtom);
     store.set(requestedScreenConfigAtom, config);
-    const pending = store.get(pendingSaveAtom);
-    if (pending) {
-      if (!initial && config !== requested) store.set(savingScreenAtom, true);
-      return pending;
-    }
+    if (pending.current) return pending.current;
 
     const saved = store.get(savedScreenAtom);
     if (
@@ -35,7 +28,8 @@ export function useSaveScreen() {
       saved.url === (config.url || defaultScreen.url) &&
       saved.title === config.title.trim() &&
       saved.message === config.message.trim() &&
-      saved.background === config.background &&
+      saved.background.color === config.background.color &&
+      saved.background.theme === config.background.theme &&
       confettiPalettes[config.confetti].every(
         (color, index) => color === saved.confetti[index],
       )
@@ -69,16 +63,14 @@ export function useSaveScreen() {
         }
       }
     })();
-    store.set(pendingSaveAtom, saving);
-    store.set(savingScreenAtom, !initial);
+    pending.current = saving;
     try {
       return await saving;
     } catch (error) {
       console.error(error);
       throw error;
     } finally {
-      store.set(pendingSaveAtom, null);
-      store.set(savingScreenAtom, false);
+      pending.current = null;
     }
   };
 }

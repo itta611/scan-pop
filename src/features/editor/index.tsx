@@ -26,9 +26,9 @@ export default function Editor() {
 }
 
 function EditorSession() {
-  useAutosaveScreen();
   const stage = useRef<SignageHandle>(null);
   const saveScreen = useSaveScreen();
+  useAutosaveScreen(saveScreen);
   const { id: screenId } = useAtomValue(editorIdentityAtom);
   const created = useAtomValue(savedScreenAtom) !== undefined;
   const [qrReady, setQrReady] = useState(false);

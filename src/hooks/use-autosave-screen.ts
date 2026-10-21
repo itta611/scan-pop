@@ -1,13 +1,14 @@
 import { useStore } from "jotai";
 import { useEffect, useEffectEvent } from "react";
-import { hasDestinationAtom, screenConfigAtom } from "@/jotai/atoms";
-import { useSaveScreen } from "./use-save-screen";
+import { isScreenConfigValidAtom, screenConfigAtom } from "@/jotai/atoms";
+import type { useSaveScreen } from "./use-save-screen";
 
-export function useAutosaveScreen() {
+export function useAutosaveScreen(
+  saveScreen: ReturnType<typeof useSaveScreen>,
+) {
   const store = useStore();
-  const saveScreen = useSaveScreen();
   const save = useEffectEvent(() => {
-    if (store.get(hasDestinationAtom)) {
+    if (store.get(isScreenConfigValidAtom)) {
       saveScreen();
     }
   });

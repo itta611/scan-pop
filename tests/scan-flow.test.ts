@@ -209,13 +209,13 @@ test("settings updates are broadcast without exposing the edit token", {
   ];
   await saveScreen(screen.id, screen.editToken, {
     ...screen,
-    theme: "night",
+    background: { color: "gray", theme: "dark" },
     confetti: colors,
   });
   const event = await waiting;
   assert.ok(event);
   assert.equal(event.type, "config");
-  assert.equal(event.data.theme, "night");
+  assert.deepEqual(event.data.background, { color: "gray", theme: "dark" });
   assert.deepEqual(event.data.confetti, colors);
   assert.deepEqual((await publicScreen(screen.id)).confetti, colors);
   assert.equal("editToken" in event.data, false);

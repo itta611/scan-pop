@@ -9,12 +9,11 @@ import { LinkSetting } from "../src/features/settings/link-setting.tsx";
 import { confettiPalettes } from "../src/features/signage/confetti.tsx";
 import { useSaveScreen } from "../src/hooks/use-save-screen.ts";
 import {
+  backgroundAtom,
   confettiAtom,
   editorIdentityAtom,
   savedScreenAtom,
-  savingScreenAtom,
   screenConfigAtom,
-  themeAtom,
   titleAtom,
   urlAtom,
 } from "../src/jotai/atoms.ts";
@@ -26,10 +25,16 @@ import {
   screenSchema,
 } from "../src/schemas/screen.ts";
 
+const saveHooks = new WeakMap<
+  ReturnType<typeof createStore>,
+  ReturnType<typeof useSaveScreen>
+>();
+
 function editor(t: TestContext) {
   const store = createStore();
   store.set(editorIdentityAtom, { id: saved.id, editToken: saved.editToken });
   t.after(store.sub(screenConfigAtom, () => {}));
+  saveHooks.set(store, renderHook(store, useSaveScreen));
   return store;
 }
 
@@ -48,11 +53,10 @@ function renderHook<Result>(
   return result;
 }
 
-function saveScreen(
-  store: ReturnType<typeof createStore>,
-  options?: { initial: boolean },
-) {
-  return renderHook(store, useSaveScreen)(options);
+function saveScreen(store: ReturnType<typeof createStore>) {
+  const save = saveHooks.get(store);
+  assert.ok(save);
+  return save();
 }
 
 const saved: SavedScreen = {
@@ -78,18 +82,18 @@ test("a fresh editor starts with default settings and no saved screen", async (t
   assert.equal(reloaded.get(savedScreenAtom), undefined);
 });
 
-test("editing text does not notify a theme subscriber or change another store", (t) => {
+test("editing text does not notify a background subscriber or change another store", (t) => {
   const first = editor(t);
   const second = editor(t);
-  let themeUpdates = 0;
+  let backgroundUpdates = 0;
   t.after(
-    first.sub(themeAtom, () => {
-      themeUpdates += 1;
+    first.sub(backgroundAtom, () => {
+      backgroundUpdates += 1;
     }),
   );
   const previous = first.get(screenConfigAtom);
   first.set(titleAtom, "独立した編集");
-  assert.equal(themeUpdates, 0);
+  assert.equal(backgroundUpdates, 0);
   assert.equal(first.get(titleAtom), "独立した編集");
   assert.equal(second.get(titleAtom), defaultScreen.title);
   assert.equal(previous.title, defaultScreen.title);
@@ -104,7 +108,6 @@ test("invalid settings reject without calling the API", async (t) => {
   store.set(urlAtom, "https://");
   await assert.rejects(saveScreen(store), /http/);
   assert.equal(fetchMock.mock.callCount(), 0);
-  assert.equal(store.get(savingScreenAtom), false);
 });
 
 test("saving creates a screen, normalizes text, and uses its owner token for updates", async (t) => {
@@ -126,7 +129,6 @@ test("saving creates a screen, normalizes text, and uses its owner token for upd
   store.set(urlAtom, saved.url);
   const saving = saveScreen(store);
   assert.equal(requests.length, 1);
-  assert.equal(store.get(savingScreenAtom), true);
   await saving;
   const created = store.get(savedScreenAtom);
   assert.equal(created?.id, saved.id);
@@ -138,7 +140,7 @@ test("saving creates a screen, normalizes text, and uses its owner token for upd
     new Headers(requests[0].init?.headers).get("X-Edit-Token"),
     saved.editToken,
   );
-  store.set(themeAtom, "night");
+  store.set(backgroundAtom, { color: "gray", theme: "dark" });
   await saveScreen(store);
   assert.equal(requests[1].path, `/api/screens/${saved.id}`);
   assert.equal(requests[1].init?.method, "PUT");
@@ -146,7 +148,10 @@ test("saving creates a screen, normalizes text, and uses its owner token for upd
     new Headers(requests[1].init?.headers).get("X-Edit-Token"),
     saved.editToken,
   );
-  assert.equal(store.get(savedScreenAtom)?.theme, "night");
+  assert.deepEqual(store.get(savedScreenAtom)?.background, {
+    color: "gray",
+    theme: "dark",
+  });
 });
 
 test("edits made while creating save the latest draft next with the same screen and owner token", async (t) => {
@@ -166,10 +171,9 @@ test("edits made while creating save the latest draft next with the same screen 
   );
   store.set(urlAtom, saved.url);
   const firstSave = saveScreen(store);
-  assert.equal(store.get(savingScreenAtom), true);
   store.set(titleAtom, "保存中の編集 ");
   const latestSave = saveScreen(store);
-  store.set(themeAtom, "night");
+  store.set(backgroundAtom, { color: "gray", theme: "dark" });
   void saveScreen(store);
   assert.equal(requests.length, 1);
   const nextRequest = new Promise<void>((resolve) => {
@@ -181,7 +185,6 @@ test("edits made while creating save the latest draft next with the same screen 
   requests[0].respond(Response.json(saved));
   await nextRequest;
   assert.equal(requests.length, 2);
-  assert.equal(store.get(savingScreenAtom), true);
   assert.equal(requests[1].path, `/api/screens/${saved.id}`);
   assert.equal(requests[1].init?.method, "PUT");
   assert.equal(
@@ -190,13 +193,15 @@ test("edits made while creating save the latest draft next with the same screen 
   );
   const latest = JSON.parse(String(requests[1].init?.body));
   assert.equal(latest.title, "保存中の編集");
-  assert.equal(latest.theme, "night");
+  assert.deepEqual(latest.background, { color: "gray", theme: "dark" });
   requests[1].respond(Response.json({ ...saved, ...latest }));
   await Promise.all([firstSave, latestSave]);
   assert.equal(store.get(titleAtom), "保存中の編集 ");
   assert.equal(store.get(savedScreenAtom)?.title, "保存中の編集");
-  assert.equal(store.get(savedScreenAtom)?.theme, "night");
-  assert.equal(store.get(savingScreenAtom), false);
+  assert.deepEqual(store.get(savedScreenAtom)?.background, {
+    color: "gray",
+    theme: "dark",
+  });
 });
 
 test("a rejected autosave keeps the draft, logs the error, and can be retried", async (t) => {
@@ -218,7 +223,6 @@ test("a rejected autosave keeps the draft, logs the error, and can be retried", 
   });
   assert.equal(store.get(savedScreenAtom), undefined);
   assert.equal(store.get(titleAtom), "残しておく下書き");
-  assert.equal(store.get(savingScreenAtom), false);
   t.mock.method(globalThis, "fetch", async () => Response.json(saved));
   await saveScreen(store);
   assert.equal(log.mock.callCount(), 2);
@@ -243,7 +247,6 @@ test("invalid edits during a save remain local until corrected", async (t) => {
   await saving;
   assert.equal(fetchMock.mock.callCount(), 1);
   assert.equal(store.get(titleAtom), "");
-  assert.equal(store.get(savingScreenAtom), false);
   t.mock.method(
     globalThis,
     "fetch",
@@ -353,7 +356,7 @@ test("typing during an ongoing save stays local until the next save request", as
   assert.equal(store.get(savedScreenAtom)?.title, "入力中の見出し");
 });
 
-test("opening an unchanged screen does not save again or show saving feedback", async (t) => {
+test("opening an unchanged screen does not save again", async (t) => {
   const store = editor(t);
   const fetchMock = t.mock.method(
     globalThis,
@@ -364,19 +367,15 @@ test("opening an unchanged screen does not save again or show saving feedback", 
   store.set(urlAtom, saved.url);
   store.set(titleAtom, "  見出し  ");
   await saveScreen(store);
-  let savingUpdates = 0;
-  t.after(
-    store.sub(savingScreenAtom, () => {
-      savingUpdates += 1;
-    }),
-  );
   await saveScreen(store);
   assert.equal(fetchMock.mock.callCount(), 1);
-  assert.equal(savingUpdates, 0);
-  store.set(themeAtom, "night");
+  store.set(backgroundAtom, { color: "gray", theme: "dark" });
   await saveScreen(store);
   assert.equal(fetchMock.mock.callCount(), 2);
-  assert.equal(store.get(savedScreenAtom)?.theme, "night");
+  assert.deepEqual(store.get(savedScreenAtom)?.background, {
+    color: "gray",
+    theme: "dark",
+  });
 });
 
 test("selecting the current setting does not reset the save timer", (t) => {
@@ -387,9 +386,9 @@ test("selecting the current setting does not reset the save timer", (t) => {
       changes += 1;
     }),
   );
-  store.set(themeAtom, store.get(themeAtom));
+  store.set(backgroundAtom, store.get(backgroundAtom));
   assert.equal(changes, 0);
-  store.set(themeAtom, "night");
+  store.set(backgroundAtom, { color: "gray", theme: "dark" });
   assert.equal(changes, 1);
 });
 
@@ -404,14 +403,8 @@ test("an identity is generated once per editor store and is independent of edits
   assert.notEqual(second.get(editorIdentityAtom).id, identity.id);
 });
 
-test("initial creation immediately saves the default URL without saving feedback", async (t) => {
+test("initial creation immediately saves the default URL", async (t) => {
   const store = editor(t);
-  let savingUpdates = 0;
-  t.after(
-    store.sub(savingScreenAtom, () => {
-      savingUpdates += 1;
-    }),
-  );
   const fetchMock = t.mock.method(
     globalThis,
     "fetch",
@@ -421,9 +414,8 @@ test("initial creation immediately saves the default URL without saving feedback
         ...store.get(editorIdentityAtom),
       }),
   );
-  const initial = saveScreen(store, { initial: true });
+  const initial = saveScreen(store);
   assert.equal(fetchMock.mock.callCount(), 1);
-  assert.equal(store.get(savingScreenAtom), false);
   const screen = await initial;
   assert.equal(screen.url, "https://scan.itta.dev");
   assert.equal(store.get(urlAtom), "");
@@ -432,12 +424,11 @@ test("initial creation immediately saves the default URL without saving feedback
     "https://scan.itta.dev",
   );
   assert.equal(screen.id, store.get(editorIdentityAtom).id);
-  assert.equal(savingUpdates, 0);
   await saveScreen(store);
   assert.equal(fetchMock.mock.callCount(), 1);
 });
 
-test("opening during initial creation shares the request without save feedback", async (t) => {
+test("opening during initial creation shares the request", async (t) => {
   const store = editor(t);
   let respond!: (response: Response) => void;
   const fetchMock = t.mock.method(
@@ -448,10 +439,9 @@ test("opening during initial creation shares the request without save feedback",
         respond = resolve;
       }),
   );
-  const initializing = saveScreen(store, { initial: true });
+  const initializing = saveScreen(store);
   const opening = saveScreen(store);
   assert.equal(fetchMock.mock.callCount(), 1);
-  assert.equal(store.get(savingScreenAtom), false);
   respond(
     Response.json({
       ...saved,
@@ -461,7 +451,6 @@ test("opening during initial creation shares the request without save feedback",
   );
   const [initialized, opened] = await Promise.all([initializing, opening]);
   assert.equal(initialized.id, opened.id);
-  assert.equal(store.get(savingScreenAtom), false);
 });
 
 test("an empty URL uses the default destination without changing the input", async (t) => {
@@ -482,4 +471,52 @@ test("an empty URL uses the default destination without changing the input", asy
   assert.equal(store.get(urlAtom), "");
   await saveScreen(store);
   assert.equal(fetchMock.mock.callCount(), 2);
+});
+
+test("separate editors save independently while another editor has a pending request", async (t) => {
+  const first = editor(t);
+  const second = editor(t);
+  const secondIdentity = {
+    id: "ec7c7aa5-bc70-4379-a31a-8479dd744091",
+    editToken: "f23c5903-a9d2-4258-846a-034ee400ab8f",
+  };
+  second.set(editorIdentityAtom, secondIdentity);
+  const requests: {
+    path: unknown;
+    init?: RequestInit;
+    respond: (response: Response) => void;
+  }[] = [];
+  t.mock.method(
+    globalThis,
+    "fetch",
+    (path: unknown, init?: RequestInit) =>
+      new Promise<Response>((respond) =>
+        requests.push({ path, init, respond }),
+      ),
+  );
+  first.set(titleAtom, "最初の画面");
+  second.set(titleAtom, "別の画面");
+  const firstSave = saveScreen(first);
+  const secondSave = saveScreen(second);
+  assert.equal(requests.length, 2);
+  assert.equal(requests[0].path, `/api/screens/${saved.id}`);
+  assert.equal(requests[1].path, `/api/screens/${secondIdentity.id}`);
+  requests[1].respond(
+    Response.json({
+      ...JSON.parse(String(requests[1].init?.body)),
+      ...secondIdentity,
+    }),
+  );
+  await secondSave;
+  assert.equal(first.get(savedScreenAtom), undefined);
+  assert.equal(second.get(savedScreenAtom)?.title, "別の画面");
+  requests[0].respond(
+    Response.json({
+      ...JSON.parse(String(requests[0].init?.body)),
+      id: saved.id,
+      editToken: saved.editToken,
+    }),
+  );
+  await firstSave;
+  assert.equal(first.get(savedScreenAtom)?.title, "最初の画面");
 });

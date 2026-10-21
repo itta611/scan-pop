@@ -4,35 +4,38 @@ import { useEffect, useState } from "react";
 import Logo from "#/components/logo";
 import { Button } from "@/components/ui/button";
 import {
-  hasDestinationAtom,
-  hasUrlInputAtom,
+  isScreenConfigValidAtom,
   requestedScreenConfigAtom,
   savedScreenAtom,
-  waitingToSaveAtom,
+  screenConfigAtom,
+  urlAtom,
 } from "@/jotai/atoms";
 import { cn } from "@/lib/utils";
 
 export function EditorHeader() {
+  const url = useAtomValue(urlAtom);
+  const hasUrlInput = url.trim().length > 0;
   return (
     <header className="bg-background w-full flex h-17 items-center gap-2 md:px-5 px-4 md:gap-8 max-w-300 mx-auto">
       <Logo className="md:ml-1" />
       <div className="ml-auto flex items-center gap-1 md:gap-2">
-        <CopyDisplayLinkButton />
-        <OpenDisplayButton />
+        <CopyDisplayLinkButton hasUrlInput={hasUrlInput} />
+        <OpenDisplayButton hasUrlInput={hasUrlInput} />
       </div>
     </header>
   );
 }
 
-function OpenDisplayButton() {
+function OpenDisplayButton({ hasUrlInput }: { hasUrlInput: boolean }) {
   const store = useStore();
   const [justSaved, setJustSaved] = useState(false);
-  const hasDestination = useAtomValue(hasDestinationAtom);
-  const hasUrlInput = useAtomValue(hasUrlInputAtom);
-  const waitingToSave = useAtomValue(waitingToSaveAtom);
+  const isConfigValid = useAtomValue(isScreenConfigValidAtom);
+  const config = useAtomValue(screenConfigAtom);
+  const requestedConfig = useAtomValue(requestedScreenConfigAtom);
+  const waitingToSave = isConfigValid && config !== requestedConfig;
   const status = waitingToSave
     ? "saving"
-    : justSaved && hasDestination
+    : justSaved && isConfigValid
       ? "saved"
       : "idle";
   const labels = {
@@ -59,7 +62,7 @@ function OpenDisplayButton() {
       type="submit"
       form="screen-editor"
       aria-label={labels[status]}
-      disabled={!hasDestination || !hasUrlInput}
+      disabled={!isConfigValid || !hasUrlInput}
     >
       <span aria-hidden="true" className="grid *:col-start-1 *:row-start-1">
         {(["idle", "saving", "saved"] as const).map((state) => (
@@ -102,9 +105,8 @@ function OpenDisplayButton() {
   );
 }
 
-function CopyDisplayLinkButton() {
+function CopyDisplayLinkButton({ hasUrlInput }: { hasUrlInput: boolean }) {
   const saved = useAtomValue(savedScreenAtom);
-  const hasUrlInput = useAtomValue(hasUrlInputAtom);
   const [copied, setCopied] = useState(false);
   async function copyDisplayLink(screenId: string) {
     await navigator.clipboard.writeText(
