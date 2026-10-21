@@ -89,10 +89,7 @@ function OpenDisplayButton({ hasUrlInput }: { hasUrlInput: boolean }) {
             )}
             <span>
               {state === "idle" ? (
-                <>
-                  <span className="md:hidden">開く</span>
-                  <span className="hidden md:inline">{labels[state]}</span>
-                </>
+                <span className="hidden md:inline">{labels[state]}</span>
               ) : (
                 labels[state]
               )}
