@@ -5,6 +5,7 @@ export function EditorFooter() {
         href="https://github.com/itta611/scan-pop"
         target="_blank"
         rel="noopener noreferrer"
+        className="underline underline-offset-3 decoration-foreground/50"
       >
         ソースコード
       </a>
@@ -13,6 +14,7 @@ export function EditorFooter() {
         href="https://x.com/IttaFunahashi"
         target="_blank"
         rel="noopener noreferrer"
+        className="underline underline-offset-3 decoration-foreground/50"
       >
         作ったひと
       </a>
