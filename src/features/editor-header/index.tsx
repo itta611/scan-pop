@@ -11,7 +11,7 @@ import {
 
 export function EditorHeader() {
   return (
-    <header className="bg-background w-full flex h-17 items-center gap-2 px-3 md:gap-8 md:px-5 max-w-300 mx-auto">
+    <header className="bg-background w-full flex md:h-17 h-15 items-center gap-2 md:px-5 px-4 md:gap-8 max-w-300 mx-auto">
       <Logo className="md:ml-1" />
       <div className="ml-auto flex items-center gap-1 md:gap-3">
         <CopyDisplayLinkButton />
