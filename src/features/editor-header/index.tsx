@@ -28,7 +28,11 @@ function OpenDisplayButton() {
   const [justSaved, setJustSaved] = useState(false);
   const hasDestination = useAtomValue(hasDestinationAtom);
   const waitingToSave = useAtomValue(waitingToSaveAtom);
-  const status = waitingToSave ? "saving" : justSaved ? "saved" : "idle";
+  const status = waitingToSave
+    ? "saving"
+    : justSaved && hasDestination
+      ? "saved"
+      : "idle";
   const labels = {
     idle: "表示ページを開く",
     saving: "保存しています...",

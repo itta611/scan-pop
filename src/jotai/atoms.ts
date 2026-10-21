@@ -44,9 +44,6 @@ export const pendingSaveAtom = atom<Promise<SavedScreen> | null>(null);
 export const savingScreenAtom = atom(false);
 export const screenConfigAtom = atom(defaultEditorConfig);
 export const savedScreenAtom = atom<SavedScreen | undefined>(undefined);
-export const waitingToSaveAtom = atom(
-  (get) => get(screenConfigAtom) !== get(requestedScreenConfigAtom),
-);
 
 function settingAtom<Key extends keyof EditorConfig>(key: Key) {
   return atom(
@@ -73,3 +70,9 @@ export const hasDestinationAtom = atom((get) => {
     confetti: confettiPalettes[config.confetti],
   }).success;
 });
+
+export const waitingToSaveAtom = atom(
+  (get) =>
+    get(hasDestinationAtom) &&
+    get(screenConfigAtom) !== get(requestedScreenConfigAtom),
+);
