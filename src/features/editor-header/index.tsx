@@ -8,10 +8,11 @@ import {
   savedScreenAtom,
   savingScreenAtom,
 } from "@/jotai/atoms";
+import { cn } from "@/lib/utils";
 
 export function EditorHeader() {
   return (
-    <header className="bg-background w-full flex md:h-17 h-15 items-center gap-2 md:px-5 px-4 md:gap-8 max-w-300 mx-auto">
+    <header className="bg-background w-full flex h-17 items-center gap-2 md:px-5 px-4 md:gap-8 max-w-300 mx-auto">
       <Logo className="md:ml-1" />
       <div className="ml-auto flex items-center gap-1 md:gap-3">
         <CopyDisplayLinkButton />
@@ -77,9 +78,48 @@ function CopyDisplayLinkButton() {
       disabled={!saved}
       onClick={saved ? () => copyDisplayLink(saved.id) : undefined}
     >
-      {copied ? <Check /> : <Copy />}
-      <span className="max-md:hidden">
-        {copied ? "コピーしました" : "表示URLをコピー"}
+      <span aria-hidden="true" className="grid *:col-start-1 *:row-start-1">
+        <span
+          className={cn(
+            "transition-[opacity,filter,scale] duration-300 ease-[cubic-bezier(0.2,0,0,1)] motion-reduce:transition-none",
+            copied
+              ? "scale-25 opacity-0 blur-[4px]"
+              : "scale-100 opacity-100 blur-0",
+          )}
+        >
+          <Copy />
+        </span>
+        <span
+          className={cn(
+            "transition-[opacity,filter,scale] duration-300 ease-[cubic-bezier(0.2,0,0,1)] motion-reduce:transition-none",
+            copied
+              ? "scale-100 opacity-100 blur-0"
+              : "scale-25 opacity-0 blur-[4px]",
+          )}
+        >
+          <Check />
+        </span>
+      </span>
+      <span
+        aria-hidden="true"
+        className="hidden text-center md:grid *:col-start-1 *:row-start-1"
+      >
+        <span
+          className={cn(
+            "transition-[opacity,filter] duration-200 ease-out motion-reduce:transition-none",
+            copied ? "opacity-0 blur-[4px]" : "opacity-100 blur-0",
+          )}
+        >
+          表示URLをコピー
+        </span>
+        <span
+          className={cn(
+            "transition-[opacity,filter] duration-200 ease-out motion-reduce:transition-none",
+            copied ? "opacity-100 blur-0" : "opacity-0 blur-[4px]",
+          )}
+        >
+          コピーしました
+        </span>
       </span>
     </Button>
   );
