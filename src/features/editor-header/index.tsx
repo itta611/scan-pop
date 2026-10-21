@@ -63,7 +63,10 @@ function OpenDisplayButton() {
         {(["idle", "saving", "saved"] as const).map((state) => (
           <span
             key={state}
-            className="inline-flex items-center justify-center gap-2"
+            className={cn(
+              "inline-flex items-center justify-center gap-2",
+              state !== "idle" && "opacity-50",
+            )}
           >
             <span
               className={cn(
@@ -82,7 +85,7 @@ function OpenDisplayButton() {
               )}
             </span>
             <span className={status === state ? "opacity-100" : "opacity-0"}>
-              <span className={state === "idle" ? undefined : "opacity-50"}>
+              <span>
                 {state === "idle" ? (
                   <>
                     <span className="md:hidden">開く</span>
@@ -133,7 +136,10 @@ function CopyDisplayLinkButton() {
         {[false, true].map((isCopied) => (
           <span
             key={isCopied ? "copied" : "idle"}
-            className="inline-flex items-center justify-center gap-2"
+            className={cn(
+              "inline-flex items-center justify-center gap-2",
+              isCopied && "opacity-50",
+            )}
           >
             <span
               className={cn(
@@ -151,9 +157,7 @@ function CopyDisplayLinkButton() {
                 copied === isCopied ? "opacity-100" : "opacity-0",
               )}
             >
-              <span className={isCopied ? "opacity-50" : undefined}>
-                {isCopied ? "コピーしました" : "表示URLをコピー"}
-              </span>
+              <span>{isCopied ? "コピーしました" : "表示URLをコピー"}</span>
             </span>
           </span>
         ))}
