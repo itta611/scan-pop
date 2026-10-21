@@ -57,7 +57,7 @@ function EditorSession() {
   return (
     <div className="min-h-svh pt-3 px-3 bg-accent flex flex-col md:h-svh md:pt-6 md:px-5">
       <EditorHeader />
-      <main className="mx-auto w-full flex flex-col gap-5 max-w-300 mt-5 grow md:flex-1 md:min-h-0 md:flex-row md:gap-9 md:mt-8">
+      <main className="mx-auto w-full flex shrink flex-col gap-5 max-w-300 mt-5 grow md:flex-1 md:min-h-0 md:flex-row md:gap-9 md:mt-8">
         <EditorPreview ref={stage} screenId={screenId} qrReady={qrReady} />
         <form
           id="screen-editor"

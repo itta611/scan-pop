@@ -131,7 +131,7 @@ function CopyDisplayLinkButton() {
           >
             <span
               className={cn(
-                "transition-[opacity,filter,scale] duration-300 ease-[cubic-bezier(0.2,0,0,1)] motion-reduce:transition-none",
+                "transition-[opacity,filter,scale] duration-100 ease-[cubic-bezier(0.2,0,0,1)] motion-reduce:transition-none",
                 copied === isCopied
                   ? "scale-100 opacity-100 blur-0"
                   : "scale-25 opacity-0 blur-[4px]",
