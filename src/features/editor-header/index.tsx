@@ -124,37 +124,31 @@ function CopyDisplayLinkButton() {
       onClick={saved ? () => copyDisplayLink(saved.id) : undefined}
     >
       <span aria-hidden="true" className="grid *:col-start-1 *:row-start-1">
-        <span
-          className={cn(
-            "transition-[opacity,filter,scale] duration-300 ease-[cubic-bezier(0.2,0,0,1)] motion-reduce:transition-none",
-            copied
-              ? "scale-25 opacity-0 blur-[4px]"
-              : "scale-100 opacity-100 blur-0",
-          )}
-        >
-          <Copy />
-        </span>
-        <span
-          className={cn(
-            "transition-[opacity,filter,scale] duration-300 ease-[cubic-bezier(0.2,0,0,1)] motion-reduce:transition-none",
-            copied
-              ? "scale-100 opacity-100 blur-0"
-              : "scale-25 opacity-0 blur-[4px]",
-          )}
-        >
-          <Check />
-        </span>
-      </span>
-      <span
-        aria-hidden="true"
-        className="hidden text-center md:grid *:col-start-1 *:row-start-1"
-      >
-        <span className={cn(copied ? "opacity-0" : "opacity-100")}>
-          表示URLをコピー
-        </span>
-        <span className={cn(copied ? "opacity-100" : "opacity-0")}>
-          コピーしました
-        </span>
+        {[false, true].map((isCopied) => (
+          <span
+            key={isCopied ? "copied" : "idle"}
+            className="inline-flex items-center justify-center gap-2"
+          >
+            <span
+              className={cn(
+                "transition-[opacity,filter,scale] duration-300 ease-[cubic-bezier(0.2,0,0,1)] motion-reduce:transition-none",
+                copied === isCopied
+                  ? "scale-100 opacity-100 blur-0"
+                  : "scale-25 opacity-0 blur-[4px]",
+              )}
+            >
+              {isCopied ? <Check /> : <Copy />}
+            </span>
+            <span
+              className={cn(
+                "max-md:hidden",
+                copied === isCopied ? "opacity-100" : "opacity-0",
+              )}
+            >
+              {isCopied ? "コピーしました" : "表示URLをコピー"}
+            </span>
+          </span>
+        ))}
       </span>
     </Button>
   );
