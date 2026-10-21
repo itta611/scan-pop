@@ -13,14 +13,14 @@ export function ThemeSetting() {
         {themes.map((option) => (
           <button
             type="button"
-            key={option.value}
-            aria-pressed={theme === option.value}
+            key={option.color}
+            aria-pressed={theme === option.color}
             className="group text-xs text-accent-foreground outline-none!"
-            onClick={() => setTheme(option.value)}
+            onClick={() => setTheme(option.color)}
           >
             <span className="relative mb-1.5 flex h-14 overflow-hidden group-aria-pressed:ring-2 group-focus-visible:ring-2 ring-primary">
-              <SignageBackground theme={option.value} sizeBasis="long" />
-              {theme === option.value && (
+              <SignageBackground theme={option.color} sizeBasis="long" />
+              {theme === option.color && (
                 <span className="absolute right-1 bottom-1 bg-primary p-0.75 text-white">
                   <CheckIcon size={11} />
                 </span>

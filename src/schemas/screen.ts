@@ -11,7 +11,7 @@ export const screenSchema = z.object({
     .max(2048),
   title: z.string().trim().min(1, "タイトルを入力してください。"),
   message: z.string().trim().max(120),
-  theme: z.enum(["paper", "mint", "sky", "rose", "night"]),
+  theme: z.enum(["none", "gray", "mint", "sky", "rose"]),
   confetti: z.tuple([hexColor, hexColor, hexColor, hexColor]),
 });
 
@@ -28,14 +28,14 @@ export const defaultScreen: ScreenConfig = {
   url: "https://scan.itta.dev",
   title: "タイトル",
   message: "ひとことメッセージ",
-  theme: "paper",
+  theme: "gray",
   confetti: ["#ffffff", "#ffffff", "#ffffff", "#ffffff"],
 };
 
 export const themes = [
-  { value: "paper", label: "ペーパー" },
-  { value: "mint", label: "ミント" },
-  { value: "sky", label: "ミスト" },
-  { value: "rose", label: "ローズ" },
-  { value: "night", label: "ナイト" },
+  { color: "none" },
+  { color: "gray" },
+  { color: "mint" },
+  { color: "sky" },
+  { color: "rose" },
 ] as const;

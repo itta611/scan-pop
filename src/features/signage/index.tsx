@@ -2,7 +2,7 @@ import { QRCodeSVG } from "qrcode.react";
 import type { Ref } from "react";
 import type { ScreenConfig } from "@/schemas/screen";
 import { cn } from "../../lib/utils";
-import { SignageBackground, themeClasses } from "./background";
+import { SignageBackground } from "./background";
 import { Confetti, type ConfettiHandle } from "./confetti";
 
 export type SignageHandle = ConfettiHandle;
@@ -20,7 +20,6 @@ export function Signage({
     <section
       className={cn(
         "relative flex h-full min-h-0 w-full flex-col overflow-hidden [container-type:size]",
-        themeClasses({ theme: config.theme }),
       )}
     >
       <SignageBackground theme={config.theme} />

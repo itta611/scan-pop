@@ -1,20 +1,13 @@
-import { cva } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 import type { ScreenConfig } from "@/schemas/screen";
 
-export const themeClasses = cva("bg-white text-black", {
-  variants: {
-    theme: {
-      paper:
-        "[--stage-pattern:var(--color-stone-200)] [--stage-accent:var(--color-stone-100)]",
-      mint: "[--stage-pattern:var(--color-emerald-100)] [--stage-accent:var(--color-emerald-50)]",
-      sky: "[--stage-pattern:var(--color-sky-100)] [--stage-accent:var(--color-sky-50)]",
-      rose: "[--stage-pattern:var(--color-rose-100)] [--stage-accent:var(--color-rose-50)]",
-      night:
-        "bg-zinc-800 text-white [--stage-pattern:var(--color-zinc-700)] [--stage-accent:var(--color-zinc-800)]",
-    },
-  },
-});
+const patternClasses = {
+  none: "fill-transparent",
+  gray: "fill-stone-100",
+  mint: "fill-green-600/10",
+  sky: "fill-sky-500/10",
+  rose: "fill-rose-400/10",
+};
 
 export function SignageBackground({
   theme,
@@ -27,7 +20,6 @@ export function SignageBackground({
     <div
       className={cn(
         "pointer-events-none absolute inset-0 overflow-hidden [container-type:size]",
-        themeClasses({ theme }),
       )}
     >
       <svg
@@ -36,12 +28,10 @@ export function SignageBackground({
         className={cn(
           "absolute top-0 right-0 h-auto origin-top-right scale-y-120",
           sizeBasis === "long" ? "w-[44cqmax]" : "w-[44cqmin]",
+          patternClasses[theme],
         )}
       >
-        <path
-          d="M560 0H1000V295C907 260 914 178 795 136C669 92 626 68 560 0Z"
-          fill="var(--stage-pattern)"
-        />
+        <path d="M560 0H1000V295C907 260 914 178 795 136C669 92 626 68 560 0Z" />
       </svg>
       <svg
         aria-hidden="true"
@@ -49,25 +39,21 @@ export function SignageBackground({
         className={cn(
           "absolute bottom-0 left-0 h-auto origin-bottom-left scale-y-120",
           sizeBasis === "long" ? "w-[33cqmax]" : "w-[33cqmin]",
+          patternClasses[theme],
         )}
       >
-        <path
-          d="M0 786C125 819 238 891 330 1000H0Z"
-          fill="var(--stage-pattern)"
-        />
+        <path d="M0 786C125 819 238 891 330 1000H0Z" />
       </svg>
       <svg
         aria-hidden="true"
         viewBox="660 820 340 180"
         className={cn(
-          "absolute right-0 bottom-0 h-auto origin-bottom-right scale-y-120",
+          "absolute right-0 bottom-0 h-auto origin-bottom-right scale-y-120 opacity-50",
           sizeBasis === "long" ? "w-[34cqmax]" : "w-[34cqmin]",
+          patternClasses[theme],
         )}
       >
-        <path
-          d="M680 1000C663 881 807 813 1000 824V1000Z"
-          fill="var(--stage-accent)"
-        />
+        <path d="M680 1000C663 881 807 813 1000 824V1000Z" />
       </svg>
     </div>
   );
