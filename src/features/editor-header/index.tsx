@@ -82,14 +82,16 @@ function OpenDisplayButton() {
               )}
             </span>
             <span className={status === state ? "opacity-100" : "opacity-0"}>
-              {state === "idle" ? (
-                <>
-                  <span className="md:hidden">開く</span>
-                  <span className="hidden md:inline">{labels[state]}</span>
-                </>
-              ) : (
-                labels[state]
-              )}
+              <span className={state === "idle" ? undefined : "opacity-50"}>
+                {state === "idle" ? (
+                  <>
+                    <span className="md:hidden">開く</span>
+                    <span className="hidden md:inline">{labels[state]}</span>
+                  </>
+                ) : (
+                  labels[state]
+                )}
+              </span>
             </span>
             {state === "idle" && (
               <span
@@ -149,7 +151,9 @@ function CopyDisplayLinkButton() {
                 copied === isCopied ? "opacity-100" : "opacity-0",
               )}
             >
-              {isCopied ? "コピーしました" : "表示URLをコピー"}
+              <span className={isCopied ? "opacity-50" : undefined}>
+                {isCopied ? "コピーしました" : "表示URLをコピー"}
+              </span>
             </span>
           </span>
         ))}
