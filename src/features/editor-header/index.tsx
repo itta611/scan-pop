@@ -45,18 +45,35 @@ function OpenDisplayButton() {
       variant="primary"
       type="submit"
       form="screen-editor"
+      aria-label={justSaved ? "保存しました" : "表示ページを開く"}
       disabled={!hasDestination}
     >
-      {justSaved ? (
-        <Check className="max-md:hidden" />
-      ) : (
-        <Monitor className="max-md:hidden" />
-      )}
-      <span className="md:hidden">{justSaved ? "保存しました" : "開く"}</span>
-      <span className="hidden md:inline">
-        {justSaved ? "保存しました" : "表示ページを開く"}
+      <span aria-hidden="true" className="grid *:col-start-1 *:row-start-1">
+        <span
+          className={cn(
+            "inline-flex items-center justify-center gap-2 transition-[opacity,filter] duration-100 ease-[cubic-bezier(0.2,0,0,1)] motion-reduce:transition-none [&_svg]:transition-[scale] [&_svg]:duration-100 [&_svg]:ease-[cubic-bezier(0.2,0,0,1)] motion-reduce:[&_svg]:transition-none",
+            justSaved
+              ? "opacity-0 blur-[4px] [&_svg]:scale-25"
+              : "opacity-100 blur-0 [&_svg]:scale-100",
+          )}
+        >
+          <Monitor className="max-md:hidden" />
+          <span className="md:hidden">開く</span>
+          <span className="hidden md:inline">表示ページを開く</span>
+          <ArrowUpRight />
+        </span>
+        <span
+          className={cn(
+            "inline-flex items-center justify-center gap-2 transition-[opacity,filter] duration-100 ease-[cubic-bezier(0.2,0,0,1)] motion-reduce:transition-none [&_svg]:transition-[scale] [&_svg]:duration-100 [&_svg]:ease-[cubic-bezier(0.2,0,0,1)] motion-reduce:[&_svg]:transition-none",
+            justSaved
+              ? "opacity-100 blur-0 [&_svg]:scale-100"
+              : "opacity-0 blur-[4px] [&_svg]:scale-25",
+          )}
+        >
+          <Check className="max-md:hidden" />
+          <span>保存しました</span>
+        </span>
       </span>
-      {!justSaved && <ArrowUpRight />}
     </Button>
   );
 }
