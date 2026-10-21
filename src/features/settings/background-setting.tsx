@@ -21,7 +21,7 @@ export function BackgroundSetting() {
           >
             <span
               className={cn(
-                "relative mb-1.5 flex aspect-video overflow-hidden transition-all ring-0 ring-border group-aria-pressed:ring-2 group-focus-visible:ring-2 group-aria-pressed:ring-primary",
+                "relative mb-1.5 flex aspect-3/2 overflow-hidden transition-all ring-0 ring-border group-aria-pressed:ring-2 group-focus-visible:ring-2 group-aria-pressed:ring-primary",
                 { "ring-1": option.theme === "light" },
               )}
             >
