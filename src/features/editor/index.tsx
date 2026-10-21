@@ -61,7 +61,7 @@ function EditorSession() {
         <EditorPreview ref={stage} screenId={screenId} qrReady={qrReady} />
         <form
           id="screen-editor"
-          className="bg-background px-5 w-full shrink-0 md:w-80 md:overflow-y-auto"
+          className="bg-background px-5 w-full shrink-0 md:w-80 md:overflow-y-auto scrollbar-track-zinc-50 scrollbar-thumb-zinc-200"
           onSubmit={submit}
           noValidate
         >

@@ -1,6 +1,6 @@
 export function EditorFooter() {
   return (
-    <footer className="h-9 w-300 mx-auto flex items-center justify-start text-xs px-2 gap-1.5 opacity-50">
+    <footer className="h-9 max-w-300 w-full mx-auto flex items-center justify-start text-xs px-2 gap-1.5 opacity-50">
       <a
         href="https://github.com/itta611/scan-pop"
         target="_blank"

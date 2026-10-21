@@ -15,7 +15,7 @@ export function EditorHeader() {
   return (
     <header className="bg-background w-full flex h-17 items-center gap-2 md:px-5 px-4 md:gap-8 max-w-300 mx-auto">
       <Logo className="md:ml-1" />
-      <div className="ml-auto flex items-center gap-1 md:gap-3">
+      <div className="ml-auto flex items-center gap-1 md:gap-2">
         <CopyDisplayLinkButton />
         <OpenDisplayButton />
       </div>
@@ -66,13 +66,13 @@ function OpenDisplayButton() {
             className={cn(
               "inline-flex items-center justify-center gap-2 transition-[opacity,filter,scale] duration-100 motion-reduce:transition-none",
               status === state
-                ? "scale-100 blur-0 ease-[cubic-bezier(0.2,0,0,1)]"
-                : "scale-25 blur-[4px] ease-in",
+                ? "ease-[cubic-bezier(0.2,0,0,1)]"
+                : "scale-70 ease-in",
               status !== state
                 ? "opacity-0"
                 : state === "idle"
                   ? "opacity-100"
-                  : "opacity-50",
+                  : "opacity-70",
             )}
           >
             {state === "saved" ? (
@@ -108,7 +108,7 @@ function CopyDisplayLinkButton() {
       `${location.origin}/screen/${screenId}`,
     );
     setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    setTimeout(() => setCopied(false), 1000);
   }
   return (
     <Button
@@ -124,12 +124,12 @@ function CopyDisplayLinkButton() {
             className={cn(
               "inline-flex items-center justify-center gap-2 transition-[opacity,filter,scale] duration-100 motion-reduce:transition-none",
               copied === isCopied
-                ? "scale-100 blur-0 ease-[cubic-bezier(0.2,0,0,1)]"
-                : "scale-25 blur-[4px] ease-in",
+                ? "scale-100 ease-[cubic-bezier(0.2,0,0,1)]"
+                : "scale-70 ease-in",
               copied !== isCopied
                 ? "opacity-0"
                 : isCopied
-                  ? "opacity-50"
+                  ? "opacity-70"
                   : "opacity-100",
             )}
           >
