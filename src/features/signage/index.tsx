@@ -20,9 +20,11 @@ export function Signage({
     <section
       className={cn(
         "relative flex h-full min-h-0 w-full flex-col overflow-hidden [container-type:size]",
+        { "text-black": config.background.theme === "light" },
+        { "text-white": config.background.theme === "dark" },
       )}
     >
-      <SignageBackground theme={config.theme} />
+      <SignageBackground background={config.background} />
       <div className="relative flex flex-1 flex-col items-center justify-center px-[10cqw] py-[9cqh] text-center">
         <h2 className="w-full max-w-[76cqw] whitespace-pre-line text-center font-semibold wrap-anywhere text-[clamp(28px,min(14cqw,9cqh),120px)]/[1.06]">
           {config.title || "タイトル"}

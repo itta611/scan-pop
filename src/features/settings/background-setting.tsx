@@ -1,32 +1,31 @@
 import { useAtom } from "jotai";
 import { CheckIcon } from "lucide-react";
 import { SignageBackground } from "@/features/signage/background";
-import { themeAtom } from "@/jotai/atoms";
-import { themes } from "@/schemas/screen";
+import { backgroundAtom } from "@/jotai/atoms";
+import { backgrounds } from "@/schemas/screen";
 import { SettingField } from "./setting-field";
 
-export function ThemeSetting() {
-  const [theme, setTheme] = useAtom(themeAtom);
+export function BackgroundSetting() {
+  const [background, setBackground] = useAtom(backgroundAtom);
   return (
     <SettingField title="背景テーマ">
       <div className="grid clear-both grid-cols-3 gap-3">
-        {themes.map((option) => (
+        {backgrounds.map((option) => (
           <button
             type="button"
-            key={option.color}
-            aria-pressed={theme === option.color}
+            key={option.color + option.theme}
+            aria-pressed={background === option}
             className="group text-xs text-accent-foreground outline-none!"
-            onClick={() => setTheme(option.color)}
+            onClick={() => setBackground(option)}
           >
             <span className="relative mb-1.5 flex h-14 overflow-hidden group-aria-pressed:ring-2 group-focus-visible:ring-2 ring-primary">
-              <SignageBackground theme={option.color} sizeBasis="long" />
-              {theme === option.color && (
+              <SignageBackground background={option} sizeBasis="long" />
+              {background === option && (
                 <span className="absolute right-1 bottom-1 bg-primary p-0.75 text-white">
                   <CheckIcon size={11} />
                 </span>
               )}
             </span>
-            <span>{option.label}</span>
           </button>
         ))}
       </div>

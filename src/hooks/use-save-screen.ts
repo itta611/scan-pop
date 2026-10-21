@@ -35,7 +35,7 @@ export function useSaveScreen() {
       saved.url === (config.url || defaultScreen.url) &&
       saved.title === config.title.trim() &&
       saved.message === config.message.trim() &&
-      saved.theme === config.theme &&
+      saved.background === config.background &&
       confettiPalettes[config.confetti].every(
         (color, index) => color === saved.confetti[index],
       )

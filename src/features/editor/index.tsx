@@ -2,10 +2,10 @@
 import { Provider, useAtomValue } from "jotai";
 import { type FormEvent, type Ref, useEffect, useRef, useState } from "react";
 import { EditorHeader } from "@/features/editor-header";
+import { BackgroundSetting } from "@/features/settings/background-setting";
 import { ConfettiSetting } from "@/features/settings/confetti-setting";
 import { LinkSetting } from "@/features/settings/link-setting";
 import { TextSetting } from "@/features/settings/text-setting";
-import { ThemeSetting } from "@/features/settings/theme-setting";
 import { Signage, type SignageHandle } from "@/features/signage";
 import { confettiPalettes } from "@/features/signage/confetti";
 import { useAutosaveScreen } from "@/hooks/use-autosave-screen";
@@ -66,7 +66,7 @@ function EditorSession() {
         >
           <LinkSetting />
           <TextSetting />
-          <ThemeSetting />
+          <BackgroundSetting />
           <ConfettiSetting
             onPreview={(palette) => stage.current?.celebrate(palette)}
           />

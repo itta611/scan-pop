@@ -59,7 +59,7 @@ function settingAtom<Key extends keyof EditorConfig>(key: Key) {
 export const urlAtom = settingAtom("url");
 export const titleAtom = settingAtom("title");
 export const messageAtom = settingAtom("message");
-export const themeAtom = settingAtom("theme");
+export const backgroundAtom = settingAtom("background");
 export const confettiAtom = settingAtom("confetti");
 
 export const hasDestinationAtom = atom((get) => {
