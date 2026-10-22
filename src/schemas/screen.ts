@@ -4,9 +4,11 @@ const hexColor = z.string().regex(/^#[0-9a-f]{6}$/i);
 
 export function normalizeUrl(url: string) {
   const value = url.trim();
-  return value && !/^[a-z][a-z\d+.-]*:\/\//i.test(value)
-    ? `https://${value}`
-    : value;
+  const hasScheme = /^[a-z][a-z\d+.-]*:/i.test(value.replace(/[\t\n\r]/g, ""));
+  const hasHostPort = /^(?:localhost|[\w-]+(?:\.[\w-]+)+):\d+(?:[/?#]|$)/i.test(
+    value,
+  );
+  return value && (!hasScheme || hasHostPort) ? `https://${value}` : value;
 }
 
 export const screenSchema = z.object({

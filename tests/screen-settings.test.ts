@@ -105,8 +105,18 @@ test("invalid settings reject without calling the API", async (t) => {
   const fetchMock = t.mock.method(globalThis, "fetch", async () => {
     throw new Error("must not fetch");
   });
-  store.set(urlAtom, "https://");
-  await assert.rejects(saveScreen(store), /http/);
+  for (const url of [
+    "https://",
+    "javascript:/alert()",
+    "javascript:123",
+    "java\tscript:/alert()",
+    "data:text/html,test",
+    "mailto:user@example.com",
+    "ftp://example.com",
+  ]) {
+    store.set(urlAtom, url);
+    await assert.rejects(saveScreen(store), /http/, url);
+  }
   assert.equal(fetchMock.mock.callCount(), 0);
 });
 
@@ -359,6 +369,7 @@ test("typing during an ongoing save stays local until the next save request", as
 for (const [input, expected] of [
   ["example.com/path?from=qr", "https://example.com/path?from=qr"],
   ["example.com:8080/path", "https://example.com:8080/path"],
+  ["localhost:3000/path", "https://localhost:3000/path"],
   [
     "example.com/?next=https://example.org",
     "https://example.com/?next=https://example.org",

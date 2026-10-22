@@ -271,6 +271,35 @@ test("PUT creates a client UUID and rejects missing credentials and other owners
   assert.equal((await put(token)).status, 200);
 });
 
+test("PUT rejects non-HTTP URL schemes without creating a screen", async () => {
+  const id = randomUUID();
+  ids.push(id);
+  for (const url of [
+    "javascript:/alert()",
+    "JaVaScRiPt:/alert()",
+    "javascript:123",
+    "java\tscript:/alert()",
+    "data:text/html,test",
+    "mailto:user@example.com",
+    "ftp://example.com",
+    "file:/tmp/test",
+  ]) {
+    const response = await PUT(
+      new Request(`http://localhost/api/screens/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Edit-Token": randomUUID(),
+        },
+        body: JSON.stringify({ ...defaultScreen, url }),
+      }),
+      { params: Promise.resolve({ id }) },
+    );
+    assert.equal(response.status, 400, url);
+  }
+  await assert.rejects(publicScreen(id), { status: 404 });
+});
+
 test("concurrent creation of the same ID never replaces the winning owner", async () => {
   const id = randomUUID();
   ids.push(id);

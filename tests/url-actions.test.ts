@@ -49,7 +49,16 @@ test("display actions require URL input even after a screen is created", (t) => 
       disabled.map((button) => ({ ...button, disabled: false })),
     );
   }
-  for (const value of ["", "   "]) {
+  for (const value of [
+    "",
+    "   ",
+    "javascript:/alert()",
+    "javascript:123",
+    "java\tscript:/alert()",
+    "data:text/html,test",
+    "mailto:user@example.com",
+    "ftp://example.com",
+  ]) {
     store.set(urlAtom, value);
     assert.deepEqual(buttons(), disabled);
     assert.equal(store.get(isScreenConfigValidAtom), false);
