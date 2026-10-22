@@ -16,7 +16,7 @@ const japaneseFont = BIZ_UDPGothic({
 });
 
 export const metadata: Metadata = {
-  title: "Scan Pop — たのしいQRコード表示ツール",
+  title: "Scan Pop — 愉快なQRコード表示ツール",
   icons: { icon: "/favicon.svg" },
 };
 export default function RootLayout({
