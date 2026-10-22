@@ -2,13 +2,26 @@ import { z } from "zod";
 
 const hexColor = z.string().regex(/^#[0-9a-f]{6}$/i);
 
+export function normalizeUrl(url: string) {
+  const value = url.trim();
+  return value && !/^[a-z][a-z\d+.-]*:\/\//i.test(value)
+    ? `https://${value}`
+    : value;
+}
+
 export const screenSchema = z.object({
   url: z
-    .url({
-      protocol: /^https?$/,
-      error: "http:// または https:// から始まるURLを入力してください。",
-    })
-    .max(2048),
+    .string()
+    .transform(normalizeUrl)
+    .pipe(
+      z
+        .url({
+          protocol: /^https?$/,
+          error:
+            "http:// または https:// でアクセスできるURLを入力してください。",
+        })
+        .max(2048),
+    ),
   title: z.string().trim().min(1, "タイトルを入力してください。"),
   message: z.string().trim().max(120),
   background: z.object({

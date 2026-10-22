@@ -356,6 +356,37 @@ test("typing during an ongoing save stays local until the next save request", as
   assert.equal(store.get(savedScreenAtom)?.title, "入力中の見出し");
 });
 
+for (const [input, expected] of [
+  ["example.com/path?from=qr", "https://example.com/path?from=qr"],
+  ["example.com:8080/path", "https://example.com:8080/path"],
+  [
+    "example.com/?next=https://example.org",
+    "https://example.com/?next=https://example.org",
+  ],
+  ["  example.com  ", "https://example.com"],
+  ["http://example.com/path", "http://example.com/path"],
+  ["https://example.com/path", "https://example.com/path"],
+]) {
+  test(`saving ${JSON.stringify(input)} uses ${expected} and keeps the input`, async (t) => {
+    const store = editor(t);
+    const fetchMock = t.mock.method(
+      globalThis,
+      "fetch",
+      async (_path: unknown, init?: RequestInit) => {
+        const config = JSON.parse(String(init?.body));
+        assert.equal(config.url, expected);
+        return Response.json({ ...saved, ...config });
+      },
+    );
+    store.set(urlAtom, input);
+    await saveScreen(store);
+    assert.equal(store.get(savedScreenAtom)?.url, expected);
+    assert.equal(store.get(urlAtom), input);
+    await saveScreen(store);
+    assert.equal(fetchMock.mock.callCount(), 1);
+  });
+}
+
 test("saving an unchanged screen does not call the API again", async (t) => {
   const store = editor(t);
   const fetchMock = t.mock.method(

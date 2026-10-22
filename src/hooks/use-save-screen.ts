@@ -9,6 +9,7 @@ import {
 } from "@/jotai/atoms";
 import {
   defaultScreen,
+  normalizeUrl,
   type SavedScreen,
   screenSchema,
 } from "@/schemas/screen";
@@ -25,7 +26,7 @@ export function useSaveScreen() {
     const saved = store.get(savedScreenAtom);
     if (
       saved &&
-      saved.url === config.url &&
+      saved.url === normalizeUrl(config.url) &&
       saved.title === config.title.trim() &&
       saved.message === config.message.trim() &&
       saved.background.color === config.background.color &&
