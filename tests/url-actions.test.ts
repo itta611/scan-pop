@@ -58,6 +58,13 @@ test("display actions require URL input even after a screen is created", (t) => 
     "data:text/html,test",
     "mailto:user@example.com",
     "ftp://example.com",
+    "example",
+    "https://example",
+    "localhost:3000",
+    "https://example/path.html",
+    "https://example?next=example.com",
+    "https://user.name@example",
+    "123",
   ]) {
     store.set(urlAtom, value);
     assert.deepEqual(buttons(), disabled);

@@ -114,9 +114,16 @@ test("invalid settings reject without calling the API", async (t) => {
     "data:text/html,test",
     "mailto:user@example.com",
     "ftp://example.com",
+    "example",
+    "https://example",
+    "localhost:3000",
+    "https://example/path.html",
+    "https://example?next=example.com",
+    "https://user.name@example",
+    "123",
   ]) {
     store.set(urlAtom, url);
-    await assert.rejects(saveScreen(store), /http/, url);
+    await assert.rejects(saveScreen(store), /URL/, url);
   }
   assert.equal(fetchMock.mock.callCount(), 0);
 });
@@ -376,7 +383,6 @@ test("typing during an ongoing save stays local until the next save request", as
 for (const [input, expected] of [
   ["example.com/path?from=qr", "https://example.com/path?from=qr"],
   ["example.com:8080/path", "https://example.com:8080/path"],
-  ["localhost:3000/path", "https://localhost:3000/path"],
   [
     "example.com/?next=https://example.org",
     "https://example.com/?next=https://example.org",
@@ -474,7 +480,7 @@ test("initial creation immediately saves the default URL", async (t) => {
     "https://scan.itta.dev",
   );
   assert.equal(screen.id, store.get(editorIdentityAtom).id);
-  await assert.rejects(saveScreen(store), /http/);
+  await assert.rejects(saveScreen(store), /URL/);
   assert.equal(fetchMock.mock.callCount(), 1);
 });
 
@@ -517,7 +523,7 @@ for (const url of ["", "   "]) {
     await saveScreen(store);
     store.set(urlAtom, url);
     store.set(titleAtom, "入力途中の見出し");
-    await assert.rejects(saveScreen(store), /http/);
+    await assert.rejects(saveScreen(store), /URL/);
     assert.equal(fetchMock.mock.callCount(), 1);
     assert.equal(store.get(savedScreenAtom)?.url, "https://example.com/custom");
     assert.equal(store.get(savedScreenAtom)?.title, saved.title);

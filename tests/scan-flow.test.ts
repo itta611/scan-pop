@@ -271,7 +271,7 @@ test("PUT creates a client UUID and rejects missing credentials and other owners
   assert.equal((await put(token)).status, 200);
 });
 
-test("PUT rejects non-HTTP URL schemes without creating a screen", async () => {
+test("PUT rejects invalid URLs without creating a screen", async () => {
   const id = randomUUID();
   ids.push(id);
   for (const url of [
@@ -282,6 +282,13 @@ test("PUT rejects non-HTTP URL schemes without creating a screen", async () => {
     "data:text/html,test",
     "mailto:user@example.com",
     "ftp://example.com",
+    "example",
+    "https://example",
+    "localhost:3000",
+    "https://example/path.html",
+    "https://example?next=example.com",
+    "https://user.name@example",
+    "123",
     "file:/tmp/test",
   ]) {
     const response = await PUT(
