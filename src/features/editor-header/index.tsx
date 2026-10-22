@@ -8,28 +8,25 @@ import {
   requestedScreenConfigAtom,
   savedScreenAtom,
   screenConfigAtom,
-  urlAtom,
 } from "@/jotai/atoms";
 import { cn } from "@/lib/utils";
 
 export function EditorHeader() {
-  const url = useAtomValue(urlAtom);
-  const hasUrlInput = url.trim().length > 0;
+  const isConfigValid = useAtomValue(isScreenConfigValidAtom);
   return (
     <header className="bg-background w-full flex h-17 items-center gap-2 md:px-5 px-4 md:gap-8 max-w-300 mx-auto">
       <Logo className="md:ml-1" />
       <div className="ml-auto flex items-center gap-1 md:gap-2">
-        <CopyDisplayLinkButton hasUrlInput={hasUrlInput} />
-        <OpenDisplayButton hasUrlInput={hasUrlInput} />
+        <CopyDisplayLinkButton isConfigValid={isConfigValid} />
+        <OpenDisplayButton isConfigValid={isConfigValid} />
       </div>
     </header>
   );
 }
 
-function OpenDisplayButton({ hasUrlInput }: { hasUrlInput: boolean }) {
+function OpenDisplayButton({ isConfigValid }: { isConfigValid: boolean }) {
   const store = useStore();
   const [justSaved, setJustSaved] = useState(false);
-  const isConfigValid = useAtomValue(isScreenConfigValidAtom);
   const config = useAtomValue(screenConfigAtom);
   const requestedConfig = useAtomValue(requestedScreenConfigAtom);
   const waitingToSave = isConfigValid && config !== requestedConfig;
@@ -67,7 +64,7 @@ function OpenDisplayButton({ hasUrlInput }: { hasUrlInput: boolean }) {
       type="submit"
       form="screen-editor"
       aria-label={labels[status]}
-      disabled={!isConfigValid || !hasUrlInput}
+      disabled={!isConfigValid}
     >
       <span aria-hidden="true" className="grid *:col-start-1 *:row-start-1">
         {(["idle", "saving", "saved"] as const).map((state) => (
@@ -107,7 +104,7 @@ function OpenDisplayButton({ hasUrlInput }: { hasUrlInput: boolean }) {
   );
 }
 
-function CopyDisplayLinkButton({ hasUrlInput }: { hasUrlInput: boolean }) {
+function CopyDisplayLinkButton({ isConfigValid }: { isConfigValid: boolean }) {
   const saved = useAtomValue(savedScreenAtom);
   const [copied, setCopied] = useState(false);
   async function copyDisplayLink(screenId: string) {
@@ -121,7 +118,7 @@ function CopyDisplayLinkButton({ hasUrlInput }: { hasUrlInput: boolean }) {
     <Button
       variant="ghost"
       aria-label={copied ? "表示URLをコピーしました" : "表示URLをコピー"}
-      disabled={!saved || !hasUrlInput}
+      disabled={!saved || !isConfigValid}
       onClick={saved ? () => copyDisplayLink(saved.id) : undefined}
     >
       <span aria-hidden="true" className="grid *:col-start-1 *:row-start-1">
