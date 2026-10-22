@@ -18,7 +18,7 @@ export const screenSchema = z.object({
       z
         .url({
           protocol: /^https?$/,
-          hostname: /\./,
+          hostname: /\.[^.]+$/,
           error:
             "http:// または https:// でアクセスできるURLを入力してください。",
         })

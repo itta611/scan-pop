@@ -115,6 +115,12 @@ test("invalid settings reject without calling the API", async (t) => {
     "mailto:user@example.com",
     "ftp://example.com",
     "example",
+    "example.",
+    "https://example.",
+    "https://example.com.",
+    "https://example./path",
+    "https://example.?next=example.com",
+    "https://example.:8080/path",
     "https://example",
     "localhost:3000",
     "https://example/path.html",
@@ -382,6 +388,7 @@ test("typing during an ongoing save stays local until the next save request", as
 
 for (const [input, expected] of [
   ["example.com/path?from=qr", "https://example.com/path?from=qr"],
+  ["example.c", "https://example.c"],
   ["example.com:8080/path", "https://example.com:8080/path"],
   [
     "example.com/?next=https://example.org",
