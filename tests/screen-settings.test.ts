@@ -4,6 +4,7 @@ import { Provider } from "jotai";
 import { createStore } from "jotai/vanilla";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
+import { EditorHeader } from "../src/features/editor-header/index.tsx";
 import { ConfettiSetting } from "../src/features/settings/confetti-setting.tsx";
 import { LinkSetting } from "../src/features/settings/link-setting.tsx";
 import { confettiPalettes } from "../src/features/signage/confetti.tsx";
@@ -139,6 +140,12 @@ test("saving creates a screen, normalizes text, and uses its owner token for upd
   store.set(urlAtom, saved.url);
   const saving = saveScreen(store);
   assert.equal(requests.length, 1);
+  assert.match(
+    renderToStaticMarkup(
+      createElement(Provider, { store }, createElement(EditorHeader)),
+    ),
+    /aria-label="保存しています..."/,
+  );
   await saving;
   const created = store.get(savedScreenAtom);
   assert.equal(created?.id, saved.id);

@@ -1,9 +1,10 @@
 import { useAtomValue, useStore } from "jotai";
 import { ArrowUpRight, Check, Copy, LoaderCircle, Monitor } from "lucide-react";
-import { useEffect, useState } from "react";
+import { type ReactNode, useEffect, useState } from "react";
 import Logo from "#/components/logo";
 import { Button } from "@/components/ui/button";
 import {
+  isSavingScreenAtom,
   isScreenConfigValidAtom,
   requestedScreenConfigAtom,
   savedScreenAtom,
@@ -29,8 +30,9 @@ function OpenDisplayButton({ isConfigValid }: { isConfigValid: boolean }) {
   const [justSaved, setJustSaved] = useState(false);
   const config = useAtomValue(screenConfigAtom);
   const requestedConfig = useAtomValue(requestedScreenConfigAtom);
-  const waitingToSave = isConfigValid && config !== requestedConfig;
-  const status = waitingToSave
+  const isSaving = useAtomValue(isSavingScreenAtom);
+  const saving = isConfigValid && (config !== requestedConfig || isSaving);
+  const status = saving
     ? "saving"
     : justSaved && isConfigValid
       ? "saved"
@@ -66,21 +68,15 @@ function OpenDisplayButton({ isConfigValid }: { isConfigValid: boolean }) {
       aria-label={labels[status]}
       disabled={!isConfigValid}
     >
-      <span aria-hidden="true" className="grid *:col-start-1 *:row-start-1">
+      <span
+        aria-hidden="true"
+        className="grid overflow-hidden *:col-start-1 *:row-start-1"
+      >
         {(["idle", "saving", "saved"] as const).map((state) => (
-          <span
+          <ButtonLabel
             key={state}
-            className={cn(
-              "inline-flex items-center justify-center gap-2 transition-[opacity,filter,scale] duration-100 motion-reduce:transition-none",
-              status === state
-                ? "ease-[cubic-bezier(0.2,0,0,1)]"
-                : "scale-70 ease-in",
-              status !== state
-                ? "opacity-0"
-                : state === "idle"
-                  ? "opacity-100"
-                  : "opacity-70",
-            )}
+            active={status === state}
+            dimmed={state !== "idle"}
           >
             {state === "saved" ? (
               <Check className="max-md:hidden" />
@@ -91,7 +87,7 @@ function OpenDisplayButton({ isConfigValid }: { isConfigValid: boolean }) {
             )}
             <span>{labels[state]}</span>
             {state === "idle" && <ArrowUpRight />}
-          </span>
+          </ButtonLabel>
         ))}
       </span>
     </Button>
@@ -115,29 +111,60 @@ function CopyDisplayLinkButton({ isConfigValid }: { isConfigValid: boolean }) {
       disabled={!saved || !isConfigValid}
       onClick={saved ? () => copyDisplayLink(saved.id) : undefined}
     >
-      <span aria-hidden="true" className="grid *:col-start-1 *:row-start-1">
+      <span
+        aria-hidden="true"
+        className="grid overflow-hidden *:col-start-1 *:row-start-1"
+      >
         {[false, true].map((isCopied) => (
-          <span
+          <ButtonLabel
             key={isCopied ? "copied" : "idle"}
-            className={cn(
-              "inline-flex items-center justify-center gap-2 transition-[opacity,filter,scale] duration-100 motion-reduce:transition-none",
-              copied === isCopied
-                ? "scale-100 ease-[cubic-bezier(0.2,0,0,1)]"
-                : "scale-70 ease-in",
-              copied !== isCopied
-                ? "opacity-0"
-                : isCopied
-                  ? "opacity-70"
-                  : "opacity-100",
-            )}
+            active={copied === isCopied}
+            dimmed={isCopied}
           >
             {isCopied ? <Check /> : <Copy />}
             <span className="max-md:hidden">
               {isCopied ? "コピーしました" : "表示URLをコピー"}
             </span>
-          </span>
+          </ButtonLabel>
         ))}
       </span>
     </Button>
+  );
+}
+
+function ButtonLabel({
+  active,
+  dimmed,
+  children,
+}: {
+  active: boolean;
+  dimmed: boolean;
+  children: ReactNode;
+}) {
+  const [transition, setTransition] = useState({ active, exiting: false });
+  if (transition.active !== active) {
+    setTransition({ active, exiting: !active });
+  }
+
+  return (
+    <span
+      className={cn(
+        "inline-flex items-center justify-center gap-2",
+        active || transition.exiting
+          ? "transition-[opacity,translate] duration-100 motion-reduce:transition-none"
+          : "transition-none",
+        active
+          ? "translate-y-0 ease-[cubic-bezier(0.2,0,0,1)]"
+          : transition.exiting
+            ? "-translate-y-2 opacity-0 ease-in"
+            : "translate-y-2 opacity-0",
+        active && (dimmed ? "opacity-70" : "opacity-100"),
+      )}
+      onTransitionEnd={() => {
+        if (!active) setTransition({ active: false, exiting: false });
+      }}
+    >
+      {children}
+    </span>
   );
 }

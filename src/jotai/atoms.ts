@@ -42,6 +42,7 @@ export const requestedScreenConfigAtom = atom(defaultEditorConfig);
 
 export const screenConfigAtom = atom(defaultEditorConfig);
 export const savedScreenAtom = atom<SavedScreen | undefined>(undefined);
+export const isSavingScreenAtom = atom(false);
 
 function settingAtom<Key extends keyof EditorConfig>(key: Key) {
   return atom(

@@ -3,6 +3,7 @@ import { useRef } from "react";
 import { confettiPalettes } from "@/features/signage/confetti";
 import {
   editorIdentityAtom,
+  isSavingScreenAtom,
   requestedScreenConfigAtom,
   savedScreenAtom,
   screenConfigAtom,
@@ -38,6 +39,7 @@ export function useSaveScreen() {
       return saved;
     }
 
+    store.set(isSavingScreenAtom, true);
     const saving = (async () => {
       while (true) {
         const config = store.get(requestedScreenConfigAtom);
@@ -74,6 +76,7 @@ export function useSaveScreen() {
       throw error;
     } finally {
       pending.current = null;
+      store.set(isSavingScreenAtom, false);
     }
   };
 }
