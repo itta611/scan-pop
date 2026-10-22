@@ -89,13 +89,7 @@ function OpenDisplayButton({ isConfigValid }: { isConfigValid: boolean }) {
             ) : (
               <Monitor className="max-md:hidden" />
             )}
-            <span>
-              {state === "idle" ? (
-                <span className="hidden md:inline">{labels[state]}</span>
-              ) : (
-                labels[state]
-              )}
-            </span>
+            <span>{labels[state]}</span>
             {state === "idle" && <ArrowUpRight />}
           </span>
         ))}
