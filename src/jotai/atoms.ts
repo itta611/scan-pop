@@ -64,7 +64,6 @@ export const isScreenConfigValidAtom = atom((get) => {
   const config = get(screenConfigAtom);
   return screenSchema.safeParse({
     ...config,
-    url: config.url || defaultScreen.url,
     confetti: confettiPalettes[config.confetti],
   }).success;
 });

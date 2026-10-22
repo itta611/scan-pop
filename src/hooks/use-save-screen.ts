@@ -25,7 +25,7 @@ export function useSaveScreen() {
     const saved = store.get(savedScreenAtom);
     if (
       saved &&
-      saved.url === (config.url || defaultScreen.url) &&
+      saved.url === config.url &&
       saved.title === config.title.trim() &&
       saved.message === config.message.trim() &&
       saved.background.color === config.background.color &&
@@ -42,7 +42,9 @@ export function useSaveScreen() {
         const config = store.get(requestedScreenConfigAtom);
         const parsed = screenSchema.parse({
           ...config,
-          url: config.url || defaultScreen.url,
+          url: store.get(savedScreenAtom)
+            ? config.url
+            : config.url || defaultScreen.url,
           confetti: confettiPalettes[config.confetti],
         });
         const { id, editToken } = store.get(editorIdentityAtom);

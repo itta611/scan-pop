@@ -414,6 +414,7 @@ test("initial creation immediately saves the default URL", async (t) => {
         ...store.get(editorIdentityAtom),
       }),
   );
+  t.mock.method(console, "error", () => {});
   const initial = saveScreen(store);
   assert.equal(fetchMock.mock.callCount(), 1);
   const screen = await initial;
@@ -424,7 +425,7 @@ test("initial creation immediately saves the default URL", async (t) => {
     "https://scan.itta.dev",
   );
   assert.equal(screen.id, store.get(editorIdentityAtom).id);
-  await saveScreen(store);
+  await assert.rejects(saveScreen(store), /http/);
   assert.equal(fetchMock.mock.callCount(), 1);
 });
 
@@ -453,25 +454,35 @@ test("saving during initial creation shares the request", async (t) => {
   assert.equal(initialized.id, result.id);
 });
 
-test("an empty URL uses the default destination without changing the input", async (t) => {
-  const store = editor(t);
-  const fetchMock = t.mock.method(
-    globalThis,
-    "fetch",
-    async (_path: unknown, init?: RequestInit) =>
-      Response.json({ ...saved, ...JSON.parse(String(init?.body)) }),
-  );
-  store.set(urlAtom, "https://example.com/custom");
-  await saveScreen(store);
-  store.set(urlAtom, "");
-  store.set(titleAtom, "空欄でも設定を保存");
-  await saveScreen(store);
-  assert.equal(store.get(savedScreenAtom)?.url, "https://scan.itta.dev");
-  assert.equal(store.get(savedScreenAtom)?.title, "空欄でも設定を保存");
-  assert.equal(store.get(urlAtom), "");
-  await saveScreen(store);
-  assert.equal(fetchMock.mock.callCount(), 2);
-});
+for (const url of ["", "   "]) {
+  test(`clearing the URL to ${JSON.stringify(url)} does not save or replace the destination`, async (t) => {
+    const store = editor(t);
+    t.mock.method(console, "error", () => {});
+    const fetchMock = t.mock.method(
+      globalThis,
+      "fetch",
+      async (_path: unknown, init?: RequestInit) =>
+        Response.json({ ...saved, ...JSON.parse(String(init?.body)) }),
+    );
+    store.set(urlAtom, "https://example.com/custom");
+    await saveScreen(store);
+    store.set(urlAtom, url);
+    store.set(titleAtom, "入力途中の見出し");
+    await assert.rejects(saveScreen(store), /http/);
+    assert.equal(fetchMock.mock.callCount(), 1);
+    assert.equal(store.get(savedScreenAtom)?.url, "https://example.com/custom");
+    assert.equal(store.get(savedScreenAtom)?.title, saved.title);
+    assert.equal(store.get(urlAtom), url);
+    store.set(urlAtom, "https://example.com/resumed");
+    await saveScreen(store);
+    assert.equal(fetchMock.mock.callCount(), 2);
+    assert.equal(
+      store.get(savedScreenAtom)?.url,
+      "https://example.com/resumed",
+    );
+    assert.equal(store.get(savedScreenAtom)?.title, "入力途中の見出し");
+  });
+}
 
 test("separate editors save independently while another editor has a pending request", async (t) => {
   const first = editor(t);

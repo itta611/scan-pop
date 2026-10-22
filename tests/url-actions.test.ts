@@ -7,7 +7,9 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { EditorHeader } from "../src/features/editor-header/index.tsx";
 import {
   isScreenConfigValidAtom,
+  requestedScreenConfigAtom,
   savedScreenAtom,
+  screenConfigAtom,
   urlAtom,
 } from "../src/jotai/atoms.ts";
 import { defaultScreen } from "../src/schemas/screen.ts";
@@ -43,7 +45,16 @@ test("display actions require URL input even after a screen is created", (t) => 
   for (const value of ["", "   "]) {
     store.set(urlAtom, value);
     assert.deepEqual(buttons(), disabled);
+    assert.equal(store.get(isScreenConfigValidAtom), false);
+    for (const requested of [false, true]) {
+      if (requested)
+        store.set(requestedScreenConfigAtom, store.get(screenConfigAtom));
+      const markup = renderToStaticMarkup(
+        createElement(Provider, { store }, createElement(EditorHeader)),
+      );
+      assert.match(markup, /aria-label="表示ページを開く"/);
+    }
   }
   store.set(urlAtom, "");
-  assert.equal(store.get(isScreenConfigValidAtom), true);
+  assert.equal(store.get(isScreenConfigValidAtom), false);
 });

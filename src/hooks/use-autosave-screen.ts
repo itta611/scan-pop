@@ -6,14 +6,14 @@ import { useSaveScreen } from "./use-save-screen";
 export function useAutosaveScreen() {
   const store = useStore();
   const saveScreen = useSaveScreen();
-  const save = useEffectEvent(() => {
-    if (store.get(isScreenConfigValidAtom)) {
+  const save = useEffectEvent((initial = false) => {
+    if (initial || store.get(isScreenConfigValidAtom)) {
       saveScreen();
     }
   });
 
   useEffect(() => {
-    save();
+    save(true);
     let timer: ReturnType<typeof setTimeout>;
     const unsubscribe = store.sub(screenConfigAtom, () => {
       clearTimeout(timer);

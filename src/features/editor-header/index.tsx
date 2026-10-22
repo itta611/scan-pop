@@ -46,7 +46,12 @@ function OpenDisplayButton({ hasUrlInput }: { hasUrlInput: boolean }) {
 
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout>;
-    const unsubscribe = store.sub(requestedScreenConfigAtom, () => {
+    let initialized = store.get(savedScreenAtom) !== undefined;
+    const unsubscribe = store.sub(savedScreenAtom, () => {
+      if (!initialized) {
+        initialized = true;
+        return;
+      }
       setJustSaved(true);
       clearTimeout(timer);
       timer = setTimeout(() => setJustSaved(false), 1000);
