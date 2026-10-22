@@ -13,8 +13,8 @@ export const confettiPalettes: ScreenConfig["confetti"][] = [
   ["#d2a056", "#d2ad56", "#d2b956", "#d2c656"],
   // ブルー — HSL: H 185/205/225/245, S 65%, L 62%.
   ["#5fd3dd", "#5fa9dd", "#5f7fdd", "#6a5fdd"],
-  // ベリー — HSL: H 285/315/345/15, S 60%, L 65%.
-  ["#c170db", "#db70c1", "#db708b", "#db8b70"],
+  // ベリー — HSL: H 285/305/325/345, S 60%, L 65%.
+  ["#c170db", "#db70d2", "#db70af", "#db708b"],
 ];
 
 export type ConfettiHandle = {
