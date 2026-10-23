@@ -59,7 +59,7 @@ export function Confetti({
 
   return (
     <canvas
-      className="pointer-events-none absolute inset-0 z-3 size-full"
+      className="pointer-events-none absolute inset-0 z-5 size-full"
       aria-hidden="true"
       tabIndex={-1}
       ref={canvas}
