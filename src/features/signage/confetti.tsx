@@ -48,7 +48,7 @@ export function Confetti({
         startVelocity: 55,
         gravity: 0.95,
         ticks: 240,
-        scalar: 1.1,
+        scalar: 2.2,
         colors: palette,
         disableForReducedMotion: true,
       };
